@@ -52,6 +52,12 @@ pnpm ios:build
 
 ## Migration Status
 
+### Old Repositories (Archived)
+- `valgate-webapp-nextjs` → superseded by `apps/web/`
+- `valgate-ios` → superseded by `apps/ios/`
+
+Both repositories are archived on GitHub. All future development happens in this monorepo.
+
 - ✅ Step 1: Created repo
 - ✅ Step 2: Migrated web + iOS (files copied, history preserved in source repos)
 - ✅ Step 3: Scaffolded shared packages
