@@ -1,0 +1,119 @@
+name: CI
+
+# Unified monorepo CI: Web (Next.js) + iOS (SwiftUI)
+# Both platforms tested on the same PR/push.
+
+on:
+  push:
+    branches:
+      - main
+      - "release/*"
+  pull_request:
+    branches:
+      - main
+      - "release/*"
+
+# Cancel stale runs on new pushes to the same branch.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Web gates ──────────────────────────────────────────────────────
+  web-lint:
+    name: web / lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        working-directory: apps/web
+        run: npm ci
+      - name: Lint
+        working-directory: apps/web
+        run: npm run lint
+
+  web-typecheck:
+    name: web / typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        working-directory: apps/web
+        run: npm ci
+      - name: Type check
+        working-directory: apps/web
+        run: npx tsc --noEmit
+
+  web-test:
+    name: web / test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        working-directory: apps/web
+        run: npm ci
+      - name: Run tests
+        working-directory: apps/web
+        run: npm test
+        env:
+          # Neon DEV branch — required by lib/env.ts and test suite.
+          # Configure in: repo Settings → Secrets → DATABASE_URL
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Staging demo mode for CI (no real Clerk keys needed)
+          STAGING_DEMO_MODE: true
+          DEMO_MODE: true
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+
+  # ── iOS gates ────────────────────────────────────────────────────────
+  ios-build-and-test:
+    name: ios / build + test
+    runs-on: [self-hosted, macOS, xcode]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: true
+      - name: Environment
+        working-directory: apps/ios
+        run: |
+          export PATH=/Applications/Xcode.app/Contents/Developer/usr/bin:$PATH
+          xcodebuild -version
+          xcrun simctl list devices available | head -5
+      - name: Build
+        working-directory: apps/ios
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project ValgateiOS.xcodeproj \
+            -scheme ValgateiOS \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=latest' \
+            | xcpretty
+      - name: Test
+        working-directory: apps/ios
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project ValgateiOS.xcodeproj \
+            -scheme ValgateiOS \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=latest' \
+            -resultBundlePath TestResults.xcresult \
+            | xcpretty
+      - name: Upload results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults
+          path: apps/ios/TestResults.xcresult
+          retention-days: 7
