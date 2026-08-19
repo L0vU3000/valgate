@@ -1,0 +1,54 @@
+# Xcode / macOS
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad
+*.xcscmblueprint
+*.moved-aside
+
+# Build products
+build/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.pins
+Package.resolved
+
+# CocoaPods (if ever adopted)
+Pods/
+
+# Carthage (if ever adopted)
+Carthage/Build/
+
+# Fastlane (if ever adopted) — reports and local env only, not the fastlane config itself
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# macOS Finder
+.DS_Store
+
+# Editor / IDE
+.idea/
+.vscode/
+
+# Local environment / secrets — never commit these
+.env
+.env.local
+*.pem
+*.p12
+*.mobileprovision
+*.cer
+
+# Local Xcode secrets — real staging API base URL, never commit
+Config/Secrets.xcconfig

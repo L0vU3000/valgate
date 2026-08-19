@@ -1,0 +1,16 @@
+{
+  "name": "@valgate/shared-types",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TypeScript types generated from Valgate API spec",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "generate": "openapi-zod-client ../api-spec/valgate-api-v1.yaml -o ./src/index.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "zod": "^3.0.0"
+  }
+}

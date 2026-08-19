@@ -1,0 +1,6 @@
+// Safe defaults. A gitignored Secrets.xcconfig may override these locally.
+VALGATE_API_BASE_URL =
+LOCAL_VERCEL_PROTECTION_BYPASS =
+VERCEL_PROTECTION_BYPASS =
+VERCEL_PROTECTION_BYPASS[config=Debug] = $(LOCAL_VERCEL_PROTECTION_BYPASS)
+#include? "Secrets.xcconfig"

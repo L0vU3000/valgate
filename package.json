@@ -1,0 +1,21 @@
+{
+  "name": "valgate",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Valgate monorepo — Web (Next.js) + iOS (SwiftUI)",
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "web:dev": "pnpm --filter valgate-webapp-nextjs dev",
+    "web:build": "pnpm --filter valgate-webapp-nextjs build",
+    "web:lint": "pnpm --filter valgate-webapp-nextjs lint",
+    "web:test": "pnpm --filter valgate-webapp-nextjs test",
+    "ios:build": "pnpm --filter valgate-ios build",
+    "ios:test": "pnpm --filter valgate-ios test",
+    "typecheck": "pnpm --filter valgate-webapp-nextjs typecheck",
+    "lint": "pnpm --filter valgate-webapp-nextjs lint",
+    "test": "pnpm --filter valgate-webapp-nextjs test"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  }
+}

@@ -1,0 +1,520 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD4E376CC32D292E607951D /* MeDto.swift */; };
+		191C053ACE7EB741A599F6D2 /* ClerkKit in Frameworks */ = {isa = PBXBuildFile; productRef = C5A8E4BFB83155B1B62F99E5 /* ClerkKit */; };
+		1F3679E3417AC3A408AB1F80 /* PropertiesLoadStateResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */; };
+		229782DC978C8D747E5932A1 /* PropertyDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D965F9027788E14B54414414 /* PropertyDetailView.swift */; };
+		2C0DBE50420E40AC10FB15DD /* RootViewStateResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094F4955487B8341011BDEE8 /* RootViewStateResolver.swift */; };
+		323E057F2FB875FC5D4B64D5 /* PropertyDto.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2619D92C3C22597917AAC10 /* PropertyDto.swift */; };
+		3656D535B0E9DE3800BF088E /* APIRequestFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C66DAA48C7B1DC2B673FF3 /* APIRequestFactoryTests.swift */; };
+		3D2999DD8C4AB36D9C0EE521 /* PropertyDetailStateResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F86B8AB112A169CAB0F4910 /* PropertyDetailStateResolver.swift */; };
+		43F438A8E1FE6016AD3BEBDE /* ConfigurationMissingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9452B973A67B2A062A410CA7 /* ConfigurationMissingView.swift */; };
+		4968736FCA56E6E8359465A8 /* APIRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE777B97EEA616F19C19006 /* APIRoute.swift */; };
+		4CDD4B9B4DC0F9AD40855B26 /* APIRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B82043C37B19C268E190FFE /* APIRequestFactory.swift */; };
+		4DD8DED426BECEFB87C5DBAE /* AppConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B1F6470503FF81B1D320F1 /* AppConfigurationTests.swift */; };
+		60EF62EF2B0DC515B49D6442 /* SessionTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 836983CDC8974A3E927A1C67 /* SessionTokenProvider.swift */; };
+		6A4C01078425B527BD28656E /* SignedOutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683ED27534EC93D2217E7075 /* SignedOutView.swift */; };
+		6C11047D81962CC72F5910FB /* MeDtoDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4E2C552642E31FC8FC1FD /* MeDtoDecodingTests.swift */; };
+		743ABA6C62B3476892C08D00 /* APIErrorEnvelopeDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B740F353870900732EDE4C4A /* APIErrorEnvelopeDecodingTests.swift */; };
+		7747C8B629548EC7BC19C781 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B9F9C575C0949D6774DBAC /* APIError.swift */; };
+		7B344C47E9D106EF5E3D74DA /* PropertiesUnauthorizedRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69E6F73468BEE851C42B551C /* PropertiesUnauthorizedRoutingTests.swift */; };
+		8588AB6FB986C573BAE162F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40BF32D1186876EF993C3220 /* Assets.xcassets */; };
+		8AF3B433EA712F154BC99A3F /* RootViewStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA375A4CD1F77D2F3DBA4C5 /* RootViewStateResolverTests.swift */; };
+		9B6D477F3965772E051A43DB /* PropertyDetailStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB80C0C33CF08F8EE03F4D98 /* PropertyDetailStateResolverTests.swift */; };
+		9C5981E75E116B963676CC9C /* PropertyDetailDtoDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F31E8EFE035E503CED09627 /* PropertyDetailDtoDecodingTests.swift */; };
+		A0EF8621B704772B9C935B26 /* PropertiesPageDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BD3E9D500C1208D99BF7EB /* PropertiesPageDecodingTests.swift */; };
+		A14FBFD58298D63EBD909F6A /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB29D23DCAAE734153F110D0 /* AppConfiguration.swift */; };
+		AF7225A316CABDB4B1A94EA2 /* ClerkKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECDDD9AD34F2D66C26842D7 /* ClerkKitUI */; };
+		B26FE88B772A0ECFA85F2810 /* ValgateiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289CAF3B76E412F13E5F7D88 /* ValgateiOSApp.swift */; };
+		B875E90CB4BFEA85D9F2C035 /* PropertiesLoadStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717E54E30465A0E3D6347769 /* PropertiesLoadStateResolverTests.swift */; };
+		BDB4849AE1A63DC848C93EFC /* SessionRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583477EC57F2CB0295D9BB1B /* SessionRefresher.swift */; };
+		C47C43BE50B8DC7963714C78 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E154FADC143DDD700CCEC9CA /* RootView.swift */; };
+		C78CF7EADA92D96CCEB01128 /* PropertiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95881E49D31608658D848396 /* PropertiesView.swift */; };
+		D460E247996484CFF715B832 /* APIClientBoundaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90DBB4F9B1936BD73002203B /* APIClientBoundaryTests.swift */; };
+		D8AA4E85E777E3ECD19719CD /* AppConfigurationHTTPSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E194D47930E007A951FF7972 /* AppConfigurationHTTPSTests.swift */; };
+		E51239B4397243244A693204 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248E1E918FEC8F041875AFEF /* APIClient.swift */; };
+		EB7828BA9E818C2D99843E33 /* SessionRefresherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */; };
+		FA53128627B9327563E3EBA3 /* PropertyListItemDtoDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */; };
+		F0D3A11E0000000000000002 /* PropertyDetailUnauthorizedRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0D3A11E0000000000000001 /* PropertyDetailUnauthorizedRoutingTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DDC4CDD266BAF618A9B797BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0EB62E4BAB5CA827FCBA0402 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B776832ECA4BCC6101617FFF;
+			remoteInfo = ValgateiOS;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		094F4955487B8341011BDEE8 /* RootViewStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewStateResolver.swift; sourceTree = "<group>"; };
+		135D266F9441DC049F2CDD45 /* ValgateiOSTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ValgateiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		15B9F9C575C0949D6774DBAC /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
+		1BA375A4CD1F77D2F3DBA4C5 /* RootViewStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewStateResolverTests.swift; sourceTree = "<group>"; };
+		248E1E918FEC8F041875AFEF /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		289CAF3B76E412F13E5F7D88 /* ValgateiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValgateiOSApp.swift; sourceTree = "<group>"; };
+		2F86B8AB112A169CAB0F4910 /* PropertyDetailStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailStateResolver.swift; sourceTree = "<group>"; };
+		38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRefresherTests.swift; sourceTree = "<group>"; };
+		40BF32D1186876EF993C3220 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		41B1F6470503FF81B1D320F1 /* AppConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfigurationTests.swift; sourceTree = "<group>"; };
+		48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesLoadStateResolver.swift; sourceTree = "<group>"; };
+		583477EC57F2CB0295D9BB1B /* SessionRefresher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRefresher.swift; sourceTree = "<group>"; };
+		683ED27534EC93D2217E7075 /* SignedOutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedOutView.swift; sourceTree = "<group>"; };
+		69E6F73468BEE851C42B551C /* PropertiesUnauthorizedRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesUnauthorizedRoutingTests.swift; sourceTree = "<group>"; };
+		6AD4E376CC32D292E607951D /* MeDto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeDto.swift; sourceTree = "<group>"; };
+		717E54E30465A0E3D6347769 /* PropertiesLoadStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesLoadStateResolverTests.swift; sourceTree = "<group>"; };
+		7F31E8EFE035E503CED09627 /* PropertyDetailDtoDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailDtoDecodingTests.swift; sourceTree = "<group>"; };
+		836983CDC8974A3E927A1C67 /* SessionTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTokenProvider.swift; sourceTree = "<group>"; };
+		84F4E2C552642E31FC8FC1FD /* MeDtoDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeDtoDecodingTests.swift; sourceTree = "<group>"; };
+		8BE777B97EEA616F19C19006 /* APIRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRoute.swift; sourceTree = "<group>"; };
+		90DBB4F9B1936BD73002203B /* APIClientBoundaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClientBoundaryTests.swift; sourceTree = "<group>"; };
+		9452B973A67B2A062A410CA7 /* ConfigurationMissingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationMissingView.swift; sourceTree = "<group>"; };
+		95881E49D31608658D848396 /* PropertiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesView.swift; sourceTree = "<group>"; };
+		9B82043C37B19C268E190FFE /* APIRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequestFactory.swift; sourceTree = "<group>"; };
+		AACA31A90B9AEA25486D27FE /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		AB80C0C33CF08F8EE03F4D98 /* PropertyDetailStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailStateResolverTests.swift; sourceTree = "<group>"; };
+		B1C66DAA48C7B1DC2B673FF3 /* APIRequestFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequestFactoryTests.swift; sourceTree = "<group>"; };
+		B740F353870900732EDE4C4A /* APIErrorEnvelopeDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrorEnvelopeDecodingTests.swift; sourceTree = "<group>"; };
+		BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyListItemDtoDecodingTests.swift; sourceTree = "<group>"; };
+		BB29D23DCAAE734153F110D0 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
+		CE18A2A777F74D48F366B354 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D4BD3E9D500C1208D99BF7EB /* PropertiesPageDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesPageDecodingTests.swift; sourceTree = "<group>"; };
+		D965F9027788E14B54414414 /* PropertyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailView.swift; sourceTree = "<group>"; };
+		DF4FD7891383403D428C89F5 /* ValgateiOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ValgateiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E154FADC143DDD700CCEC9CA /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		E194D47930E007A951FF7972 /* AppConfigurationHTTPSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfigurationHTTPSTests.swift; sourceTree = "<group>"; };
+		E2619D92C3C22597917AAC10 /* PropertyDto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDto.swift; sourceTree = "<group>"; };
+		F0D3A11E0000000000000001 /* PropertyDetailUnauthorizedRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailUnauthorizedRoutingTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F437BD4B130AD2F336AB5DC5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				191C053ACE7EB741A599F6D2 /* ClerkKit in Frameworks */,
+				AF7225A316CABDB4B1A94EA2 /* ClerkKitUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02E459255E4D13FD02D674B8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DF4FD7891383403D428C89F5 /* ValgateiOS.app */,
+				135D266F9441DC049F2CDD45 /* ValgateiOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0C65356C0F9C7F9580956202 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9452B973A67B2A062A410CA7 /* ConfigurationMissingView.swift */,
+				48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */,
+				95881E49D31608658D848396 /* PropertiesView.swift */,
+				2F86B8AB112A169CAB0F4910 /* PropertyDetailStateResolver.swift */,
+				D965F9027788E14B54414414 /* PropertyDetailView.swift */,
+				E154FADC143DDD700CCEC9CA /* RootView.swift */,
+				094F4955487B8341011BDEE8 /* RootViewStateResolver.swift */,
+				683ED27534EC93D2217E7075 /* SignedOutView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		1904D621C7C063A6ECA65B32 = {
+			isa = PBXGroup;
+			children = (
+				76D7F600EC6337376EABB9A2 /* Config */,
+				5E25481A9D4F6985C4C73EE5 /* Sources */,
+				BAF44E519FDFB13B8036E828 /* Tests */,
+				02E459255E4D13FD02D674B8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		234C3BDB57E463051CE8A9BB /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				15B9F9C575C0949D6774DBAC /* APIError.swift */,
+				6AD4E376CC32D292E607951D /* MeDto.swift */,
+				E2619D92C3C22597917AAC10 /* PropertyDto.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		2431D50091A3B0CD731D6972 /* ValgateiOS */ = {
+			isa = PBXGroup;
+			children = (
+				40BF32D1186876EF993C3220 /* Assets.xcassets */,
+				CE18A2A777F74D48F366B354 /* Info.plist */,
+				48C8122C28C5C62F9DBAD8C3 /* App */,
+				ADA2F5EE9B797356BEEFFAC9 /* Configuration */,
+				234C3BDB57E463051CE8A9BB /* Models */,
+				C137A16839862073A0ABC2D1 /* Networking */,
+				0C65356C0F9C7F9580956202 /* Views */,
+			);
+			path = ValgateiOS;
+			sourceTree = "<group>";
+		};
+		48C8122C28C5C62F9DBAD8C3 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				289CAF3B76E412F13E5F7D88 /* ValgateiOSApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		5E25481A9D4F6985C4C73EE5 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				2431D50091A3B0CD731D6972 /* ValgateiOS */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		76D7F600EC6337376EABB9A2 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				AACA31A90B9AEA25486D27FE /* Base.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		ADA2F5EE9B797356BEEFFAC9 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				BB29D23DCAAE734153F110D0 /* AppConfiguration.swift */,
+				583477EC57F2CB0295D9BB1B /* SessionRefresher.swift */,
+				836983CDC8974A3E927A1C67 /* SessionTokenProvider.swift */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		BAF44E519FDFB13B8036E828 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				FA254FFAD43CF9D887304F94 /* ValgateiOSTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		C137A16839862073A0ABC2D1 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				248E1E918FEC8F041875AFEF /* APIClient.swift */,
+				9B82043C37B19C268E190FFE /* APIRequestFactory.swift */,
+				8BE777B97EEA616F19C19006 /* APIRoute.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		FA254FFAD43CF9D887304F94 /* ValgateiOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				90DBB4F9B1936BD73002203B /* APIClientBoundaryTests.swift */,
+				B740F353870900732EDE4C4A /* APIErrorEnvelopeDecodingTests.swift */,
+				B1C66DAA48C7B1DC2B673FF3 /* APIRequestFactoryTests.swift */,
+				E194D47930E007A951FF7972 /* AppConfigurationHTTPSTests.swift */,
+				41B1F6470503FF81B1D320F1 /* AppConfigurationTests.swift */,
+				84F4E2C552642E31FC8FC1FD /* MeDtoDecodingTests.swift */,
+				717E54E30465A0E3D6347769 /* PropertiesLoadStateResolverTests.swift */,
+				D4BD3E9D500C1208D99BF7EB /* PropertiesPageDecodingTests.swift */,
+				69E6F73468BEE851C42B551C /* PropertiesUnauthorizedRoutingTests.swift */,
+				7F31E8EFE035E503CED09627 /* PropertyDetailDtoDecodingTests.swift */,
+				AB80C0C33CF08F8EE03F4D98 /* PropertyDetailStateResolverTests.swift */,
+				BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */,
+				1BA375A4CD1F77D2F3DBA4C5 /* RootViewStateResolverTests.swift */,
+				38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */,
+				F0D3A11E0000000000000001 /* PropertyDetailUnauthorizedRoutingTests.swift */,
+			);
+			path = ValgateiOSTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B776832ECA4BCC6101617FFF /* ValgateiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D02362F606C3E1EE6986E92 /* Build configuration list for PBXNativeTarget "ValgateiOS" */;
+			buildPhases = (
+				89F8080224B4D69631A90E9C /* Sources */,
+				7130B0354547F78DD4701AFA /* Resources */,
+				F437BD4B130AD2F336AB5DC5 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ValgateiOS;
+			packageProductDependencies = (
+				C5A8E4BFB83155B1B62F99E5 /* ClerkKit */,
+				3ECDDD9AD34F2D66C26842D7 /* ClerkKitUI */,
+			);
+			productName = ValgateiOS;
+			productReference = DF4FD7891383403D428C89F5 /* ValgateiOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		DB7AAB233BCA6F11C3CA1021 /* ValgateiOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 84426E20535AC23C74575699 /* Build configuration list for PBXNativeTarget "ValgateiOSTests" */;
+			buildPhases = (
+				1C1CF02F3F0066D99AC2EDD4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A84AB3FB159C7D0FB60013D2 /* PBXTargetDependency */,
+			);
+			name = ValgateiOSTests;
+			packageProductDependencies = (
+			);
+			productName = ValgateiOSTests;
+			productReference = 135D266F9441DC049F2CDD45 /* ValgateiOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0EB62E4BAB5CA827FCBA0402 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					DB7AAB233BCA6F11C3CA1021 = {
+						TestTargetID = B776832ECA4BCC6101617FFF;
+					};
+				};
+			};
+			buildConfigurationList = 78FB1417B863C365D4838AA8 /* Build configuration list for PBXProject "ValgateiOS" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 1904D621C7C063A6ECA65B32;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9B1E1A14CEA8E1A6E7C29A64 /* XCRemoteSwiftPackageReference "clerk-ios" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 02E459255E4D13FD02D674B8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B776832ECA4BCC6101617FFF /* ValgateiOS */,
+				DB7AAB233BCA6F11C3CA1021 /* ValgateiOSTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7130B0354547F78DD4701AFA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8588AB6FB986C573BAE162F4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1C1CF02F3F0066D99AC2EDD4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D460E247996484CFF715B832 /* APIClientBoundaryTests.swift in Sources */,
+				743ABA6C62B3476892C08D00 /* APIErrorEnvelopeDecodingTests.swift in Sources */,
+				3656D535B0E9DE3800BF088E /* APIRequestFactoryTests.swift in Sources */,
+				D8AA4E85E777E3ECD19719CD /* AppConfigurationHTTPSTests.swift in Sources */,
+				4DD8DED426BECEFB87C5DBAE /* AppConfigurationTests.swift in Sources */,
+				6C11047D81962CC72F5910FB /* MeDtoDecodingTests.swift in Sources */,
+				B875E90CB4BFEA85D9F2C035 /* PropertiesLoadStateResolverTests.swift in Sources */,
+				A0EF8621B704772B9C935B26 /* PropertiesPageDecodingTests.swift in Sources */,
+				7B344C47E9D106EF5E3D74DA /* PropertiesUnauthorizedRoutingTests.swift in Sources */,
+				9C5981E75E116B963676CC9C /* PropertyDetailDtoDecodingTests.swift in Sources */,
+				9B6D477F3965772E051A43DB /* PropertyDetailStateResolverTests.swift in Sources */,
+				FA53128627B9327563E3EBA3 /* PropertyListItemDtoDecodingTests.swift in Sources */,
+				F0D3A11E0000000000000002 /* PropertyDetailUnauthorizedRoutingTests.swift in Sources */,
+				8AF3B433EA712F154BC99A3F /* RootViewStateResolverTests.swift in Sources */,
+				EB7828BA9E818C2D99843E33 /* SessionRefresherTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		89F8080224B4D69631A90E9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E51239B4397243244A693204 /* APIClient.swift in Sources */,
+				7747C8B629548EC7BC19C781 /* APIError.swift in Sources */,
+				4CDD4B9B4DC0F9AD40855B26 /* APIRequestFactory.swift in Sources */,
+				4968736FCA56E6E8359465A8 /* APIRoute.swift in Sources */,
+				A14FBFD58298D63EBD909F6A /* AppConfiguration.swift in Sources */,
+				43F438A8E1FE6016AD3BEBDE /* ConfigurationMissingView.swift in Sources */,
+				094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */,
+				1F3679E3417AC3A408AB1F80 /* PropertiesLoadStateResolver.swift in Sources */,
+				C78CF7EADA92D96CCEB01128 /* PropertiesView.swift in Sources */,
+				3D2999DD8C4AB36D9C0EE521 /* PropertyDetailStateResolver.swift in Sources */,
+				229782DC978C8D747E5932A1 /* PropertyDetailView.swift in Sources */,
+				323E057F2FB875FC5D4B64D5 /* PropertyDto.swift in Sources */,
+				C47C43BE50B8DC7963714C78 /* RootView.swift in Sources */,
+				2C0DBE50420E40AC10FB15DD /* RootViewStateResolver.swift in Sources */,
+				BDB4849AE1A63DC848C93EFC /* SessionRefresher.swift in Sources */,
+				60EF62EF2B0DC515B49D6442 /* SessionTokenProvider.swift in Sources */,
+				6A4C01078425B527BD28656E /* SignedOutView.swift in Sources */,
+				B26FE88B772A0ECFA85F2810 /* ValgateiOSApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A84AB3FB159C7D0FB60013D2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B776832ECA4BCC6101617FFF /* ValgateiOS */;
+			targetProxy = DDC4CDD266BAF618A9B797BC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4CCEB48DBFEB092B6CB4A5BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = Sources/ValgateiOS/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation;
+				PRODUCT_MODULE_NAME = ValgateiOS;
+				PRODUCT_NAME = Valgate;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		6673464042A36D74D2F150AE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation.tests;
+				PRODUCT_NAME = ValgateiOSTests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Valgate.app/Valgate";
+				TEST_TARGET_NAME = ValgateiOS;
+			};
+			name = Debug;
+		};
+		6B7D69BDACA264CBB233EB83 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AACA31A90B9AEA25486D27FE /* Base.xcconfig */;
+			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A7C12617FA25AF50F8413CD9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation.tests;
+				PRODUCT_NAME = ValgateiOSTests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Valgate.app/Valgate";
+				TEST_TARGET_NAME = ValgateiOS;
+			};
+			name = Release;
+		};
+		B4C1B9911D0D375CAABC4042 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				INFOPLIST_FILE = Sources/ValgateiOS/Info.plist;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation;
+				PRODUCT_MODULE_NAME = ValgateiOS;
+				PRODUCT_NAME = Valgate;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B9E84D115081EDACD3FA1D8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AACA31A90B9AEA25486D27FE /* Base.xcconfig */;
+			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		78FB1417B863C365D4838AA8 /* Build configuration list for PBXProject "ValgateiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B9E84D115081EDACD3FA1D8E /* Debug */,
+				6B7D69BDACA264CBB233EB83 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		84426E20535AC23C74575699 /* Build configuration list for PBXNativeTarget "ValgateiOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6673464042A36D74D2F150AE /* Debug */,
+				A7C12617FA25AF50F8413CD9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9D02362F606C3E1EE6986E92 /* Build configuration list for PBXNativeTarget "ValgateiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B4C1B9911D0D375CAABC4042 /* Debug */,
+				4CCEB48DBFEB092B6CB4A5BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9B1E1A14CEA8E1A6E7C29A64 /* XCRemoteSwiftPackageReference "clerk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/clerk/clerk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.9;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3ECDDD9AD34F2D66C26842D7 /* ClerkKitUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9B1E1A14CEA8E1A6E7C29A64 /* XCRemoteSwiftPackageReference "clerk-ios" */;
+			productName = ClerkKitUI;
+		};
+		C5A8E4BFB83155B1B62F99E5 /* ClerkKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9B1E1A14CEA8E1A6E7C29A64 /* XCRemoteSwiftPackageReference "clerk-ios" */;
+			productName = ClerkKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 0EB62E4BAB5CA827FCBA0402 /* Project object */;
+}

@@ -1,0 +1,12 @@
+{
+  "id": "LEASE-0001",
+  "propertyId": "PROP-0001",
+  "tenantId": "TEN-0001",
+  "unit": "Ground Floor",
+  "stage": "Signed",
+  "startDate": 1756857600000,
+  "endDate": 1782604800000,
+  "monthlyRent": 850,
+  "termMonths": 10,
+  "renewalStatus": "Auto-renew"
+}

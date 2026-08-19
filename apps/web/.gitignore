@@ -1,0 +1,83 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# playwright e2e artifacts (generated, not source)
+playwright-report/
+test-results/
+e2e/test-results.json
+
+# next.js
+/.next/
+/out/
+
+# fumadocs-mdx generated output
+/.source/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+
+# Auth E2E — Clerk test sessions (contain session tokens) and real-key env file
+playwright/.clerk/
+.env.e2e-auth
+
+# Preview-smoke E2E — artifacts from playwright.preview.config.ts (HTML/JSON
+# reports, traces, screenshots, videos) and any locally-supplied authenticated
+# storageState file (contains a real preview session — never commit it).
+preview-artifacts/
+playwright/.preview-state/
+playwright/.clerk-preview/
+*.preview-storage-state.json
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Conductor / AI tooling (local only, re-provisioned automatically)
+.agents/
+.agent/
+.opencode/
+.claude/skills/
+.codex/
+.cursor/
+.kiro/
+skills/
+skills-lock.json
+
+# clerk configuration (can include secrets)
+/.clerk/
+.gstack/
+
+# graphify knowledge-graph output (local navigation artifact, not a deliverable)
+graphify-out/
+
+# local runtime upload storage (property photos etc. written by the app, not repo content)
+public/_storage/

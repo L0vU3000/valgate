@@ -1,0 +1,13 @@
+{
+  "id": "PROP-0020",
+  "userId": "demo-user",
+  "name": "Chroy Changvar Bridge Land",
+  "code": "PROP-0020",
+  "type": "land",
+  "status": "Vacant",
+  "lat": 11.63512,
+  "lng": 104.90824,
+  "createdAt": 1779356162894,
+  "updatedAt": 1781118641765,
+  "clientId": "CLI-0001"
+}

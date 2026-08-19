@@ -1,0 +1,438 @@
+import "server-only"; // C1
+import { and, asc, count, eq, gt, inArray, or } from "drizzle-orm";
+import { db } from "@/lib/db/client";
+import { encodeCursor, decodeCursor } from "@/lib/pagination/cursor";
+import {
+  properties, leases, payments, documents,
+  tenants, expenses, landParcels, propertyValuations,
+  coOwners, ownershipRecords, ownershipDocuments, ownershipHistory,
+  inspections, certifications, safetyRisks, emergencyContacts, maintenanceItems,
+  pillarVerifications,
+} from "@/lib/db/schema";
+import { PropertySchema, type Property } from "@/lib/data/types/property";
+import type { NewProperty, PropertyPatch } from "@/lib/data/types/property";
+import { toDomain, nextId, assertCanMutate, type Ctx } from "@/lib/services/_mapping";
+import { scopedUpdate, scopedDelete, requireMember, assertOrgAdmin } from "@/lib/services/_crud";
+import { convertRowToDb } from "@/lib/db/column-classifier";
+import { listDocuments } from "@/lib/services/documents";
+import { deleteStorageObject } from "@/lib/services/storage";
+
+const rowToProperty = (r: typeof properties.$inferSelect): Property =>
+  PropertySchema.parse(toDomain(properties, r)); // C6/C7
+
+export async function listProperties(ctx: Ctx): Promise<Property[]> {
+  const rows = await db.select().from(properties)
+    .where(eq(properties.orgId, ctx.orgId)) // C3
+    .orderBy(asc(properties.createdAt), asc(properties.id))
+    .limit(500)
+  return rows.map(rowToProperty);
+}
+
+// Cursor shape for listPropertiesPage — the same (createdAt, id) tuple listProperties already
+// orders by, so pagination is a straight "give me rows after this tuple" query (never fetch-then-
+// slice). id is a tie-breaker for same-millisecond createdAt collisions.
+type PropertyPageCursor = { createdAt: number; id: string };
+const CURSOR_KEYS: (keyof PropertyPageCursor)[] = ["createdAt", "id"];
+
+export type PropertyPage = { items: Property[]; nextCursor: string | null };
+
+// HTTP API v1's paginated list (GET /api/v1/properties). Keeps listProperties's 500-row cap
+// untouched for existing callers; this is the real, opaque-cursor, org-scoped alternative for
+// a caller that needs to walk an org's full property set page by page.
+export async function listPropertiesPage(
+  ctx: Ctx,
+  opts: { limit: number; cursor?: string | null },
+): Promise<PropertyPage> {
+  const { limit, cursor } = opts;
+  const conditions = [eq(properties.orgId, ctx.orgId)]; // C3
+
+  if (cursor) {
+    const decoded = decodeCursor<PropertyPageCursor>(cursor, CURSOR_KEYS);
+    // decodeCursor only proves the two keys are present; a tampered/foreign cursor can still
+    // carry the wrong runtime types (or a JSON number that overflowed to Infinity/-Infinity on
+    // parse). Validate exactly before it ever reaches a query: createdAt must be a finite
+    // nonnegative number, id a nonempty string. No DB round-trip happens for a rejected cursor.
+    if (
+      !decoded ||
+      typeof decoded.createdAt !== "number" ||
+      !Number.isFinite(decoded.createdAt) ||
+      decoded.createdAt < 0 ||
+      typeof decoded.id !== "string" ||
+      decoded.id.length === 0
+    ) {
+      throw new Error("invalid_cursor");
+    }
+    const afterCreatedAt = new Date(decoded.createdAt);
+    conditions.push(
+      or(
+        gt(properties.createdAt, afterCreatedAt),
+        and(eq(properties.createdAt, afterCreatedAt), gt(properties.id, decoded.id)),
+      )!,
+    );
+  }
+
+  // Fetch one extra row past `limit` so "is there a next page" never needs a second
+  // round-trip (and never fetch-then-slice: only limit+1 rows ever leave the DB).
+  const rows = await db.select().from(properties)
+    .where(and(...conditions))
+    .orderBy(asc(properties.createdAt), asc(properties.id))
+    .limit(limit + 1);
+
+  const hasMore = rows.length > limit;
+  const items = (hasMore ? rows.slice(0, limit) : rows).map(rowToProperty);
+
+  const last = items[items.length - 1];
+  const nextCursor = hasMore && last
+    ? encodeCursor<PropertyPageCursor>({ createdAt: last.createdAt, id: last.id })
+    : null;
+
+  return { items, nextCursor };
+}
+
+export async function getProperty(ctx: Ctx, id: string): Promise<Property | null> {
+  const [row] = await db.select().from(properties)
+    .where(and(eq(properties.orgId, ctx.orgId), eq(properties.id, id))); // C3
+  return row ? rowToProperty(row) : null;
+}
+
+export async function getPropertyForOrg(orgId: string, id: string): Promise<Property | null> {
+  const [row] = await db.select().from(properties)
+    .where(and(eq(properties.orgId, orgId), eq(properties.id, id)));
+  return row ? rowToProperty(row) : null;
+}
+
+export async function createProperty(ctx: Ctx, input: NewProperty): Promise<Property> {
+  requireMember(ctx);
+  const id = await nextId("PROP");
+  const now = Date.now();
+  const merged = PropertySchema.parse({
+    ...input,
+    id,
+    userId: ctx.userId,
+    orgId: ctx.orgId,
+    code: id,
+    createdAt: now,
+    updatedAt: now,
+  });
+  const [row] = await db.insert(properties).values({
+    ...convertRowToDb(properties, merged as Record<string, unknown>),
+    orgId: ctx.orgId,
+  } as never).returning();
+  return rowToProperty(row!);
+}
+
+export async function createPropertyForOrg(ctx: Ctx, targetOrgId: string, input: NewProperty): Promise<Property> {
+  assertCanMutate();
+  await assertOrgAdmin(ctx, targetOrgId);
+  const id = await nextId("PROP");
+  const now = Date.now();
+  const merged = PropertySchema.parse({
+    ...input,
+    id,
+    userId: ctx.userId,
+    orgId: targetOrgId,
+    code: id,
+    createdAt: now,
+    updatedAt: now,
+  });
+  const [row] = await db.insert(properties).values({
+    ...convertRowToDb(properties, merged as Record<string, unknown>),
+    orgId: targetOrgId,
+  } as never).returning();
+  return rowToProperty(row!);
+}
+
+export async function updateProperty(ctx: Ctx, id: string, patch: PropertyPatch): Promise<Property | null> {
+  return scopedUpdate(ctx, properties, id, { ...patch, updatedAt: Date.now() }, rowToProperty, true);
+}
+
+// Cross-org variant of updateProperty, used by the Pro add-property wizard to update a
+// property that lives in a managed client's org (targetOrgId) rather than the caller's own.
+// scopedUpdate hardcodes WHERE org_id = ctx.orgId, which would never match a property in a
+// different org, so this mirrors createPropertyForOrg's explicit-org pattern instead.
+// Authorization: assertOrgAdmin verifies the caller is an admin of the target org.
+export async function updatePropertyForOrg(
+  ctx: Ctx,
+  targetOrgId: string,
+  id: string,
+  patch: PropertyPatch,
+): Promise<Property | null> {
+  assertCanMutate();
+  await assertOrgAdmin(ctx, targetOrgId);
+  const dbPatch = convertRowToDb(properties, { ...patch, updatedAt: Date.now() });
+  const [row] = await db.update(properties)
+    .set(dbPatch as never)
+    .where(and(eq(properties.orgId, targetOrgId), eq(properties.id, id)))
+    .returning();
+  return row ? rowToProperty(row) : null;
+}
+
+// Set (or clear) the property's cover photo. Passing null clears it so the hero falls
+// back to the map. Kept separate from updateProperty because PropertyPatch's Zod type
+// only allows string|undefined for coverStorageId — clearing needs an explicit null,
+// which scopedUpdate → convertRowToDb writes straight through as SQL NULL.
+// Org-scope + admin/member checks live inside scopedUpdate, so this is IDOR-safe.
+export async function setCoverPhoto(
+  ctx: Ctx,
+  id: string,
+  coverStorageId: string | null,
+): Promise<Property | null> {
+  return scopedUpdate(ctx, properties, id, { coverStorageId }, rowToProperty, true);
+}
+
+// Permanently deletes a property and all its children.
+//
+// Why it works in 3 steps — gather, delete, cleanup — and not the reverse:
+//   1. GATHER storage ids FIRST, before the DB rows vanish. We need the S3 object keys
+//      from the property's photo list and from every document row. Once the DB row is gone,
+//      those keys are lost forever (orphaned bytes).
+//   2. ATOMIC CASCADE DELETE via scopedDelete. The database now has ON DELETE CASCADE on all
+//      21 child FKs, so a single DELETE on `properties` removes leases, payments, tenants,
+//      documents, folders, verifications, ownership rows, safety rows, etc. in one transaction.
+//      The 3 nullable FKs (payments.propertyId, estate_activity_events.propertyId,
+//      notifications.propertyId) are SET NULL so those rows survive but lose the property link.
+//   3. BEST-EFFORT S3 cleanup loop after the DB commit. If an S3 delete fails we log it and
+//      move on — the real delete already succeeded, and a failed storage cleanup must not make
+//      it look like the property is still there.
+//
+// scopedDelete inside enforces org-scope (WHERE orgId = ctx.orgId) AND requires admin role,
+// so a viewer/member reaching this function is rejected at the service layer as well.
+export async function deleteProperty(ctx: Ctx, id: string): Promise<void> {
+  // Step 1: collect all S3 keys we will need to clean up after the DB delete.
+  // We read the property row for its photoStorageIds, and list all document rows for their
+  // storageId / thumbStorageId. All reads are org-scoped.
+  const [propertyRow] = await db
+    .select({ photoStorageIds: properties.photoStorageIds })
+    .from(properties)
+    .where(and(eq(properties.orgId, ctx.orgId), eq(properties.id, id)));
+
+  const storageIdsToDelete: string[] = [];
+
+  if (propertyRow) {
+    // Photo storage ids live directly on the property row.
+    for (const sid of propertyRow.photoStorageIds ?? []) {
+      if (sid) storageIdsToDelete.push(sid);
+    }
+  }
+
+  // Document storage ids (main file + optional thumbnail).
+  const docList = await listDocuments(ctx, id);
+  for (const doc of docList) {
+    if (doc.storageId) storageIdsToDelete.push(doc.storageId);
+    if (doc.thumbStorageId) storageIdsToDelete.push(doc.thumbStorageId);
+  }
+
+  // Step 2: atomically delete the property row. The DB cascades to all 18 child tables and
+  // sets null on the 3 nullable FKs — one transaction, no partial-failure risk.
+  await scopedDelete(ctx, properties, id);
+
+  // Step 3: clean up S3 objects. Best-effort: a failed S3 delete is logged but never throws,
+  // so it cannot make a completed DB delete look like it failed.
+  for (const sid of storageIdsToDelete) {
+    await deleteStorageObject(sid); // already never-throws — see storage.ts
+  }
+}
+
+export async function bulkAssignProperties(
+  ctx: Ctx,
+  targetUserId: string,
+  targetOrgId: string,
+  propertyIds: string[],
+): Promise<{ assigned: number; conflicts: string[] }> {
+  assertCanMutate();
+  requireMember(ctx);
+  const conflicts: string[] = [];
+  const toAssign: string[] = [];
+
+  await db.transaction(async (tx) => {
+    for (const propertyId of propertyIds) {
+      const [row] = await tx
+        .select({ orgId: properties.orgId, clientId: properties.clientId })
+        .from(properties)
+        .where(eq(properties.id, propertyId))
+        .limit(1);
+
+      if (!row) {
+        conflicts.push(propertyId);
+        continue;
+      }
+
+      if (row.orgId !== targetOrgId && row.clientId) {
+        conflicts.push(propertyId);
+        continue;
+      }
+
+      if (row.clientId && row.clientId !== targetUserId) {
+        conflicts.push(propertyId);
+        continue;
+      }
+
+      toAssign.push(propertyId);
+    }
+
+    for (const propertyId of toAssign) {
+      await tx
+        .update(properties)
+        .set({ clientId: targetUserId, updatedAt: new Date() })
+        .where(eq(properties.id, propertyId));
+    }
+  });
+
+  return { assigned: toAssign.length, conflicts };
+}
+
+/**
+ * Returns a Set of lowercase property names currently assigned to a specific
+ * client (by clientId) within this org. Used by importCsvProperties to detect
+ * duplicates before inserting a batch — avoids an N+1 check per row.
+ *
+ * Why lowercase: user-entered names may differ only in capitalisation
+ * (e.g. "Sunset Villa" vs "sunset villa"). Lowercasing catches those as dupes.
+ *
+ * What could go wrong: an unknown clientId returns an empty Set so no valid
+ * rows are silently blocked.
+ */
+export async function listPropertyNamesByClientId(
+  ctx: Ctx,
+  clientId: string,
+): Promise<Set<string>> {
+  const rows = await db
+    .select({ name: properties.name })
+    .from(properties)
+    .where(and(eq(properties.orgId, ctx.orgId), eq(properties.clientId, clientId)));
+  return new Set(rows.map((r) => r.name.toLowerCase()));
+}
+
+// The shape returned by countPropertyCascade — used by the delete-confirm dialog to show
+// the user a blast-radius summary ("you are about to destroy N leases, N payments, …").
+export type PropertyCascadeCounts = {
+  // Headline counts — shown individually in the confirm dialog.
+  leases: number;
+  payments: number;
+  documents: number;
+  // Supporting entity counts — shown as a combined "and N other records" line.
+  tenants: number;
+  expenses: number;
+  landParcels: number;
+  propertyValuations: number;
+  coOwners: number;
+  ownershipRecords: number;
+  ownershipDocuments: number;
+  ownershipHistory: number;
+  inspections: number;
+  certifications: number;
+  safetyRisks: number;
+  emergencyContacts: number;
+  maintenanceItems: number;
+  pillarVerifications: number;
+  // Derived: sum of all supporting entity counts for the "and N other records" label.
+  otherTotal: number;
+};
+
+// Counts every child row that will be destroyed when this property is hard-deleted.
+// All queries are org-scoped (WHERE orgId = ctx.orgId) so one org can never probe another's data.
+//
+// Payments are not linked to a property directly — they hang off a lease — so we first
+// gather the property's lease ids and then count payments referencing those leases.
+// Every other table links to the property directly.
+export async function countPropertyCascade(ctx: Ctx, propertyId: string): Promise<PropertyCascadeCounts> {
+  // Collect all query promises in parallel so we hit the DB in one round-trip burst
+  // rather than issuing 16 sequential queries.
+  const [
+    leaseRows,
+    [tenantCount],
+    [expenseCount],
+    [landParcelCount],
+    [valuationCount],
+    [coOwnerCount],
+    [ownershipRecordCount],
+    [ownershipDocCount],
+    [ownershipHistoryCount],
+    [inspectionCount],
+    [certCount],
+    [riskCount],
+    [contactCount],
+    [maintenanceCount],
+    [documentCount],
+    [verificationCount],
+  ] = await Promise.all([
+    // Leases — gathered as rows so we can reuse their ids for the payments sub-query below.
+    db.select({ id: leases.id })
+      .from(leases)
+      .where(and(eq(leases.orgId, ctx.orgId), eq(leases.propertyId, propertyId))),
+
+    // Direct property children — each returns a single { count } row.
+    db.select({ count: count() }).from(tenants)
+      .where(and(eq(tenants.orgId, ctx.orgId), eq(tenants.propertyId, propertyId))),
+    db.select({ count: count() }).from(expenses)
+      .where(and(eq(expenses.orgId, ctx.orgId), eq(expenses.propertyId, propertyId))),
+    db.select({ count: count() }).from(landParcels)
+      .where(and(eq(landParcels.orgId, ctx.orgId), eq(landParcels.propertyId, propertyId))),
+    db.select({ count: count() }).from(propertyValuations)
+      .where(and(eq(propertyValuations.orgId, ctx.orgId), eq(propertyValuations.propertyId, propertyId))),
+    db.select({ count: count() }).from(coOwners)
+      .where(and(eq(coOwners.orgId, ctx.orgId), eq(coOwners.propertyId, propertyId))),
+    db.select({ count: count() }).from(ownershipRecords)
+      .where(and(eq(ownershipRecords.orgId, ctx.orgId), eq(ownershipRecords.propertyId, propertyId))),
+    db.select({ count: count() }).from(ownershipDocuments)
+      .where(and(eq(ownershipDocuments.orgId, ctx.orgId), eq(ownershipDocuments.propertyId, propertyId))),
+    db.select({ count: count() }).from(ownershipHistory)
+      .where(and(eq(ownershipHistory.orgId, ctx.orgId), eq(ownershipHistory.propertyId, propertyId))),
+    db.select({ count: count() }).from(inspections)
+      .where(and(eq(inspections.orgId, ctx.orgId), eq(inspections.propertyId, propertyId))),
+    db.select({ count: count() }).from(certifications)
+      .where(and(eq(certifications.orgId, ctx.orgId), eq(certifications.propertyId, propertyId))),
+    db.select({ count: count() }).from(safetyRisks)
+      .where(and(eq(safetyRisks.orgId, ctx.orgId), eq(safetyRisks.propertyId, propertyId))),
+    db.select({ count: count() }).from(emergencyContacts)
+      .where(and(eq(emergencyContacts.orgId, ctx.orgId), eq(emergencyContacts.propertyId, propertyId))),
+    db.select({ count: count() }).from(maintenanceItems)
+      .where(and(eq(maintenanceItems.orgId, ctx.orgId), eq(maintenanceItems.propertyId, propertyId))),
+    db.select({ count: count() }).from(documents)
+      .where(and(eq(documents.orgId, ctx.orgId), eq(documents.propertyId, propertyId))),
+    db.select({ count: count() }).from(pillarVerifications)
+      .where(and(eq(pillarVerifications.orgId, ctx.orgId), eq(pillarVerifications.propertyId, propertyId))),
+  ]);
+
+  const leaseIds = leaseRows.map((r) => r.id);
+
+  // Payments hang off leases, not directly on properties, so we need a second query once we
+  // have the lease ids. Skip entirely if the property has no leases (saves a DB round-trip).
+  let paymentCountNum = 0;
+  if (leaseIds.length > 0) {
+    const [result] = await db.select({ count: count() })
+      .from(payments)
+      .where(and(eq(payments.orgId, ctx.orgId), inArray(payments.leaseId, leaseIds)));
+    paymentCountNum = Number(result?.count ?? 0);
+  }
+
+  // Helper to safely convert Drizzle's count() result (which comes back as a string) to a number.
+  const n = (r: { count: number | string } | undefined) => Number(r?.count ?? 0);
+
+  const otherFields = {
+    tenants:           n(tenantCount),
+    expenses:          n(expenseCount),
+    landParcels:       n(landParcelCount),
+    propertyValuations: n(valuationCount),
+    coOwners:          n(coOwnerCount),
+    ownershipRecords:  n(ownershipRecordCount),
+    ownershipDocuments: n(ownershipDocCount),
+    ownershipHistory:  n(ownershipHistoryCount),
+    inspections:       n(inspectionCount),
+    certifications:    n(certCount),
+    safetyRisks:       n(riskCount),
+    emergencyContacts: n(contactCount),
+    maintenanceItems:  n(maintenanceCount),
+    pillarVerifications: n(verificationCount),
+  };
+
+  const otherTotal = Object.values(otherFields).reduce((acc, v) => acc + v, 0);
+
+  return {
+    leases:    leaseIds.length,
+    payments:  paymentCountNum,
+    documents: n(documentCount),
+    ...otherFields,
+    otherTotal,
+  };
+}
