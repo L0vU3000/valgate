@@ -393,6 +393,7 @@
 		4CCEB48DBFEB092B6CB4A5BD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				INFOPLIST_FILE = Sources/ValgateiOS/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation;
 				PRODUCT_MODULE_NAME = ValgateiOS;
@@ -404,6 +405,7 @@
 		6673464042A36D74D2F150AE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -418,6 +420,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AACA31A90B9AEA25486D27FE /* Base.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
@@ -427,6 +430,7 @@
 		A7C12617FA25AF50F8413CD9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation.tests;
@@ -439,6 +443,7 @@
 		B4C1B9911D0D375CAABC4042 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = Sources/ValgateiOS/Info.plist;
 				ONLY_ACTIVE_ARCH = YES;
@@ -454,6 +459,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AACA31A90B9AEA25486D27FE /* Base.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;

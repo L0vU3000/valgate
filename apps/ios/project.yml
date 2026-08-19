@@ -7,6 +7,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
+    ALWAYS_SEARCH_USER_PATHS: NO
 configFiles:
   Debug: Config/Base.xcconfig
   Release: Config/Base.xcconfig
