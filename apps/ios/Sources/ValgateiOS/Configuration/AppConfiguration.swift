@@ -1,14 +1,6 @@
 import Foundation
 import SwiftUI
 
-extension Color {
-    static let valgateBase = Color(red: 248/255, green: 249/255, blue: 255/255)
-    static let valgateHeading = Color(red: 18/255, green: 28/255, blue: 40/255)
-    static let valgatePrimary = Color(red: 0/255, green: 74/255, blue: 198/255)
-    static let valgateTint = Color(red: 238/255, green: 244/255, blue: 255/255)
-    static let valgateBorder = Color(red: 216/255, green: 227/255, blue: 244/255)
-}
-
 struct AppConfiguration {
     let apiBaseURL: URL?
     let clerkPublishableKey: String?
