@@ -50,7 +50,8 @@ function checkMcpIpRateLimit(request: NextRequest): NextResponse | null {
 // process.env, so it correctly reflects the runtime mode.
 // DEMO_MODE: demo-no-clerk → hasClerk=false. Real Clerk: sk_test_/sk_live_ → true.
 // Force rebuild to pick up new env var
-const hasClerk = isRealClerkKey(process.env.CLERK_SECRET_KEY);
+const rawKey = process.env.CLERK_SECRET_KEY;
+const hasClerk = isRealClerkKey(rawKey);
 
 // Routes reachable WITHOUT being signed in: the auth pages, the Clerk webhook, and
 // Clerk's own frontend API routes. Everything else requires a session (auth.protect → /login).
