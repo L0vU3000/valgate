@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,16 +15,23 @@
 		323E057F2FB875FC5D4B64D5 /* PropertyDto.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2619D92C3C22597917AAC10 /* PropertyDto.swift */; };
 		3656D535B0E9DE3800BF088E /* APIRequestFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C66DAA48C7B1DC2B673FF3 /* APIRequestFactoryTests.swift */; };
 		3D2999DD8C4AB36D9C0EE521 /* PropertyDetailStateResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F86B8AB112A169CAB0F4910 /* PropertyDetailStateResolver.swift */; };
+		3FEEE715A73A5ACEC95A454B /* CreatePropertyStateResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D37257EBF9682412CECBAD /* CreatePropertyStateResolver.swift */; };
 		43F438A8E1FE6016AD3BEBDE /* ConfigurationMissingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9452B973A67B2A062A410CA7 /* ConfigurationMissingView.swift */; };
 		4968736FCA56E6E8359465A8 /* APIRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE777B97EEA616F19C19006 /* APIRoute.swift */; };
 		4CDD4B9B4DC0F9AD40855B26 /* APIRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B82043C37B19C268E190FFE /* APIRequestFactory.swift */; };
 		4DD8DED426BECEFB87C5DBAE /* AppConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B1F6470503FF81B1D320F1 /* AppConfigurationTests.swift */; };
+		4F78C4691F219E022282B60F /* CreatePropertyRequestFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9854FCD35DC8EE84879593F7 /* CreatePropertyRequestFactoryTests.swift */; };
+		55EA78B37FFCC314E3E3DD46 /* valgate-icon.svg in Resources */ = {isa = PBXBuildFile; fileRef = 17D1C2C85A83DF5610E79190 /* valgate-icon.svg */; };
+		5CF123E415A489CF55F710E2 /* CreatePropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 995F851414A21A1643ABAD0F /* CreatePropertyView.swift */; };
 		60EF62EF2B0DC515B49D6442 /* SessionTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 836983CDC8974A3E927A1C67 /* SessionTokenProvider.swift */; };
+		6A22C5B59E05862753976638 /* PropertyDetailUnauthorizedRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC5B5E9BAD935FAE173788A /* PropertyDetailUnauthorizedRoutingTests.swift */; };
 		6A4C01078425B527BD28656E /* SignedOutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 683ED27534EC93D2217E7075 /* SignedOutView.swift */; };
 		6C11047D81962CC72F5910FB /* MeDtoDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4E2C552642E31FC8FC1FD /* MeDtoDecodingTests.swift */; };
 		743ABA6C62B3476892C08D00 /* APIErrorEnvelopeDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B740F353870900732EDE4C4A /* APIErrorEnvelopeDecodingTests.swift */; };
 		7747C8B629548EC7BC19C781 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B9F9C575C0949D6774DBAC /* APIError.swift */; };
 		7B344C47E9D106EF5E3D74DA /* PropertiesUnauthorizedRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69E6F73468BEE851C42B551C /* PropertiesUnauthorizedRoutingTests.swift */; };
+		850DBA73CF4A7BEB3AC66D5F /* CreatePropertyStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54457B7CD87F3D5362875425 /* CreatePropertyStateResolverTests.swift */; };
+		851440F47CED2EB3728DD4B1 /* CreatePropertyRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA96CC22207A608E46F7996 /* CreatePropertyRequest.swift */; };
 		8588AB6FB986C573BAE162F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40BF32D1186876EF993C3220 /* Assets.xcassets */; };
 		8AF3B433EA712F154BC99A3F /* RootViewStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA375A4CD1F77D2F3DBA4C5 /* RootViewStateResolverTests.swift */; };
 		9B6D477F3965772E051A43DB /* PropertyDetailStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB80C0C33CF08F8EE03F4D98 /* PropertyDetailStateResolverTests.swift */; };
@@ -34,6 +41,7 @@
 		AF7225A316CABDB4B1A94EA2 /* ClerkKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECDDD9AD34F2D66C26842D7 /* ClerkKitUI */; };
 		B26FE88B772A0ECFA85F2810 /* ValgateiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289CAF3B76E412F13E5F7D88 /* ValgateiOSApp.swift */; };
 		B875E90CB4BFEA85D9F2C035 /* PropertiesLoadStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717E54E30465A0E3D6347769 /* PropertiesLoadStateResolverTests.swift */; };
+		BA302DC659E36BEE5FC61798 /* CreatePropertyRequestEncodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8EA07FD345332286F24AC /* CreatePropertyRequestEncodingTests.swift */; };
 		BDB4849AE1A63DC848C93EFC /* SessionRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583477EC57F2CB0295D9BB1B /* SessionRefresher.swift */; };
 		C47C43BE50B8DC7963714C78 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E154FADC143DDD700CCEC9CA /* RootView.swift */; };
 		C78CF7EADA92D96CCEB01128 /* PropertiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95881E49D31608658D848396 /* PropertiesView.swift */; };
@@ -42,7 +50,6 @@
 		E51239B4397243244A693204 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248E1E918FEC8F041875AFEF /* APIClient.swift */; };
 		EB7828BA9E818C2D99843E33 /* SessionRefresherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */; };
 		FA53128627B9327563E3EBA3 /* PropertyListItemDtoDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */; };
-		F0D3A11E0000000000000002 /* PropertyDetailUnauthorizedRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0D3A11E0000000000000001 /* PropertyDetailUnauthorizedRoutingTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,15 +66,20 @@
 		094F4955487B8341011BDEE8 /* RootViewStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewStateResolver.swift; sourceTree = "<group>"; };
 		135D266F9441DC049F2CDD45 /* ValgateiOSTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ValgateiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		15B9F9C575C0949D6774DBAC /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
+		17D1C2C85A83DF5610E79190 /* valgate-icon.svg */ = {isa = PBXFileReference; path = "valgate-icon.svg"; sourceTree = "<group>"; };
 		1BA375A4CD1F77D2F3DBA4C5 /* RootViewStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewStateResolverTests.swift; sourceTree = "<group>"; };
+		1DA96CC22207A608E46F7996 /* CreatePropertyRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyRequest.swift; sourceTree = "<group>"; };
 		248E1E918FEC8F041875AFEF /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		289CAF3B76E412F13E5F7D88 /* ValgateiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValgateiOSApp.swift; sourceTree = "<group>"; };
 		2F86B8AB112A169CAB0F4910 /* PropertyDetailStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailStateResolver.swift; sourceTree = "<group>"; };
 		38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRefresherTests.swift; sourceTree = "<group>"; };
 		40BF32D1186876EF993C3220 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		41B1F6470503FF81B1D320F1 /* AppConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfigurationTests.swift; sourceTree = "<group>"; };
+		47D37257EBF9682412CECBAD /* CreatePropertyStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyStateResolver.swift; sourceTree = "<group>"; };
 		48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesLoadStateResolver.swift; sourceTree = "<group>"; };
+		54457B7CD87F3D5362875425 /* CreatePropertyStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyStateResolverTests.swift; sourceTree = "<group>"; };
 		583477EC57F2CB0295D9BB1B /* SessionRefresher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRefresher.swift; sourceTree = "<group>"; };
+		66B8EA07FD345332286F24AC /* CreatePropertyRequestEncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyRequestEncodingTests.swift; sourceTree = "<group>"; };
 		683ED27534EC93D2217E7075 /* SignedOutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedOutView.swift; sourceTree = "<group>"; };
 		69E6F73468BEE851C42B551C /* PropertiesUnauthorizedRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesUnauthorizedRoutingTests.swift; sourceTree = "<group>"; };
 		6AD4E376CC32D292E607951D /* MeDto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeDto.swift; sourceTree = "<group>"; };
@@ -79,6 +91,8 @@
 		90DBB4F9B1936BD73002203B /* APIClientBoundaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClientBoundaryTests.swift; sourceTree = "<group>"; };
 		9452B973A67B2A062A410CA7 /* ConfigurationMissingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationMissingView.swift; sourceTree = "<group>"; };
 		95881E49D31608658D848396 /* PropertiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesView.swift; sourceTree = "<group>"; };
+		9854FCD35DC8EE84879593F7 /* CreatePropertyRequestFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyRequestFactoryTests.swift; sourceTree = "<group>"; };
+		995F851414A21A1643ABAD0F /* CreatePropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyView.swift; sourceTree = "<group>"; };
 		9B82043C37B19C268E190FFE /* APIRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequestFactory.swift; sourceTree = "<group>"; };
 		AACA31A90B9AEA25486D27FE /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		AB80C0C33CF08F8EE03F4D98 /* PropertyDetailStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailStateResolverTests.swift; sourceTree = "<group>"; };
@@ -93,7 +107,7 @@
 		E154FADC143DDD700CCEC9CA /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		E194D47930E007A951FF7972 /* AppConfigurationHTTPSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfigurationHTTPSTests.swift; sourceTree = "<group>"; };
 		E2619D92C3C22597917AAC10 /* PropertyDto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDto.swift; sourceTree = "<group>"; };
-		F0D3A11E0000000000000001 /* PropertyDetailUnauthorizedRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailUnauthorizedRoutingTests.swift; sourceTree = "<group>"; };
+		FAC5B5E9BAD935FAE173788A /* PropertyDetailUnauthorizedRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailUnauthorizedRoutingTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +136,8 @@
 			isa = PBXGroup;
 			children = (
 				9452B973A67B2A062A410CA7 /* ConfigurationMissingView.swift */,
+				47D37257EBF9682412CECBAD /* CreatePropertyStateResolver.swift */,
+				995F851414A21A1643ABAD0F /* CreatePropertyView.swift */,
 				48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */,
 				95881E49D31608658D848396 /* PropertiesView.swift */,
 				2F86B8AB112A169CAB0F4910 /* PropertyDetailStateResolver.swift */,
@@ -147,6 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				15B9F9C575C0949D6774DBAC /* APIError.swift */,
+				1DA96CC22207A608E46F7996 /* CreatePropertyRequest.swift */,
 				6AD4E376CC32D292E607951D /* MeDto.swift */,
 				E2619D92C3C22597917AAC10 /* PropertyDto.swift */,
 			);
@@ -159,6 +176,7 @@
 				40BF32D1186876EF993C3220 /* Assets.xcassets */,
 				CE18A2A777F74D48F366B354 /* Info.plist */,
 				48C8122C28C5C62F9DBAD8C3 /* App */,
+				6067029FA5CA0F9C25022AE9 /* AssetsSource */,
 				ADA2F5EE9B797356BEEFFAC9 /* Configuration */,
 				234C3BDB57E463051CE8A9BB /* Models */,
 				C137A16839862073A0ABC2D1 /* Networking */,
@@ -181,6 +199,14 @@
 				2431D50091A3B0CD731D6972 /* ValgateiOS */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		6067029FA5CA0F9C25022AE9 /* AssetsSource */ = {
+			isa = PBXGroup;
+			children = (
+				17D1C2C85A83DF5610E79190 /* valgate-icon.svg */,
+			);
+			path = AssetsSource;
 			sourceTree = "<group>";
 		};
 		76D7F600EC6337376EABB9A2 /* Config */ = {
@@ -227,16 +253,19 @@
 				B1C66DAA48C7B1DC2B673FF3 /* APIRequestFactoryTests.swift */,
 				E194D47930E007A951FF7972 /* AppConfigurationHTTPSTests.swift */,
 				41B1F6470503FF81B1D320F1 /* AppConfigurationTests.swift */,
+				66B8EA07FD345332286F24AC /* CreatePropertyRequestEncodingTests.swift */,
+				9854FCD35DC8EE84879593F7 /* CreatePropertyRequestFactoryTests.swift */,
+				54457B7CD87F3D5362875425 /* CreatePropertyStateResolverTests.swift */,
 				84F4E2C552642E31FC8FC1FD /* MeDtoDecodingTests.swift */,
 				717E54E30465A0E3D6347769 /* PropertiesLoadStateResolverTests.swift */,
 				D4BD3E9D500C1208D99BF7EB /* PropertiesPageDecodingTests.swift */,
 				69E6F73468BEE851C42B551C /* PropertiesUnauthorizedRoutingTests.swift */,
 				7F31E8EFE035E503CED09627 /* PropertyDetailDtoDecodingTests.swift */,
 				AB80C0C33CF08F8EE03F4D98 /* PropertyDetailStateResolverTests.swift */,
+				FAC5B5E9BAD935FAE173788A /* PropertyDetailUnauthorizedRoutingTests.swift */,
 				BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */,
 				1BA375A4CD1F77D2F3DBA4C5 /* RootViewStateResolverTests.swift */,
 				38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */,
-				F0D3A11E0000000000000001 /* PropertyDetailUnauthorizedRoutingTests.swift */,
 			);
 			path = ValgateiOSTests;
 			sourceTree = "<group>";
@@ -277,8 +306,6 @@
 				A84AB3FB159C7D0FB60013D2 /* PBXTargetDependency */,
 			);
 			name = ValgateiOSTests;
-			packageProductDependencies = (
-			);
 			productName = ValgateiOSTests;
 			productReference = 135D266F9441DC049F2CDD45 /* ValgateiOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -298,6 +325,7 @@
 				};
 			};
 			buildConfigurationList = 78FB1417B863C365D4838AA8 /* Build configuration list for PBXProject "ValgateiOS" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -305,12 +333,9 @@
 				en,
 			);
 			mainGroup = 1904D621C7C063A6ECA65B32;
-			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				9B1E1A14CEA8E1A6E7C29A64 /* XCRemoteSwiftPackageReference "clerk-ios" */,
 			);
-			preferredProjectObjectVersion = 77;
-			productRefGroup = 02E459255E4D13FD02D674B8 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -326,6 +351,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8588AB6FB986C573BAE162F4 /* Assets.xcassets in Resources */,
+				55EA78B37FFCC314E3E3DD46 /* valgate-icon.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,14 +367,17 @@
 				3656D535B0E9DE3800BF088E /* APIRequestFactoryTests.swift in Sources */,
 				D8AA4E85E777E3ECD19719CD /* AppConfigurationHTTPSTests.swift in Sources */,
 				4DD8DED426BECEFB87C5DBAE /* AppConfigurationTests.swift in Sources */,
+				BA302DC659E36BEE5FC61798 /* CreatePropertyRequestEncodingTests.swift in Sources */,
+				4F78C4691F219E022282B60F /* CreatePropertyRequestFactoryTests.swift in Sources */,
+				850DBA73CF4A7BEB3AC66D5F /* CreatePropertyStateResolverTests.swift in Sources */,
 				6C11047D81962CC72F5910FB /* MeDtoDecodingTests.swift in Sources */,
 				B875E90CB4BFEA85D9F2C035 /* PropertiesLoadStateResolverTests.swift in Sources */,
 				A0EF8621B704772B9C935B26 /* PropertiesPageDecodingTests.swift in Sources */,
 				7B344C47E9D106EF5E3D74DA /* PropertiesUnauthorizedRoutingTests.swift in Sources */,
 				9C5981E75E116B963676CC9C /* PropertyDetailDtoDecodingTests.swift in Sources */,
 				9B6D477F3965772E051A43DB /* PropertyDetailStateResolverTests.swift in Sources */,
+				6A22C5B59E05862753976638 /* PropertyDetailUnauthorizedRoutingTests.swift in Sources */,
 				FA53128627B9327563E3EBA3 /* PropertyListItemDtoDecodingTests.swift in Sources */,
-				F0D3A11E0000000000000002 /* PropertyDetailUnauthorizedRoutingTests.swift in Sources */,
 				8AF3B433EA712F154BC99A3F /* RootViewStateResolverTests.swift in Sources */,
 				EB7828BA9E818C2D99843E33 /* SessionRefresherTests.swift in Sources */,
 			);
@@ -364,6 +393,9 @@
 				4968736FCA56E6E8359465A8 /* APIRoute.swift in Sources */,
 				A14FBFD58298D63EBD909F6A /* AppConfiguration.swift in Sources */,
 				43F438A8E1FE6016AD3BEBDE /* ConfigurationMissingView.swift in Sources */,
+				851440F47CED2EB3728DD4B1 /* CreatePropertyRequest.swift in Sources */,
+				3FEEE715A73A5ACEC95A454B /* CreatePropertyStateResolver.swift in Sources */,
+				5CF123E415A489CF55F710E2 /* CreatePropertyView.swift in Sources */,
 				094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */,
 				1F3679E3417AC3A408AB1F80 /* PropertiesLoadStateResolver.swift in Sources */,
 				C78CF7EADA92D96CCEB01128 /* PropertiesView.swift in Sources */,
@@ -393,11 +425,17 @@
 		4CCEB48DBFEB092B6CB4A5BD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Sources/ValgateiOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation;
 				PRODUCT_MODULE_NAME = ValgateiOS;
 				PRODUCT_NAME = Valgate;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -405,12 +443,18 @@
 		6673464042A36D74D2F150AE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation.tests;
 				PRODUCT_NAME = ValgateiOSTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Valgate.app/Valgate";
 				TEST_TARGET_NAME = ValgateiOS;
 			};
@@ -421,8 +465,54 @@
 			baseConfigurationReference = AACA31A90B9AEA25486D27FE /* Base.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -430,11 +520,17 @@
 		A7C12617FA25AF50F8413CD9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation.tests;
 				PRODUCT_NAME = ValgateiOSTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Valgate.app/Valgate";
 				TEST_TARGET_NAME = ValgateiOS;
 			};
@@ -443,13 +539,19 @@
 		B4C1B9911D0D375CAABC4042 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = Sources/ValgateiOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation;
 				PRODUCT_MODULE_NAME = ValgateiOS;
 				PRODUCT_NAME = Valgate;
+				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -460,8 +562,61 @@
 			baseConfigurationReference = AACA31A90B9AEA25486D27FE /* Base.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;

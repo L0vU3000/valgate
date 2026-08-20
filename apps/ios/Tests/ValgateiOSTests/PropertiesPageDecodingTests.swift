@@ -4,7 +4,7 @@ import XCTest
 final class PropertiesPageDecodingTests: XCTestCase {
     func test_decodesItemsAndNextCursor() throws {
         let json = """
-        {"items":[{"id":"prop_1","name":"A","type":"residential","status":"active","city":"C","province":"P","createdAt":"2026-01-15T10:00:00Z"}],"nextCursor":"opaque-cursor-1"}
+        {"items":[{"id":"prop_1","name":"A","type":"residential","status":"active","city":"C","province":"P","createdAt":1705312800000}],"nextCursor":"opaque-cursor-1"}
         """.data(using: .utf8)!
 
         let page = try JSONDecoder().decode(PropertiesPageDto.self, from: json)
