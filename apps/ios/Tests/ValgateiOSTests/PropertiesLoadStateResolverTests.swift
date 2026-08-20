@@ -10,7 +10,7 @@ final class PropertiesLoadStateResolverTests: XCTestCase {
         status: "active",
         city: "Cape Town",
         province: "Western Cape",
-        createdAt: "2026-01-15T10:00:00Z"
+        createdAt: 1700000000000
     )
 
     func test_successWithItems_yieldsLoaded() {

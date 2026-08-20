@@ -5,9 +5,9 @@ struct PropertyListItemDto: Decodable, Equatable, Identifiable {
     let name: String
     let type: String
     let status: String
-    let city: String
-    let province: String
-    let createdAt: String
+    let city: String?
+    let province: String?
+    let createdAt: Int
 }
 
 struct PropertiesPageDto: Decodable {
@@ -20,13 +20,13 @@ struct PropertyDetailDto: Decodable, Equatable {
     let name: String
     let type: String
     let status: String
-    let city: String
-    let province: String
-    let createdAt: String
-    let addressLine: String
-    let country: String
-    let totalArea: Double
-    let bedrooms: Int
-    let bathrooms: Double
-    let yearBuilt: Int
+    let city: String?
+    let province: String?
+    let createdAt: Int
+    let addressLine: String?
+    let country: String?
+    let totalArea: String
+    let bedrooms: String?
+    let bathrooms: String?
+    let yearBuilt: String?
 }

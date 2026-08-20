@@ -11,6 +11,7 @@ final class PropertiesViewModel: ObservableObject {
     }
 
     @Published private(set) var state: LoadState = .loading
+    @Published var navigateToPropertyId: String?
 
     private let client: APIClient
     private let sessionToken: String
@@ -36,8 +37,6 @@ final class PropertiesViewModel: ObservableObject {
         }
         state = resolved
 
-        // An expired session is not a dead end: hand control back to the owner of
-        // the session token so the signed-out/auth entry state can take over.
         if case .unauthorized = resolved {
             onUnauthorized()
         }
@@ -46,6 +45,7 @@ final class PropertiesViewModel: ObservableObject {
 
 struct PropertiesView: View {
     @StateObject private var viewModel: PropertiesViewModel
+    @State private var showCreateSheet = false
     private let client: APIClient
     private let sessionToken: String
     private let onUnauthorized: @MainActor () -> Void
@@ -66,6 +66,25 @@ struct PropertiesView: View {
     var body: some View {
         NavigationStack {
             content
+                .sheet(isPresented: $showCreateSheet) {
+                    NavigationStack {
+                        CreatePropertyView(
+                            client: client,
+                            sessionToken: sessionToken,
+                            onUnauthorized: onUnauthorized,
+                            onCreated: { dto in
+                                showCreateSheet = false
+                                viewModel.navigateToPropertyId = dto.id
+                            }
+                        )
+                    }
+                }
+                .navigationDestination(item: $viewModel.navigateToPropertyId) { propertyId in
+                    PropertyDetailView(client: client, propertyId: propertyId, sessionToken: sessionToken, onUnauthorized: onUnauthorized)
+                        .onDisappear {
+                            viewModel.navigateToPropertyId = nil
+                        }
+                }
         }
     }
 
@@ -84,13 +103,23 @@ struct PropertiesView: View {
                         VStack(alignment: .leading) {
                             Text(property.name)
                                 .font(ValgateTypography.Brand.headline)
-                            Text(property.city)
+                            Text(property.city ?? "—")
                                 .font(ValgateTypography.Content.subheadline)
                                 .foregroundStyle(.secondary)
                         }
                     }
                 }
                 .navigationTitle(me.orgName)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showCreateSheet = true
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                        .accessibilityIdentifier("properties-add-button")
+                    }
+                }
                 .accessibilityIdentifier("propertiesListView")
             case .empty:
                 ContentUnavailableView(
@@ -98,6 +127,16 @@ struct PropertiesView: View {
                     systemImage: "building.2",
                     description: Text("Your organization has no properties yet.")
                 )
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showCreateSheet = true
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                        .accessibilityIdentifier("properties-add-button")
+                    }
+                }
                 .accessibilityIdentifier("propertiesEmptyView")
             case .unauthorized:
                 ContentUnavailableView(

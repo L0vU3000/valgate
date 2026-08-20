@@ -57,19 +57,19 @@ struct PropertyDetailView: View {
                         LabeledContent("Status", value: property.status)
                     }
                     Section {
-                        LabeledContent("Address", value: property.addressLine)
-                        LabeledContent("City", value: property.city)
-                        LabeledContent("Province", value: property.province)
-                        LabeledContent("Country", value: property.country)
+                        LabeledContent("Address", value: property.addressLine ?? "—")
+                        LabeledContent("City", value: property.city ?? "—")
+                        LabeledContent("Province", value: property.province ?? "—")
+                        LabeledContent("Country", value: property.country ?? "—")
                     }
                     Section {
-                        LabeledContent("Total Area", value: "\(property.totalArea)")
-                        LabeledContent("Bedrooms", value: "\(property.bedrooms)")
-                        LabeledContent("Bathrooms", value: "\(property.bathrooms)")
-                        LabeledContent("Year Built", value: "\(property.yearBuilt)")
+                        LabeledContent("Total Area", value: property.totalArea)
+                        LabeledContent("Bedrooms", value: property.bedrooms ?? "—")
+                        LabeledContent("Bathrooms", value: property.bathrooms ?? "—")
+                        LabeledContent("Year Built", value: property.yearBuilt ?? "—")
                     }
                     Section {
-                        LabeledContent("Created At", value: property.createdAt)
+                        LabeledContent("Created At", value: "\(property.createdAt)")
                         LabeledContent("ID", value: property.id)
                     }
                 }

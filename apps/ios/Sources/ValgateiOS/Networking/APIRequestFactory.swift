@@ -26,7 +26,7 @@ struct APIRequestFactory {
         }
 
         var request = URLRequest(url: components.url!)
-        request.httpMethod = "GET"
+        request.httpMethod = httpMethod(for: route)
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         if let sessionToken, !sessionToken.isEmpty {
             request.setValue("Bearer \(sessionToken)", forHTTPHeaderField: "Authorization")
@@ -41,6 +41,15 @@ struct APIRequestFactory {
         return request
     }
 
+    private func httpMethod(for route: APIRoute) -> String {
+        switch route {
+        case .createProperty:
+            return "POST"
+        default:
+            return "GET"
+        }
+    }
+
     private func path(for route: APIRoute) -> String {
         switch route {
         case .me:
@@ -49,6 +58,8 @@ struct APIRequestFactory {
             return "api/v1/properties"
         case .property(let id):
             return "api/v1/properties/\(id)"
+        case .createProperty:
+            return "api/v1/properties"
         }
     }
 }

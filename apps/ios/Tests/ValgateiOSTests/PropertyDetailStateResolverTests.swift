@@ -9,13 +9,13 @@ final class PropertyDetailStateResolverTests: XCTestCase {
         status: "active",
         city: "Cape Town",
         province: "Western Cape",
-        createdAt: "2026-01-15T10:00:00Z",
+        createdAt: 1700000000000,
         addressLine: "12 Lake Road",
         country: "South Africa",
-        totalArea: 250.5,
-        bedrooms: 4,
-        bathrooms: 2.5,
-        yearBuilt: 1998
+        totalArea: "250 sqm",
+        bedrooms: "4",
+        bathrooms: "2.5",
+        yearBuilt: "1998"
     )
 
     func test_success_yieldsLoaded() {

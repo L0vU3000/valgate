@@ -23,15 +23,23 @@ actor APIClient {
     }
 
     func me(sessionToken: String) async throws -> MeDto {
-        try await send(.me, sessionToken: sessionToken)
+        try await send(factory.urlRequest(for: .me, sessionToken: sessionToken), route: .me)
     }
 
     func properties(limit: Int?, cursor: String?, sessionToken: String) async throws -> PropertiesPageDto {
-        try await send(.properties(limit: limit, cursor: cursor), sessionToken: sessionToken)
+        try await send(factory.urlRequest(for: .properties(limit: limit, cursor: cursor), sessionToken: sessionToken), route: .properties(limit: limit, cursor: cursor))
     }
 
     func property(id: String, sessionToken: String) async throws -> PropertyDetailDto {
-        try await send(.property(id: id), sessionToken: sessionToken)
+        try await send(factory.urlRequest(for: .property(id: id), sessionToken: sessionToken), route: .property(id: id))
+    }
+
+    func createProperty(_ body: CreatePropertyRequest, sessionToken: String) async throws -> PropertyDetailDto {
+        let bodyData = try JSONEncoder().encode(body)
+        var request = factory.urlRequest(for: .createProperty, sessionToken: sessionToken)
+        request.httpBody = bodyData
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        return try await send(request, route: .createProperty)
     }
 
     private static func safeRouteLabel(for route: APIRoute) -> String {
@@ -42,12 +50,12 @@ actor APIClient {
             "properties"
         case .property:
             "property"
+        case .createProperty:
+            "createProperty"
         }
     }
 
-    private func send<T: Decodable>(_ route: APIRoute, sessionToken: String) async throws -> T {
-        let request = factory.urlRequest(for: route, sessionToken: sessionToken)
-
+    private func send<T: Decodable>(_ request: URLRequest, route: APIRoute) async throws -> T {
         let data: Data
         let response: URLResponse
         do {
