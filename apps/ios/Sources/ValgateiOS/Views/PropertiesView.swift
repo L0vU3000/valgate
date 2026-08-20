@@ -66,6 +66,9 @@ struct PropertiesView: View {
     var body: some View {
         NavigationStack {
             content
+                .refreshable {
+                    await viewModel.load()
+                }
                 .sheet(isPresented: $showCreateSheet) {
                     NavigationStack {
                         CreatePropertyView(

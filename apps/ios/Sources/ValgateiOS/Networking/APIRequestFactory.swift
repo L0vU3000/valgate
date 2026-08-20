@@ -45,6 +45,10 @@ struct APIRequestFactory {
         switch route {
         case .createProperty:
             return "POST"
+        case .updateProperty:
+            return "PATCH"
+        case .deleteProperty:
+            return "DELETE"
         default:
             return "GET"
         }
@@ -56,7 +60,7 @@ struct APIRequestFactory {
             return "api/v1/me"
         case .properties:
             return "api/v1/properties"
-        case .property(let id):
+        case .property(let id), .updateProperty(let id), .deleteProperty(let id):
             return "api/v1/properties/\(id)"
         case .createProperty:
             return "api/v1/properties"

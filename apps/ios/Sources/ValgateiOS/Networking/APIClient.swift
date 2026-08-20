@@ -42,6 +42,19 @@ actor APIClient {
         return try await send(request, route: .createProperty)
     }
 
+    func updateProperty(id: String, body: UpdatePropertyRequest, sessionToken: String) async throws -> PropertyDetailDto {
+        let bodyData = try JSONEncoder().encode(body)
+        var request = factory.urlRequest(for: .updateProperty(id: id), sessionToken: sessionToken)
+        request.httpBody = bodyData
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        return try await send(request, route: .updateProperty(id: id))
+    }
+
+    func deleteProperty(id: String, sessionToken: String) async throws -> Void {
+        let request = factory.urlRequest(for: .deleteProperty(id: id), sessionToken: sessionToken)
+        try await send(request, route: .deleteProperty(id: id))
+    }
+
     private static func safeRouteLabel(for route: APIRoute) -> String {
         switch route {
         case .me:
@@ -52,6 +65,10 @@ actor APIClient {
             "property"
         case .createProperty:
             "createProperty"
+        case .updateProperty:
+            "updateProperty"
+        case .deleteProperty:
+            "deleteProperty"
         }
     }
 
@@ -78,6 +95,10 @@ actor APIClient {
                 code: envelope?.error.knownCode,
                 message: envelope?.error.message
             )
+        }
+
+        if T.self == Void.self {
+            return () as! T
         }
 
         do {

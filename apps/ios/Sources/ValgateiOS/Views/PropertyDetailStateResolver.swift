@@ -3,6 +3,9 @@ import Foundation
 enum PropertyDetailState: Equatable {
     case loading
     case loaded(PropertyDetailDto)
+    case deleting
+    case deleted
+    case deleteError(String)
     case unauthorized
     case error(String)
 }
