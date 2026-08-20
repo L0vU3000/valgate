@@ -35,7 +35,7 @@ struct BrandedAuthView: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.accentColor)
+                        .background(Color.blue)
                         .cornerRadius(12)
                 }
                 .accessibilityIdentifier("auth-get-started-button")
@@ -44,8 +44,8 @@ struct BrandedAuthView: View {
                     onAuthAction()
                 } label: {
                     Text("Already have an account? Sign In")
-                        .font(ValgateTypography.Content.callout)
-                        .foregroundStyle(.accentColor)
+                        .font(ValgateTypography.Content.subheadline)
+                        .foregroundStyle(.blue)
                 }
                 .accessibilityIdentifier("auth-sign-in-link")
             }

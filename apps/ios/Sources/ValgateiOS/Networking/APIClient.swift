@@ -50,9 +50,9 @@ actor APIClient {
         return try await send(request, route: .updateProperty(id: id))
     }
 
-    func deleteProperty(id: String, sessionToken: String) async throws -> Void {
+    func deleteProperty(id: String, sessionToken: String) async throws {
         let request = factory.urlRequest(for: .deleteProperty(id: id), sessionToken: sessionToken)
-        try await send(request, route: .deleteProperty(id: id))
+        let _: Void = try await sendVoid(request, route: .deleteProperty(id: id))
     }
 
     private static func safeRouteLabel(for route: APIRoute) -> String {
@@ -97,14 +97,36 @@ actor APIClient {
             )
         }
 
-        if T.self == Void.self {
-            return () as! T
-        }
-
         do {
             return try JSONDecoder().decode(T.self, from: data)
         } catch {
             throw APIClientError.decoding(error)
+        }
+    }
+
+    private func sendVoid(_ request: URLRequest, route: APIRoute) async throws {
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            throw APIClientError.transport(error)
+        }
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIClientError.unexpectedResponse
+        }
+
+        guard (200..<300).contains(httpResponse.statusCode) else {
+            apiDiagnosticLogger.debug(
+                "api-response: route=\(Self.safeRouteLabel(for: route)) status=\(httpResponse.statusCode)"
+            )
+            let envelope = try? JSONDecoder().decode(APIErrorEnvelope.self, from: data)
+            throw APIClientError.server(
+                status: httpResponse.statusCode,
+                code: envelope?.error.knownCode,
+                message: envelope?.error.message
+            )
         }
     }
 }
