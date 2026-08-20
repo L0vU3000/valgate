@@ -159,6 +159,82 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+    patch:
+      operationId: updateProperty
+      summary: Update a property
+      description: Partially updates a property. Any omitted field is left unchanged.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Property ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                status:
+                  type: string
+                lat:
+                  type: number
+                lng:
+                  type: number
+                buyNumeric:
+                  type: number
+                totalArea:
+                  type: string
+                title:
+                  type: string
+                addressLine:
+                  type: string
+                  nullable: true
+                city:
+                  type: string
+                  nullable: true
+                province:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: Property updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropertyDetailDtoV1"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      operationId: deleteProperty
+      summary: Delete a property
+      description: Deletes a property. Idempotent — returns 204 even if already deleted.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Property ID
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Property deleted (or already absent)
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
 components:
   schemas:
