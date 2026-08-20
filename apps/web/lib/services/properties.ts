@@ -102,6 +102,7 @@ export async function getPropertyForOrg(orgId: string, id: string): Promise<Prop
 }
 
 export async function createProperty(ctx: Ctx, input: NewProperty): Promise<Property> {
+  assertCanMutate();
   requireMember(ctx);
   const id = await nextId("PROP");
   const now = Date.now();
