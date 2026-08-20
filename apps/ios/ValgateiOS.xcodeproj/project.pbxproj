@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD4E376CC32D292E607951D /* MeDto.swift */; };
+		16F75C8C6352D1C74CBCFB2F /* EditPropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40432FFA6FC85128F0BD817 /* EditPropertyView.swift */; };
 		191C053ACE7EB741A599F6D2 /* ClerkKit in Frameworks */ = {isa = PBXBuildFile; productRef = C5A8E4BFB83155B1B62F99E5 /* ClerkKit */; };
 		1F3679E3417AC3A408AB1F80 /* PropertiesLoadStateResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */; };
 		229782DC978C8D747E5932A1 /* PropertyDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D965F9027788E14B54414414 /* PropertyDetailView.swift */; };
@@ -38,6 +39,7 @@
 		9C5981E75E116B963676CC9C /* PropertyDetailDtoDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F31E8EFE035E503CED09627 /* PropertyDetailDtoDecodingTests.swift */; };
 		A0EF8621B704772B9C935B26 /* PropertiesPageDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4BD3E9D500C1208D99BF7EB /* PropertiesPageDecodingTests.swift */; };
 		A14FBFD58298D63EBD909F6A /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB29D23DCAAE734153F110D0 /* AppConfiguration.swift */; };
+		AEA28F0751EB0D046A784AA3 /* UpdatePropertyRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70217B209495B2167AD817A0 /* UpdatePropertyRequest.swift */; };
 		AF7225A316CABDB4B1A94EA2 /* ClerkKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECDDD9AD34F2D66C26842D7 /* ClerkKitUI */; };
 		B26FE88B772A0ECFA85F2810 /* ValgateiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289CAF3B76E412F13E5F7D88 /* ValgateiOSApp.swift */; };
 		B875E90CB4BFEA85D9F2C035 /* PropertiesLoadStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717E54E30465A0E3D6347769 /* PropertiesLoadStateResolverTests.swift */; };
@@ -48,6 +50,7 @@
 		D460E247996484CFF715B832 /* APIClientBoundaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90DBB4F9B1936BD73002203B /* APIClientBoundaryTests.swift */; };
 		D8AA4E85E777E3ECD19719CD /* AppConfigurationHTTPSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E194D47930E007A951FF7972 /* AppConfigurationHTTPSTests.swift */; };
 		E51239B4397243244A693204 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248E1E918FEC8F041875AFEF /* APIClient.swift */; };
+		E6B0B839DF87962F02200781 /* BrandedAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC20330114E4958D492AB4CE /* BrandedAuthView.swift */; };
 		EB7828BA9E818C2D99843E33 /* SessionRefresherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */; };
 		FA53128627B9327563E3EBA3 /* PropertyListItemDtoDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */; };
 /* End PBXBuildFile section */
@@ -83,6 +86,7 @@
 		683ED27534EC93D2217E7075 /* SignedOutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedOutView.swift; sourceTree = "<group>"; };
 		69E6F73468BEE851C42B551C /* PropertiesUnauthorizedRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesUnauthorizedRoutingTests.swift; sourceTree = "<group>"; };
 		6AD4E376CC32D292E607951D /* MeDto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeDto.swift; sourceTree = "<group>"; };
+		70217B209495B2167AD817A0 /* UpdatePropertyRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatePropertyRequest.swift; sourceTree = "<group>"; };
 		717E54E30465A0E3D6347769 /* PropertiesLoadStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesLoadStateResolverTests.swift; sourceTree = "<group>"; };
 		7F31E8EFE035E503CED09627 /* PropertyDetailDtoDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailDtoDecodingTests.swift; sourceTree = "<group>"; };
 		836983CDC8974A3E927A1C67 /* SessionTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTokenProvider.swift; sourceTree = "<group>"; };
@@ -100,7 +104,9 @@
 		B740F353870900732EDE4C4A /* APIErrorEnvelopeDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrorEnvelopeDecodingTests.swift; sourceTree = "<group>"; };
 		BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyListItemDtoDecodingTests.swift; sourceTree = "<group>"; };
 		BB29D23DCAAE734153F110D0 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
+		CC20330114E4958D492AB4CE /* BrandedAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandedAuthView.swift; sourceTree = "<group>"; };
 		CE18A2A777F74D48F366B354 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D40432FFA6FC85128F0BD817 /* EditPropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPropertyView.swift; sourceTree = "<group>"; };
 		D4BD3E9D500C1208D99BF7EB /* PropertiesPageDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesPageDecodingTests.swift; sourceTree = "<group>"; };
 		D965F9027788E14B54414414 /* PropertyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailView.swift; sourceTree = "<group>"; };
 		DF4FD7891383403D428C89F5 /* ValgateiOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ValgateiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -135,9 +141,11 @@
 		0C65356C0F9C7F9580956202 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				CC20330114E4958D492AB4CE /* BrandedAuthView.swift */,
 				9452B973A67B2A062A410CA7 /* ConfigurationMissingView.swift */,
 				47D37257EBF9682412CECBAD /* CreatePropertyStateResolver.swift */,
 				995F851414A21A1643ABAD0F /* CreatePropertyView.swift */,
+				D40432FFA6FC85128F0BD817 /* EditPropertyView.swift */,
 				48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */,
 				95881E49D31608658D848396 /* PropertiesView.swift */,
 				2F86B8AB112A169CAB0F4910 /* PropertyDetailStateResolver.swift */,
@@ -166,6 +174,7 @@
 				1DA96CC22207A608E46F7996 /* CreatePropertyRequest.swift */,
 				6AD4E376CC32D292E607951D /* MeDto.swift */,
 				E2619D92C3C22597917AAC10 /* PropertyDto.swift */,
+				70217B209495B2167AD817A0 /* UpdatePropertyRequest.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -392,10 +401,12 @@
 				4CDD4B9B4DC0F9AD40855B26 /* APIRequestFactory.swift in Sources */,
 				4968736FCA56E6E8359465A8 /* APIRoute.swift in Sources */,
 				A14FBFD58298D63EBD909F6A /* AppConfiguration.swift in Sources */,
+				E6B0B839DF87962F02200781 /* BrandedAuthView.swift in Sources */,
 				43F438A8E1FE6016AD3BEBDE /* ConfigurationMissingView.swift in Sources */,
 				851440F47CED2EB3728DD4B1 /* CreatePropertyRequest.swift in Sources */,
 				3FEEE715A73A5ACEC95A454B /* CreatePropertyStateResolver.swift in Sources */,
 				5CF123E415A489CF55F710E2 /* CreatePropertyView.swift in Sources */,
+				16F75C8C6352D1C74CBCFB2F /* EditPropertyView.swift in Sources */,
 				094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */,
 				1F3679E3417AC3A408AB1F80 /* PropertiesLoadStateResolver.swift in Sources */,
 				C78CF7EADA92D96CCEB01128 /* PropertiesView.swift in Sources */,
@@ -407,6 +418,7 @@
 				BDB4849AE1A63DC848C93EFC /* SessionRefresher.swift in Sources */,
 				60EF62EF2B0DC515B49D6442 /* SessionTokenProvider.swift in Sources */,
 				6A4C01078425B527BD28656E /* SignedOutView.swift in Sources */,
+				AEA28F0751EB0D046A784AA3 /* UpdatePropertyRequest.swift in Sources */,
 				B26FE88B772A0ECFA85F2810 /* ValgateiOSApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
