@@ -29,7 +29,7 @@ struct RootView: View {
             case .loading:
                 ProgressView()
             case .signedIn(let baseURL, let token):
-                PropertiesView(
+                PortfolioDashboardView(
                     client: APIClient(baseURL: baseURL),
                     sessionToken: token,
                     onUnauthorized: clearSession

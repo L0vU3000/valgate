@@ -49,6 +49,7 @@
 		C78CF7EADA92D96CCEB01128 /* PropertiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95881E49D31608658D848396 /* PropertiesView.swift */; };
 		D460E247996484CFF715B832 /* APIClientBoundaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90DBB4F9B1936BD73002203B /* APIClientBoundaryTests.swift */; };
 		D8AA4E85E777E3ECD19719CD /* AppConfigurationHTTPSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E194D47930E007A951FF7972 /* AppConfigurationHTTPSTests.swift */; };
+		E0BA42A02CB73195008E45AE /* PortfolioDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732F9A268A79F1FC285872C1 /* PortfolioDashboardView.swift */; };
 		E51239B4397243244A693204 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248E1E918FEC8F041875AFEF /* APIClient.swift */; };
 		E6B0B839DF87962F02200781 /* BrandedAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC20330114E4958D492AB4CE /* BrandedAuthView.swift */; };
 		EB7828BA9E818C2D99843E33 /* SessionRefresherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */; };
@@ -88,6 +89,7 @@
 		6AD4E376CC32D292E607951D /* MeDto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeDto.swift; sourceTree = "<group>"; };
 		70217B209495B2167AD817A0 /* UpdatePropertyRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatePropertyRequest.swift; sourceTree = "<group>"; };
 		717E54E30465A0E3D6347769 /* PropertiesLoadStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesLoadStateResolverTests.swift; sourceTree = "<group>"; };
+		732F9A268A79F1FC285872C1 /* PortfolioDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortfolioDashboardView.swift; sourceTree = "<group>"; };
 		7F31E8EFE035E503CED09627 /* PropertyDetailDtoDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailDtoDecodingTests.swift; sourceTree = "<group>"; };
 		836983CDC8974A3E927A1C67 /* SessionTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTokenProvider.swift; sourceTree = "<group>"; };
 		84F4E2C552642E31FC8FC1FD /* MeDtoDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeDtoDecodingTests.swift; sourceTree = "<group>"; };
@@ -146,6 +148,7 @@
 				47D37257EBF9682412CECBAD /* CreatePropertyStateResolver.swift */,
 				995F851414A21A1643ABAD0F /* CreatePropertyView.swift */,
 				D40432FFA6FC85128F0BD817 /* EditPropertyView.swift */,
+				732F9A268A79F1FC285872C1 /* PortfolioDashboardView.swift */,
 				48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */,
 				95881E49D31608658D848396 /* PropertiesView.swift */,
 				2F86B8AB112A169CAB0F4910 /* PropertyDetailStateResolver.swift */,
@@ -408,6 +411,7 @@
 				5CF123E415A489CF55F710E2 /* CreatePropertyView.swift in Sources */,
 				16F75C8C6352D1C74CBCFB2F /* EditPropertyView.swift in Sources */,
 				094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */,
+				E0BA42A02CB73195008E45AE /* PortfolioDashboardView.swift in Sources */,
 				1F3679E3417AC3A408AB1F80 /* PropertiesLoadStateResolver.swift in Sources */,
 				C78CF7EADA92D96CCEB01128 /* PropertiesView.swift in Sources */,
 				3D2999DD8C4AB36D9C0EE521 /* PropertyDetailStateResolver.swift in Sources */,
