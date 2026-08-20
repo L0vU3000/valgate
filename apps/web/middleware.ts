@@ -49,6 +49,7 @@ function checkMcpIpRateLimit(request: NextRequest): NextResponse | null {
 // script (e.g. dev:e2e-auth). CLERK_SECRET_KEY is a server-only var read from live
 // process.env, so it correctly reflects the runtime mode.
 // DEMO_MODE: demo-no-clerk → hasClerk=false. Real Clerk: sk_test_/sk_live_ → true.
+// Force rebuild to pick up new env var
 const hasClerk = isRealClerkKey(process.env.CLERK_SECRET_KEY);
 
 // Routes reachable WITHOUT being signed in: the auth pages, the Clerk webhook, and
