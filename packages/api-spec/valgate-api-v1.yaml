@@ -77,6 +77,62 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "500":
           $ref: "#/components/responses/InternalError"
+    post:
+      operationId: createProperty
+      summary: Create a property
+      description: Creates a new property under the caller's organization.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, type, status, lat, lng, buyNumeric, totalArea, title]
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                status:
+                  type: string
+                lat:
+                  type: number
+                lng:
+                  type: number
+                buyNumeric:
+                  type: number
+                totalArea:
+                  type: string
+                title:
+                  type: string
+                addressLine:
+                  type: string
+                  nullable: true
+                city:
+                  type: string
+                  nullable: true
+                province:
+                  type: string
+                  nullable: true
+                zip:
+                  type: string
+                  nullable: true
+                country:
+                  type: string
+                  nullable: true
+      responses:
+        "201":
+          description: Property created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropertyDetailDtoV1"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   /properties/{id}:
     get:
