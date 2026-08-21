@@ -71,9 +71,9 @@ struct HomeView: View {
             switch viewModel.state {
             case .loading:
                 MapLoadingView()
-            case .loaded(let properties), .empty:
+            case .loaded(let properties):
                 PropertyMapView(
-                    properties: loadedProperties,
+                    properties: properties,
                     portfolioStats: viewModel.portfolioStats,
                     onSelect: { property in
                         // TODO: Navigate to property detail
@@ -93,6 +93,17 @@ struct HomeView: View {
                     onRental: {
                         // TODO: Navigate to rental
                     }
+                )
+            case .empty:
+                PropertyMapView(
+                    properties: [],
+                    portfolioStats: viewModel.portfolioStats,
+                    onSelect: { _ in },
+                    onAddProperty: {},
+                    onSearch: {},
+                    onPortfolio: {},
+                    onDocuments: {},
+                    onRental: {}
                 )
             case .unauthorized:
                 ContentUnavailableView(
@@ -120,13 +131,6 @@ struct HomeView: View {
         .refreshable {
             await viewModel.load()
         }
-    }
-
-    private var loadedProperties: [PropertyListItemDto] {
-        if case .loaded(let items) = viewModel.state {
-            return items
-        }
-        return []
     }
 }
 
