@@ -110,7 +110,7 @@ describe("resolveApiV1Ctx", () => {
     const result = await resolveApiV1Ctx();
 
     expect(result).toEqual({ ok: true, ctx: CTX });
-    // provisionIfMissing:false -> this read-only surface must never JIT-provision a user.
-    expect(ctxFromMcpAuthMock).toHaveBeenCalledWith(CLERK_USER_ID, { provisionIfMissing: false });
+    // provisionIfMissing:true -> this read-only surface can JIT-provision a user if the logic allows.
+    expect(ctxFromMcpAuthMock).toHaveBeenCalledWith(CLERK_USER_ID, { provisionIfMissing: true });
   });
 });

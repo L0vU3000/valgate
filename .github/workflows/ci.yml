@@ -70,11 +70,12 @@ jobs:
         env:
           # Neon DEV branch — required by lib/env.ts and test suite.
           # Configure in: repo Settings → Secrets → DATABASE_URL
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://localhost:5432/test' }}
           # Staging demo mode for CI (no real Clerk keys needed)
           STAGING_DEMO_MODE: true
           DEMO_MODE: true
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.test_token' }}
 
   # ── iOS gates ────────────────────────────────────────────────────────
   ios-build-and-test:
@@ -94,22 +95,18 @@ jobs:
       - name: Build
         working-directory: apps/ios
         run: |
-          set -o pipefail
           xcodebuild build \
             -project ValgateiOS.xcodeproj \
             -scheme ValgateiOS \
-            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=latest' \
-            | xcpretty
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=latest'
       - name: Test
         working-directory: apps/ios
         run: |
-          set -o pipefail
           xcodebuild test \
             -project ValgateiOS.xcodeproj \
             -scheme ValgateiOS \
             -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=latest' \
-            -resultBundlePath TestResults.xcresult \
-            | xcpretty
+            -resultBundlePath TestResults.xcresult
       - name: Upload results on failure
         if: failure()
         uses: actions/upload-artifact@v4
