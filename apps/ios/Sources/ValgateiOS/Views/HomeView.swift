@@ -58,26 +58,43 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ZStack {
+                // Always show map underneath
+                PropertyMapView(
+                    properties: loadedProperties,
+                    onSelect: { property in
+                        // TODO: Navigate to property detail
+                    },
+                    onAddProperty: {
+                        // TODO: Show add property sheet
+                    }
+                )
+                .opacity(mapOpacity)
+
+                // Overlay states
                 switch viewModel.state {
                 case .loading:
                     ProgressView("Loading...")
-                case .loaded(let properties):
-                    PropertyMapView(
-                        properties: properties,
-                        onSelect: { property in
-                            // Navigate to property detail
-                        },
-                        onAddProperty: {
-                            // Show add property sheet
-                        }
-                    )
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(8)
                 case .empty:
-                    ContentUnavailableView(
-                        "No Properties",
-                        systemImage: "building.2",
-                        description: Text("Add your first property to see it on the map.")
-                    )
+                    VStack(spacing: 12) {
+                        Image(systemName: "building.2")
+                            .font(.largeTitle)
+                            .foregroundStyle(.secondary)
+                        Text("No Properties Yet")
+                            .font(.headline)
+                        Text("Add your first property to see it on the map.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Button("Add Property") {
+                            // TODO: Show add property sheet
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                    .padding(24)
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(16)
                 case .unauthorized:
                     ContentUnavailableView(
                         "Session Expired",
@@ -90,6 +107,8 @@ struct HomeView: View {
                         systemImage: "exclamationmark.triangle",
                         description: Text(message)
                     )
+                case .loaded:
+                    EmptyView()
                 }
             }
         }
@@ -98,6 +117,22 @@ struct HomeView: View {
         }
         .refreshable {
             await viewModel.load()
+        }
+    }
+
+    private var loadedProperties: [PropertyListItemDto] {
+        if case .loaded(let items) = viewModel.state {
+            return items
+        }
+        return []
+    }
+
+    private var mapOpacity: Double {
+        switch viewModel.state {
+        case .loaded:
+            return 1.0
+        default:
+            return 0.4 // Dim map when loading/empty/error
         }
     }
 }
