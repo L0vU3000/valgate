@@ -35,6 +35,8 @@ export type PropertyListItemDtoV1 = {
   status: Property["status"];
   city: string | undefined;
   province: string | undefined;
+  lat: number;
+  lng: number;
   createdAt: number;
 };
 
@@ -46,6 +48,8 @@ export function toPropertyListItemDto(property: Property): PropertyListItemDtoV1
     status: property.status,
     city: property.city,
     province: property.province,
+    lat: property.lat,
+    lng: property.lng,
     createdAt: property.createdAt,
   };
 }

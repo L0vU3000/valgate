@@ -7,6 +7,8 @@ struct PropertyListItemDto: Decodable, Equatable, Identifiable {
     let status: String
     let city: String?
     let province: String?
+    let lat: Double
+    let lng: Double
     let createdAt: Int
 }
 
