@@ -1,5 +1,6 @@
 // Safe defaults. A gitignored Secrets.xcconfig may override these locally.
 VALGATE_API_BASE_URL = https://www.valgate.co
+CLERK_PUBLISHABLE_KEY = pk_test_d2hvbGUtY2l2ZXQtODkuY2xlcmsuYWNjb3VudHMuZGV2JA
 LOCAL_VERCEL_PROTECTION_BYPASS =
 VERCEL_PROTECTION_BYPASS =
 VERCEL_PROTECTION_BYPASS[config=Debug] = $(LOCAL_VERCEL_PROTECTION_BYPASS)
