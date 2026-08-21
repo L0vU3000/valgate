@@ -40,58 +40,58 @@ struct PropertyMapView: View {
             .mapStyle(isSatellite ? .imagery : .standard)
 
             // Top floating search + quick actions
-            VStack(spacing: 12) {
+            VStack(spacing: ValgateSpacing.space3) {
                 // Search bar
                 Button(action: onSearch) {
-                    HStack(spacing: 10) {
+                    HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 17, weight: .medium))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.valTextSecondary)
 
                         Text("Search properties, documents, tenants...")
-                            .font(.system(size: 15))
-                            .foregroundStyle(.secondary)
+                            .font(ValgateTypography.Body.standard)
+                            .foregroundStyle(.valTextSecondary)
 
                         Spacer()
 
-                        HStack(spacing: 4) {
+                        HStack(spacing: ValgateSpacing.space1) {
                             Image(systemName: "command")
                                 .font(.system(size: 10))
                             Text("K")
-                                .font(.system(size: 11, weight: .medium))
+                                .font(ValgateTypography.Content.caption)
                         }
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 3)
+                        .foregroundStyle(.valTextSecondary)
+                        .padding(.horizontal, ValgateSpacing.space1)
+                        .padding(.vertical, ValgateSpacing.space0_5)
                         .background(.regularMaterial)
-                        .cornerRadius(6)
+                        .cornerRadius(ValgateRadius.sm)
                     }
-                    .padding(.horizontal, 14)
-                    .frame(height: 48)
+                    .padding(.horizontal, ValgateSpacing.space4)
+                    .frame(height: ValgateTouchTarget.comfortable)
                     .background(.ultraThinMaterial)
-                    .cornerRadius(14)
+                    .cornerRadius(ValgateRadius.lg)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(.secondary.opacity(0.15), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: ValgateRadius.lg)
+                            .stroke(.valBorderSubtle.opacity(0.15), lineWidth: 1)
                     )
                 }
                 .buttonStyle(.plain)
 
                 // Quick action chips
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
+                    HStack(spacing: ValgateSpacing.space2) {
                         QuickActionChip(icon: "plus", label: "New Property", action: onAddProperty)
                         QuickActionChip(icon: "chart.bar.fill", label: "Portfolio", action: onPortfolio)
                         QuickActionChip(icon: "doc.text", label: "Documents", action: onDocuments)
                         QuickActionChip(icon: "person.2", label: "Rental", action: onRental)
                     }
-                    .padding(.horizontal, 4)
+                    .padding(.horizontal, ValgateSpacing.space1)
                 }
 
                 Spacer()
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 60) // Below status bar
+            .padding(.horizontal, ValgateSpacing.space4)
+            .padding(.top, ValgateSpacing.safeAreaTop + ValgateSpacing.space4)
 
             // Bottom controls
             VStack {
@@ -106,7 +106,7 @@ struct PropertyMapView: View {
                     Spacer()
 
                     // Map controls
-                    VStack(spacing: 8) {
+                    VStack(spacing: ValgateSpacing.space2) {
                         MapControlButton(icon: "list.bullet") {
                             showPropertyList = true
                         }
@@ -118,8 +118,8 @@ struct PropertyMapView: View {
                         }
                     }
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 24)
+                .padding(.horizontal, ValgateSpacing.space4)
+                .padding(.bottom, ValgateSpacing.safeAreaBottom + ValgateSpacing.space6)
             }
         }
         .sheet(item: $selectedProperty) { property in
@@ -199,10 +199,9 @@ struct PropertyPin: View {
 
                     Image(systemName: "building.2.fill")
                         .font(.system(size: isSelected ? 18 : 14, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.valTextInverse)
                 }
 
-                // Pin tail
                 Triangle()
                     .fill(pinColor)
                     .frame(width: 12, height: 8)
@@ -216,11 +215,11 @@ struct PropertyPin: View {
 
     private var pinColor: Color {
         switch property.status.lowercased() {
-        case "active", "rented": return .green
-        case "pending", "vacant": return .orange
-        case "sold": return .blue
-        case "archived": return .gray
-        default: return .blue
+        case "active", "rented": return .valStatusSuccess
+        case "pending", "vacant": return .valStatusWarning
+        case "sold": return .valStatusInfo
+        case "archived": return .valTextSecondary
+        default: return .valStatusInfo
         }
     }
 }
@@ -236,7 +235,7 @@ struct Triangle: Shape {
     }
 }
 
-// MARK: - Quick Action Chip
+// MARK: - Quick Action Chip (Design System)
 
 struct QuickActionChip: View {
     let icon: String
@@ -245,50 +244,44 @@ struct QuickActionChip: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) {
+            HStack(spacing: ValgateSpacing.space1) {
                 Image(systemName: icon)
                     .font(.system(size: 13, weight: .medium))
                 Text(label)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(ValgateTypography.Content.subheadlineEmphasis)
             }
-            .foregroundStyle(.primary)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
+            .foregroundStyle(.valTextPrimary)
+            .padding(.horizontal, ValgateSpacing.space3)
+            .padding(.vertical, ValgateSpacing.space2)
             .background(.ultraThinMaterial)
-            .cornerRadius(20)
+            .cornerRadius(ValgateRadius.pill)
             .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(.secondary.opacity(0.15), lineWidth: 1)
+                RoundedRectangle(cornerRadius: ValgateRadius.pill)
+                    .stroke(.valBorderSubtle.opacity(0.15), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
     }
 }
 
-// MARK: - Map Control Button
+// MARK: - Map Control Button (Design System)
 
 struct MapControlButton: View {
     let icon: String
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(.primary)
-                .frame(width: 40, height: 40)
-                .background(.ultraThinMaterial)
-                .cornerRadius(12)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(.secondary.opacity(0.15), lineWidth: 1)
-                )
-        }
-        .buttonStyle(.plain)
+        VGIconButton(icon: icon, variant: .ghost, size: ValgateTouchTarget.iconVisual, action: action)
+            .background(.ultraThinMaterial)
+            .cornerRadius(ValgateRadius.md)
+            .overlay(
+                RoundedRectangle(cornerRadius: ValgateRadius.md)
+                    .stroke(.valBorderSubtle.opacity(0.15), lineWidth: 1)
+            )
     }
 }
 
-// MARK: - Portfolio Legend
+// MARK: - Portfolio Stats DTO
 
 struct PortfolioStatsDto: Equatable {
     let totalProperties: Int
@@ -297,45 +290,30 @@ struct PortfolioStatsDto: Equatable {
     let vacantCount: Int
 }
 
+// MARK: - Portfolio Legend (Design System)
+
 struct PortfolioLegend: View {
     let stats: PortfolioStatsDto
 
     var body: some View {
-        HStack(spacing: 16) {
-            StatBadge(count: stats.totalProperties, label: "Total", color: .blue)
-            StatBadge(count: stats.activeCount, label: "Active", color: .green)
-            StatBadge(count: stats.pendingCount, label: "Pending", color: .orange)
-            StatBadge(count: stats.vacantCount, label: "Vacant", color: .purple)
+        HStack(spacing: ValgateSpacing.space4) {
+            VGBadge("\\(stats.totalProperties) Total", variant: .primary, size: .small)
+            VGBadge("\\(stats.activeCount) Active", variant: .success, size: .small)
+            VGBadge("\\(stats.pendingCount) Pending", variant: .warning, size: .small)
+            VGBadge("\\(stats.vacantCount) Vacant", variant: .info, size: .small)
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(.horizontal, ValgateSpacing.space3)
+        .padding(.vertical, ValgateSpacing.space2)
         .background(.ultraThinMaterial)
-        .cornerRadius(12)
+        .cornerRadius(ValgateRadius.lg)
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(.secondary.opacity(0.15), lineWidth: 1)
+            RoundedRectangle(cornerRadius: ValgateRadius.lg)
+                .stroke(.valBorderSubtle.opacity(0.15), lineWidth: 1)
         )
     }
 }
 
-struct StatBadge: View {
-    let count: Int
-    let label: String
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: 2) {
-            Text("\\(count)")
-                .font(.system(size: 15, weight: .bold))
-                .foregroundStyle(color)
-            Text(label)
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(.secondary)
-        }
-    }
-}
-
-// MARK: - Property Detail Sheet
+// MARK: - Property Detail Sheet (Design System)
 
 struct PropertyDetailSheet: View {
     let property: PropertyListItemDto
@@ -345,16 +323,17 @@ struct PropertyDetailSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    // Hero image area (placeholder gradient)
+                    // Hero area with brand-tinted card
                     ZStack(alignment: .bottomLeading) {
-                        LinearGradient(
-                            colors: [.blue.opacity(0.3), .purple.opacity(0.2)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                        .frame(height: 180)
+                        VGCard(variant: .elevated, padding: 0) {
+                            LinearGradient(
+                                colors: [.valInteractivePrimary.opacity(0.15), .valInteractivePrimary.opacity(0.05)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                            .frame(height: 180)
+                        }
 
-                        // Gradient overlay
                         LinearGradient(
                             colors: [.clear, .black.opacity(0.6)],
                             startPoint: .top,
@@ -362,141 +341,129 @@ struct PropertyDetailSheet: View {
                         )
                         .frame(height: 180)
 
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
                             HStack {
-                                StatusBadge(status: property.status)
+                                VGStatusBadge(status: property.status)
                                 Spacer()
-                                Button(action: onEdit) {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "pencil")
-                                            .font(.system(size: 11))
-                                        Text("Edit")
-                                            .font(.system(size: 12, weight: .semibold))
-                                    }
-                                    .foregroundStyle(.white)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 5)
-                                    .background(.white.opacity(0.2))
-                                    .cornerRadius(8)
-                                }
+                                VGIconButton(icon: "pencil", variant: .ghost, size: 32, action: onEdit)
+                                    .foregroundStyle(.valTextInverse)
                             }
 
                             Text(property.name)
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundStyle(.white)
+                                .font(ValgateTypography.Headline.title2)
+                                .foregroundStyle(.valTextInverse)
 
                             if let city = property.city, let province = property.province {
-                                HStack(spacing: 4) {
+                                HStack(spacing: ValgateSpacing.space1) {
                                     Image(systemName: "mappin")
                                         .font(.system(size: 11))
-                                    Text("\\(city), \\(province)")
-                                        .font(.system(size: 13))
+                                    Text("\(city), \(province)")
+                                        .font(ValgateTypography.Content.subheadline)
                                 }
-                                .foregroundStyle(.white.opacity(0.7))
+                                .foregroundStyle(.valTextInverse.opacity(0.7))
                             }
                         }
-                        .padding(16)
+                        .padding(ValgateSpacing.space4)
                     }
 
                     // Progress section
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
                         HStack {
                             Text("PROGRESS")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(.secondary)
+                                .font(ValgateTypography.Content.label)
+                                .foregroundStyle(.valTextSecondary)
                             Spacer()
                             Text("0%")
-                                .font(.system(size: 13, weight: .bold))
-                                .foregroundStyle(.blue)
+                                .font(ValgateTypography.Body.standardEmphasis)
+                                .foregroundStyle(.valInteractivePrimary)
                         }
 
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(.secondary.opacity(0.15))
+                                RoundedRectangle(cornerRadius: ValgateRadius.sm)
+                                    .fill(.valBorderSubtle.opacity(0.15))
                                     .frame(height: 6)
 
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(.blue)
+                                RoundedRectangle(cornerRadius: ValgateRadius.sm)
+                                    .fill(.valInteractivePrimary)
                                     .frame(width: 0, height: 6)
                             }
                         }
                         .frame(height: 6)
                     }
-                    .padding(16)
-                    .background(.background)
+                    .padding(ValgateSpacing.space4)
+                    .background(.valSurfaceBase)
 
                     Divider()
 
-                    // Property details
-                    VStack(alignment: .leading, spacing: 16) {
+                    // Property details using LabeledContent + SF Symbols
+                    VStack(alignment: .leading, spacing: ValgateSpacing.space4) {
                         DetailSection(title: "Property") {
-                            DetailRow(icon: "building.2", label: "Type", value: property.type)
-                            DetailRow(icon: "tag", label: "Status", value: property.status)
+                            LabeledDetailRow(icon: "building.2", label: "Type", value: property.type)
+                            LabeledDetailRow(icon: "tag", label: "Status", value: property.status)
                         }
 
                         DetailSection(title: "Location") {
                             if let city = property.city {
-                                DetailRow(icon: "mappin", label: "City", value: city)
+                                LabeledDetailRow(icon: "mappin", label: "City", value: city)
                             }
                             if let province = property.province {
-                                DetailRow(icon: "map", label: "Province", value: province)
+                                LabeledDetailRow(icon: "map", label: "Province", value: province)
                             }
-                            DetailRow(icon: "location", label: "Coordinates", value: String(format: "%.4f, %.4f", property.lat, property.lng))
+                            LabeledDetailRow(icon: "location", label: "Coordinates", value: String(format: "%.4f, %.4f", property.lat, property.lng))
                         }
                     }
-                    .padding(16)
+                    .padding(ValgateSpacing.space4)
                 }
             }
-            .background(.groupedBackground)
+            .background(.valSurfacePage)
             .navigationTitle("Property Details")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
 
-// MARK: - Supporting Views
+// MARK: - Supporting Views (Design System)
 
 struct DetailSection<Content: View>: View {
     let title: String
     @ViewBuilder let content: Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
             Text(title.uppercased())
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.secondary)
+                .font(ValgateTypography.Content.label)
+                .foregroundStyle(.valTextSecondary)
             content
         }
     }
 }
 
-struct DetailRow: View {
+struct LabeledDetailRow: View {
     let icon: String
     let label: String
     let value: String
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundStyle(.secondary)
-                .frame(width: 20)
-
-            Text(label)
-                .font(.system(size: 14))
-                .foregroundStyle(.secondary)
-
-            Spacer()
-
+        LabeledContent {
             Text(value)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(.primary)
+                .font(ValgateTypography.Body.standardEmphasis)
+                .foregroundStyle(.valTextPrimary)
+        } label: {
+            HStack(spacing: ValgateSpacing.space2) {
+                Image(systemName: icon)
+                    .font(.system(size: 14))
+                    .foregroundStyle(.valTextSecondary)
+                    .frame(width: 20)
+                Text(label)
+                    .font(ValgateTypography.Body.standard)
+                    .foregroundStyle(.valTextSecondary)
+            }
         }
     }
 }
 
-// MARK: - Property List Sheet
+// MARK: - Property List Sheet (Design System)
 
 struct PropertyListSheet: View {
     let properties: [PropertyListItemDto]
@@ -509,49 +476,45 @@ struct PropertyListSheet: View {
                 Button {
                     onSelect(property)
                 } label: {
-                    HStack(spacing: 12) {
-                        // Color dot
+                    HStack(spacing: ValgateSpacing.space3) {
                         Circle()
                             .fill(statusColor(property.status))
                             .frame(width: 10, height: 10)
 
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
                             Text(property.name)
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(.primary)
+                                .font(ValgateTypography.Headline.title3)
+                                .foregroundStyle(.valTextPrimary)
 
-                            HStack(spacing: 8) {
+                            HStack(spacing: ValgateSpacing.space2) {
                                 Text(property.type)
-                                    .font(.system(size: 13))
-                                    .foregroundStyle(.secondary)
+                                    .font(ValgateTypography.Content.subheadline)
+                                    .foregroundStyle(.valTextSecondary)
 
                                 if let city = property.city {
                                     Text("·")
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(.valTextSecondary)
                                     Text(city)
-                                        .font(.system(size: 13))
-                                        .foregroundStyle(.secondary)
+                                        .font(ValgateTypography.Content.subheadline)
+                                        .foregroundStyle(.valTextSecondary)
                                 }
                             }
                         }
 
                         Spacer()
 
-                        StatusBadge(status: property.status)
+                        VGStatusBadge(status: property.status)
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, ValgateSpacing.space1)
                 }
                 .buttonStyle(.plain)
             }
             .listStyle(.plain)
-            .navigationTitle("\\(properties.count) Properties")
+            .navigationTitle("\(properties.count) Properties")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: onAddProperty) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 16, weight: .semibold))
-                    }
+                    VGToolbarButton(icon: "plus", action: onAddProperty)
                 }
             }
         }
@@ -559,37 +522,11 @@ struct PropertyListSheet: View {
 
     private func statusColor(_ status: String) -> Color {
         switch status.lowercased() {
-        case "active", "rented": return .green
-        case "pending", "vacant": return .orange
-        case "sold": return .blue
-        case "archived": return .gray
-        default: return .blue
-        }
-    }
-}
-
-// MARK: - StatusBadge (reused)
-
-struct StatusBadge: View {
-    let status: String
-
-    var body: some View {
-        Text(status)
-            .font(.system(size: 11, weight: .semibold))
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(statusColor.opacity(0.15))
-            .foregroundStyle(statusColor)
-            .cornerRadius(6)
-    }
-
-    private var statusColor: Color {
-        switch status.lowercased() {
-        case "active", "rented": return .green
-        case "pending", "vacant": return .orange
-        case "sold": return .blue
-        case "archived": return .gray
-        default: return .primary
+        case "active", "rented": return .valStatusSuccess
+        case "pending", "vacant": return .valStatusWarning
+        case "sold": return .valStatusInfo
+        case "archived": return .valTextSecondary
+        default: return .valStatusInfo
         }
     }
 }

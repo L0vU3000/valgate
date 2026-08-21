@@ -99,13 +99,19 @@ struct HomeView: View {
                     "Session Expired",
                     systemImage: "lock",
                     description: Text("Please sign in again.")
+                        .font(ValgateTypography.Content.subheadline)
+                        .foregroundStyle(.valTextSecondary)
                 )
+                .background(.valSurfacePage)
             case .error(let message):
                 ContentUnavailableView(
                     "Error",
                     systemImage: "exclamationmark.triangle",
                     description: Text(message)
+                        .font(ValgateTypography.Content.subheadline)
+                        .foregroundStyle(.valTextSecondary)
                 )
+                .background(.valSurfacePage)
             }
         }
         .task {
@@ -127,45 +133,45 @@ struct HomeView: View {
 struct MapLoadingView: View {
     var body: some View {
         ZStack {
-            // Gray placeholder map background
-            Color(.systemGray6)
+            Color.valSurfaceBase
                 .overlay(
                     Image(systemName: "map.fill")
                         .font(.system(size: 60))
-                        .foregroundStyle(.secondary.opacity(0.3))
+                        .foregroundStyle(.valTextSecondary.opacity(0.3))
                 )
 
-            VStack(spacing: 16) {
+            VStack(spacing: ValgateSpacing.space4) {
                 ProgressView()
                     .scaleEffect(1.2)
+                    .tint(.valInteractivePrimary)
 
-                HStack(spacing: 8) {
+                HStack(spacing: ValgateSpacing.space2) {
                     Image(systemName: "map")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(.blue)
+                        .font(ValgateTypography.Content.subheadlineEmphasis)
+                        .foregroundStyle(.valInteractivePrimary)
                     Text("Loading map…")
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundStyle(.secondary)
+                        .font(ValgateTypography.Content.subheadlineEmphasis)
+                        .foregroundStyle(.valTextSecondary)
                 }
 
                 // Loading bar
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(.secondary.opacity(0.15))
+                        RoundedRectangle(cornerRadius: ValgateRadius.sm)
+                            .fill(.valBorderSubtle.opacity(0.15))
                             .frame(height: 4)
 
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(.blue)
+                        RoundedRectangle(cornerRadius: ValgateRadius.sm)
+                            .fill(.valInteractivePrimary)
                             .frame(width: geo.size.width * 0.6, height: 4)
                             .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: true)
                     }
                 }
                 .frame(width: 180, height: 4)
             }
-            .padding(24)
+            .padding(ValgateSpacing.space6)
             .background(.ultraThinMaterial)
-            .cornerRadius(16)
+            .cornerRadius(ValgateRadius.xl)
         }
     }
 }

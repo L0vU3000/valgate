@@ -10,9 +10,11 @@ struct SignedOutView: View {
         BrandedAuthView {
             isPresentingAuth = true
         }
+        .background(.valSurfacePage)
         .accessibilityIdentifier("signedOutView")
         .sheet(isPresented: $isPresentingAuth, onDismiss: onSignInCompleted) {
             AuthView()
+                .background(.valSurfacePage)
         }
     }
 }

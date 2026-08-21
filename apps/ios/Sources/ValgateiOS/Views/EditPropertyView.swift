@@ -94,45 +94,224 @@ struct EditPropertyView: View {
 
     var body: some View {
         Form {
-            Section("General Information") {
-                TextField("Property Name", text: $viewModel.name)
-                Picker("Type", selection: $viewModel.type) {
+            // General Information
+            Section {
+                LabeledContent {
+                    TextField("Property Name", text: $viewModel.name)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "building.2")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Name")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
+
+                Picker(selection: $viewModel.type) {
                     ForEach(PropertyType.allCases, id: \.self) { t in
                         Text(t.displayName).tag(t)
                     }
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "square.grid.2x2")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Type")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
                 }
-                Picker("Status", selection: $viewModel.status) {
+
+                Picker(selection: $viewModel.status) {
                     ForEach(PropertyStatus.allCases, id: \.self) { s in
                         Text(s.rawValue).tag(s)
                     }
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "checkmark.shield")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Status")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
                 }
+            } header: {
+                Text("General Information")
+                    .font(ValgateTypography.Content.label)
+                    .foregroundStyle(.valTextSecondary)
+                    .textCase(.uppercase)
             }
-            Section("Location") {
-                TextField("City", text: $viewModel.city)
-                TextField("Province", text: $viewModel.province)
-                TextField("Country", text: $viewModel.country)
-                TextField("Address", text: $viewModel.addressLine)
+
+            // Location
+            Section {
+                LabeledContent {
+                    TextField("City", text: $viewModel.city)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "mappin.and.ellipse")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("City")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
+
+                LabeledContent {
+                    TextField("Province", text: $viewModel.province)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "map")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Province")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
+
+                LabeledContent {
+                    TextField("Country", text: $viewModel.country)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "globe")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Country")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
+
+                LabeledContent {
+                    TextField("Address", text: $viewModel.addressLine)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "location.fill")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Address")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
+            } header: {
+                Text("Location")
+                    .font(ValgateTypography.Content.label)
+                    .foregroundStyle(.valTextSecondary)
+                    .textCase(.uppercase)
             }
-            Section("Details") {
-                TextField("Total Area", text: $viewModel.totalArea)
-                TextField("Year Built", text: $viewModel.yearBuilt)
-                TextField("Bedrooms", text: $viewModel.bedrooms)
-                TextField("Bathrooms", text: $viewModel.bathrooms)
+
+            // Details
+            Section {
+                LabeledContent {
+                    TextField("Total Area", text: $viewModel.totalArea)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "ruler")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Total Area")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
+
+                LabeledContent {
+                    TextField("Year Built", text: $viewModel.yearBuilt)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "calendar")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Year Built")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
+
+                LabeledContent {
+                    TextField("Bedrooms", text: $viewModel.bedrooms)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "bed.double")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Bedrooms")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
+
+                LabeledContent {
+                    TextField("Bathrooms", text: $viewModel.bathrooms)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "shower")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Bathrooms")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
+            } header: {
+                Text("Details")
+                    .font(ValgateTypography.Content.label)
+                    .foregroundStyle(.valTextSecondary)
+                    .textCase(.uppercase)
             }
         }
         .navigationTitle("Edit Property")
+        .navigationBarTitleDisplayMode(.large)
+        .background(.valSurfacePage)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") { dismiss() }
+                    .font(ValgateTypography.Body.standardEmphasis)
+                    .foregroundStyle(.valTextSecondary)
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    Task {
-                        await viewModel.save()
-                        if case .saved = viewModel.state { dismiss() }
+                if case .saving = viewModel.state {
+                    ProgressView()
+                } else {
+                    VGToolbarButton(icon: "checkmark") {
+                        Task {
+                            await viewModel.save()
+                            if case .saved = viewModel.state { dismiss() }
+                        }
                     }
                 }
-                .disabled(viewModel.state == .saving)
             }
         }
     }

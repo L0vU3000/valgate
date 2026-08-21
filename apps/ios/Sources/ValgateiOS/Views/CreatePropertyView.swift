@@ -55,69 +55,212 @@ struct CreatePropertyView: View {
 
     var body: some View {
         Form {
-            Section("Basic Info") {
-                TextField("Property Name", text: $form.name)
-                    .accessibilityIdentifier("create-property-name")
-                    .focused($focusedField, equals: .name)
+            // Basic Info Section
+            Section {
+                LabeledContent {
+                    TextField("Property Name", text: $form.name)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                        .accessibilityIdentifier("create-property-name")
+                        .focused($focusedField, equals: .name)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "building.2")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Name")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
 
-                Picker("Type", selection: $form.type) {
+                Picker(selection: $form.type) {
                     ForEach(PropertyType.allCases, id: \.self) { type in
                         Text(type.displayName).tag(type)
+                    }
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "square.grid.2x2")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Type")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
                     }
                 }
                 .accessibilityIdentifier("create-property-type")
 
-                Picker("Status", selection: $form.status) {
+                Picker(selection: $form.status) {
                     ForEach(PropertyStatus.allCases, id: \.self) { status in
                         Text(status.rawValue).tag(status)
                     }
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "checkmark.shield")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Status")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
                 }
                 .accessibilityIdentifier("create-property-status")
+            } header: {
+                Text("Basic Info")
+                    .font(ValgateTypography.Content.label)
+                    .foregroundStyle(.valTextSecondary)
+                    .textCase(.uppercase)
             }
 
-            Section("Location") {
-                TextField("City", text: $form.city)
-                    .accessibilityIdentifier("create-property-city")
-                    .focused($focusedField, equals: .city)
-
-                TextField("Province", text: $form.province)
-                    .accessibilityIdentifier("create-property-province")
-                    .focused($focusedField, equals: .province)
-
-                HStack {
-                    TextField("Latitude", value: $form.lat, format: .number)
-                        .keyboardType(.decimalPad)
-                        .accessibilityIdentifier("create-property-lat")
-                        .focused($focusedField, equals: .lat)
-                    TextField("Longitude", value: $form.lng, format: .number)
-                        .keyboardType(.decimalPad)
-                        .accessibilityIdentifier("create-property-lng")
-                        .focused($focusedField, equals: .lng)
+            // Location Section
+            Section {
+                LabeledContent {
+                    TextField("City", text: $form.city)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                        .accessibilityIdentifier("create-property-city")
+                        .focused($focusedField, equals: .city)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "mappin.and.ellipse")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("City")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
                 }
+
+                LabeledContent {
+                    TextField("Province", text: $form.province)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                        .accessibilityIdentifier("create-property-province")
+                        .focused($focusedField, equals: .province)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "map")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Province")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
+
+                HStack(spacing: ValgateSpacing.space3) {
+                    LabeledContent {
+                        TextField("Latitude", value: $form.lat, format: .number)
+                            .keyboardType(.decimalPad)
+                            .font(ValgateTypography.Body.standard)
+                            .foregroundStyle(.valTextPrimary)
+                            .multilineTextAlignment(.trailing)
+                            .accessibilityIdentifier("create-property-lat")
+                            .focused($focusedField, equals: .lat)
+                    } label: {
+                        HStack(spacing: ValgateSpacing.space2) {
+                            Image(systemName: "location.north")
+                                .foregroundStyle(.valTextSecondary)
+                                .font(.system(size: 14))
+                            Text("Lat")
+                                .font(ValgateTypography.Body.standardEmphasis)
+                                .foregroundStyle(.valTextPrimary)
+                        }
+                    }
+
+                    Divider()
+                        .frame(height: 20)
+
+                    LabeledContent {
+                        TextField("Longitude", value: $form.lng, format: .number)
+                            .keyboardType(.decimalPad)
+                            .font(ValgateTypography.Body.standard)
+                            .foregroundStyle(.valTextPrimary)
+                            .multilineTextAlignment(.trailing)
+                            .accessibilityIdentifier("create-property-lng")
+                            .focused($focusedField, equals: .lng)
+                    } label: {
+                        HStack(spacing: ValgateSpacing.space2) {
+                            Image(systemName: "location")
+                                .foregroundStyle(.valTextSecondary)
+                                .font(.system(size: 14))
+                            Text("Lng")
+                                .font(ValgateTypography.Body.standardEmphasis)
+                                .foregroundStyle(.valTextPrimary)
+                        }
+                    }
+                }
+            } header: {
+                Text("Location")
+                    .font(ValgateTypography.Content.label)
+                    .foregroundStyle(.valTextSecondary)
+                    .textCase(.uppercase)
             }
 
-            Section("Details") {
-                TextField("Total Area", text: $form.totalArea)
-                    .accessibilityIdentifier("create-property-area")
-                    .focused($focusedField, equals: .totalArea)
+            // Details Section
+            Section {
+                LabeledContent {
+                    TextField("Total Area", text: $form.totalArea)
+                        .font(ValgateTypography.Body.standard)
+                        .foregroundStyle(.valTextPrimary)
+                        .multilineTextAlignment(.trailing)
+                        .accessibilityIdentifier("create-property-area")
+                        .focused($focusedField, equals: .totalArea)
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "ruler")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Total Area")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
+                }
 
-                Picker("Title", selection: $form.title) {
+                Picker(selection: $form.title) {
                     ForEach(PropertyTitle.allCases, id: \.self) { title in
                         Text(title.rawValue).tag(title)
                     }
+                } label: {
+                    HStack(spacing: ValgateSpacing.space2) {
+                        Image(systemName: "doc.text")
+                            .foregroundStyle(.valTextSecondary)
+                            .font(.system(size: 14))
+                        Text("Title")
+                            .font(ValgateTypography.Body.standardEmphasis)
+                            .foregroundStyle(.valTextPrimary)
+                    }
                 }
                 .accessibilityIdentifier("create-property-title")
+            } header: {
+                Text("Details")
+                    .font(ValgateTypography.Content.label)
+                    .foregroundStyle(.valTextSecondary)
+                    .textCase(.uppercase)
             }
+
+            // Submit button in a card for visual prominence
+            Section {
+                VGButton("Save Property", icon: "checkmark", variant: .primary, size: .large) {
+                    submit()
+                }
+                .disabled(!form.isValid || viewModel.state == .submitting)
+                .opacity(form.isValid ? 1.0 : 0.6)
+                .padding(.vertical, ValgateSpacing.space2)
+            }
+            .listRowBackground(Color.clear)
+            .listRowInsets(EdgeInsets())
         }
         .navigationTitle("Add Property")
+        .navigationBarTitleDisplayMode(.large)
+        .background(.valSurfacePage)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button(action: submit) {
-                    if case .submitting = viewModel.state {
-                        ProgressView()
-                    } else {
-                        Text("Save")
-                    }
+                VGToolbarButton(icon: "checkmark") {
+                    submit()
                 }
                 .disabled(!form.isValid || viewModel.state == .submitting)
                 .accessibilityIdentifier("create-property-save")
@@ -126,6 +269,8 @@ struct CreatePropertyView: View {
                 HStack {
                     Spacer()
                     Button("Done") { focusedField = nil }
+                        .font(ValgateTypography.Body.standardEmphasis)
+                        .foregroundStyle(.valInteractivePrimary)
                 }
             }
         }
