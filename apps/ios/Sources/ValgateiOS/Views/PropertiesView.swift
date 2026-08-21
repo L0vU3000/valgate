@@ -103,39 +103,31 @@ struct PropertiesView: View {
                     NavigationLink {
                         PropertyDetailView(client: client, propertyId: property.id, sessionToken: sessionToken, onUnauthorized: onUnauthorized)
                     } label: {
-                        VStack(alignment: .leading) {
-                            Text(property.name)
-                                .font(ValgateTypography.Brand.headline)
-                            Text(property.city ?? "—")
-                                .font(ValgateTypography.Content.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
+                        propertyCell(property)
                     }
                 }
+                .listStyle(.plain)
                 .navigationTitle(me.orgName)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button {
+                        VGToolbarButton(icon: "plus") {
                             showCreateSheet = true
-                        } label: {
-                            Image(systemName: "plus")
                         }
                         .accessibilityIdentifier("properties-add-button")
                     }
                 }
                 .accessibilityIdentifier("propertiesListView")
-            case .empty:
+            case .empty(let me):
                 ContentUnavailableView(
                     "No Properties",
                     systemImage: "building.2",
                     description: Text("Your organization has no properties yet.")
                 )
+                .navigationTitle(me.orgName)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button {
+                        VGToolbarButton(icon: "plus") {
                             showCreateSheet = true
-                        } label: {
-                            Image(systemName: "plus")
                         }
                         .accessibilityIdentifier("properties-add-button")
                     }
@@ -159,6 +151,55 @@ struct PropertiesView: View {
         }
         .task {
             await viewModel.load()
+        }
+    }
+
+    // MARK: - Property List Cell
+    private func propertyCell(_ property: PropertyListItemDto) -> some View {
+        HStack(spacing: ValgateSpacing.space3) {
+            // Property thumbnail / icon
+            ZStack {
+                Circle()
+                    .fill(.valBrandSubtle)
+                    .frame(width: 40, height: 40)
+                Image(systemName: "house.fill")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(.valInteractivePrimary)
+            }
+
+            VStack(alignment: .leading, spacing: ValgateSpacing.space0_5) {
+                Text(property.name)
+                    .font(ValgateTypography.Headline.brand)
+                    .foregroundStyle(.valTextPrimary)
+                HStack(spacing: ValgateSpacing.space1) {
+                    Text(property.city ?? "—")
+                        .font(ValgateTypography.Content.subheadline)
+                        .foregroundStyle(.valTextSecondary)
+                    if let status = property.status {
+                        Text("·")
+                            .font(ValgateTypography.Content.subheadline)
+                            .foregroundStyle(.valTextTertiary)
+                        Text(status.capitalized)
+                            .font(ValgateTypography.Content.caption)
+                            .foregroundStyle(statusColor(status))
+                    }
+                }
+            }
+
+            Spacer()
+
+            // Type badge
+            VGBadge(property.type.capitalized, variant: .neutral, size: .small)
+        }
+        .padding(.vertical, ValgateSpacing.space1)
+    }
+
+    private func statusColor(_ status: String) -> Color {
+        switch status.lowercased() {
+        case "active", "rented", "occupied": return .valStatusSuccess
+        case "pending", "vacant": return .valStatusWarning
+        case "sold", "archived": return .valTextTertiary
+        default: return .valTextSecondary
         }
     }
 }

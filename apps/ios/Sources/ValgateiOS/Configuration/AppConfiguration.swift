@@ -33,19 +33,3 @@ struct AppConfiguration {
     }
 }
 
-/// Native typography roles shared by Valgate-owned iOS views.
-/// Display styles use San Francisco Rounded; reading styles retain standard San Francisco.
-enum ValgateTypography {
-    enum Brand {
-        static func heading(_ style: Font.TextStyle) -> Font {
-            .system(style, design: .rounded).bold()
-        }
-
-        static let title = heading(.title)
-        static let headline = heading(.headline)
-    }
-
-    enum Content {
-        static let subheadline = Font.system(.subheadline)
-    }
-}

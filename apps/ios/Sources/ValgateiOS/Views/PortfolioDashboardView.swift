@@ -127,15 +127,15 @@ struct PortfolioDashboardView: View {
     @ViewBuilder
     private func dashboardContent(stats: PortfolioStats) -> some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: ValgateSpacing.space5) {
                 totalCard(count: stats.totalProperties)
 
                 if !stats.byType.isEmpty {
-                    breakdownCard(title: "By Type", items: stats.byType, color: .blue)
+                    breakdownCard(title: "By Type", items: stats.byType, color: .valInteractivePrimary)
                 }
 
                 if !stats.byStatus.isEmpty {
-                    breakdownCard(title: "By Status", items: stats.byStatus, color: .green)
+                    breakdownCard(title: "By Status", items: stats.byStatus, color: .valStatusSuccess)
                 }
 
                 locationCard(cities: stats.totalCities, provinces: stats.totalProvinces)
@@ -144,119 +144,116 @@ struct PortfolioDashboardView: View {
                     recentCard(properties: stats.recentProperties)
                 }
             }
-            .padding()
+            .padding(ValgateSpacing.space4)
         }
     }
 
+    // MARK: - Total Properties Card
     private func totalCard(count: Int) -> some View {
-        VStack(spacing: 8) {
-            Text("\(count)")
-                .font(.system(size: 48, weight: .bold, design: .rounded))
-                .foregroundStyle(.primary)
-            Text(count == 1 ? "Property" : "Properties")
-                .font(ValgateTypography.Brand.headline)
-                .foregroundStyle(.secondary)
+        VGCard(variant: .elevated, padding: ValgateSpacing.space6) {
+            VStack(spacing: ValgateSpacing.space2) {
+                Text("\(count)")
+                    .font(ValgateTypography.Display.medium)
+                    .foregroundStyle(.valTextPrimary)
+                Text(count == 1 ? "Property" : "Properties")
+                    .font(ValgateTypography.Headline.brand)
+                    .foregroundStyle(.valTextSecondary)
+            }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 24)
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(16)
     }
 
+    // MARK: - Breakdown Card (Type / Status)
     private func breakdownCard(title: String, items: [(String, Int)], color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(ValgateTypography.Brand.headline)
+        VGSectionCard(title: title, variant: .default) {
+            VStack(alignment: .leading, spacing: ValgateSpacing.space3) {
+                let displayItems = Array(items.prefix(4))
+                let totalCount = items.map { $0.1 }.reduce(0, +)
+                ForEach(0..<displayItems.count, id: \.self) { index in
+                    let item = displayItems[index]
+                    let fraction = totalCount > 0 ? Double(item.1) / Double(totalCount) : 0
 
-            let displayItems = Array(items.prefix(4))
-            let totalCount = items.map { $0.1 }.reduce(0, +)
-            ForEach(0..<displayItems.count, id: \.self) { index in
-                let item = displayItems[index]
-                let label = item.0
-                let count = item.1
-                let fraction = totalCount > 0 ? Double(count) / Double(totalCount) : 0
+                    VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
+                        HStack {
+                            Text(item.0.capitalized)
+                                .font(ValgateTypography.Content.subheadline)
+                            Spacer()
+                            Text("\(item.1)")
+                                .font(ValgateTypography.Content.subheadlineEmphasis)
+                        }
+                        .foregroundStyle(.valTextPrimary)
 
-                HStack {
-                    Text(label.capitalized)
-                        .font(.subheadline)
-                    Spacer()
-                    Text("\(count)")
-                        .font(.subheadline.bold())
-                }
-
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.gray.opacity(0.15))
-                            .frame(height: 8)
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(color)
-                            .frame(width: geo.size.width * fraction, height: 8)
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: ValgateRadius.sm)
+                                    .fill(.valBorderSubtle)
+                                    .frame(height: 8)
+                                RoundedRectangle(cornerRadius: ValgateRadius.sm)
+                                    .fill(color)
+                                    .frame(width: geo.size.width * fraction, height: 8)
+                            }
+                        }
+                        .frame(height: 8)
                     }
                 }
-                .frame(height: 8)
             }
         }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(16)
     }
 
+    // MARK: - Location Card
     private func locationCard(cities: Int, provinces: Int) -> some View {
-        HStack(spacing: 16) {
+        HStack(spacing: ValgateSpacing.space4) {
             locationMetric(icon: "mappin.and.ellipse", value: cities, label: "Cities")
             locationMetric(icon: "map", value: provinces, label: "Provinces")
         }
     }
 
     private func locationMetric(icon: String, value: Int, label: String) -> some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(.blue)
-            Text("\(value)")
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-            Text(label)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        VGCard(variant: .elevated, padding: ValgateSpacing.space5) {
+            VStack(spacing: ValgateSpacing.space2) {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundStyle(.valInteractivePrimary)
+                Text("\(value)")
+                    .font(ValgateTypography.Display.small)
+                    .foregroundStyle(.valTextPrimary)
+                Text(label)
+                    .font(ValgateTypography.Content.subheadline)
+                    .foregroundStyle(.valTextSecondary)
+            }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(16)
     }
 
+    // MARK: - Recently Added Card
     private func recentCard(properties: [PropertyListItemDto]) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Recently Added")
-                .font(ValgateTypography.Brand.headline)
-
-            ForEach(properties) { property in
-                NavigationLink {
-                    PropertyDetailView(client: client, propertyId: property.id, sessionToken: sessionToken, onUnauthorized: onUnauthorized)
-                } label: {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(property.name)
-                                .font(.headline)
-                            Text([property.city, property.province].compactMap { $0 }.joined(separator: ", "))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+        VGSectionCard(title: "Recently Added", variant: .default) {
+            VStack(alignment: .leading, spacing: ValgateSpacing.space3) {
+                ForEach(properties) { property in
+                    NavigationLink {
+                        PropertyDetailView(
+                            client: client,
+                            propertyId: property.id,
+                            sessionToken: sessionToken,
+                            onUnauthorized: onUnauthorized
+                        )
+                    } label: {
+                        HStack(spacing: ValgateSpacing.space3) {
+                            VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
+                                Text(property.name)
+                                    .font(ValgateTypography.Headline.brand)
+                                    .foregroundStyle(.valTextPrimary)
+                                Text([property.city, property.province].compactMap { $0 }.joined(separator: ", "))
+                                    .font(ValgateTypography.Content.footnote)
+                                    .foregroundStyle(.valTextSecondary)
+                            }
+                            Spacer()
+                            VGBadge(property.type.capitalized, variant: .primary, size: .small)
                         }
-                        Spacer()
-                        Text(property.type.capitalized)
-                            .font(.caption.bold())
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.blue.opacity(0.15))
-                            .foregroundStyle(.blue)
-                            .cornerRadius(8)
+                        .padding(.vertical, ValgateSpacing.space1)
                     }
                 }
             }
         }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(16)
     }
 }

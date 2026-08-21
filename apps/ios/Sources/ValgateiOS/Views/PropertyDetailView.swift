@@ -67,73 +67,7 @@ struct PropertyDetailView: View {
                 ProgressView(viewModel.state == .loading ? "Loading property…" : "Deleting property…")
                     .accessibilityIdentifier("property-detail-loading")
             case .loaded(let property):
-                List {
-                    Section {
-                        LabeledContent("Name", value: property.name)
-                        LabeledContent("Type", value: property.type)
-                        LabeledContent("Status", value: property.status)
-                    }
-                    Section {
-                        LabeledContent("Address", value: property.addressLine ?? "—")
-                        LabeledContent("City", value: property.city ?? "—")
-                        LabeledContent("Province", value: property.province ?? "—")
-                        LabeledContent("Country", value: property.country ?? "—")
-                    }
-                    Section {
-                        LabeledContent("Total Area", value: property.totalArea)
-                        LabeledContent("Bedrooms", value: property.bedrooms ?? "—")
-                        LabeledContent("Bathrooms", value: property.bathrooms ?? "—")
-                        LabeledContent("Year Built", value: property.yearBuilt ?? "—")
-                    }
-                    Section {
-                        LabeledContent("Created At", value: "\(property.createdAt)")
-                        LabeledContent("ID", value: property.id)
-                    }
-                }
-                .navigationTitle(property.name)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        HStack {
-                            Button {
-                                showEditSheet = true
-                            } label: {
-                                Image(systemName: "pencil")
-                            }
-                            .accessibilityIdentifier("property-detail-edit-button")
-
-                            Button {
-                                showDeleteConfirmation = true
-                            } label: {
-                                Image(systemName: "trash")
-                            }
-                            .foregroundStyle(.red)
-                            .accessibilityIdentifier("property-detail-delete-button")
-                        }
-                    }
-                }
-                .confirmationDialog("Delete Property", isPresented: $showDeleteConfirmation) {
-                    Button("Delete", role: .destructive) {
-                        Task {
-                            await viewModel.delete()
-                        }
-                    }
-                    Button("Cancel", role: .cancel) { }
-                }
-                .sheet(isPresented: $showEditSheet) {
-                    NavigationStack {
-                        EditPropertyView(
-                            client: viewModel.client, // Need to make client public in viewModel or pass from init
-                            propertyId: viewModel.propertyId,
-                            property: property,
-                            sessionToken: viewModel.sessionToken,
-                            onUnauthorized: viewModel.onUnauthorized,
-                            onUpdated: {
-                                Task { await viewModel.load() }
-                            }
-                        )
-                    }
-                }
-                .accessibilityIdentifier("property-detail-loaded")
+                propertyContent(property: property)
             case .deleted:
                 EmptyView()
             case .unauthorized:
@@ -155,5 +89,137 @@ struct PropertyDetailView: View {
         .task {
             await viewModel.load()
         }
+    }
+
+    // MARK: - Loaded Content
+    @ViewBuilder
+    private func propertyContent(property: PropertyDto) -> some View {
+        List {
+            // MARK: Hero Card
+            VGCard(variant: .elevated, padding: ValgateSpacing.space4) {
+                VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
+                    HStack {
+                        VGStatusBadge(status: property.status)
+                        Spacer()
+                        VGIconButton(icon: "pencil", variant: .ghost) {
+                            showEditSheet = true
+                        }
+                    }
+
+                    Text(property.name)
+                        .font(ValgateTypography.Headline.title1)
+                        .foregroundStyle(.valTextPrimary)
+
+                    if let city = property.city, let province = property.province {
+                        Label("\(city), \(province)", systemImage: "mappin")
+                            .font(ValgateTypography.Content.subheadline)
+                            .foregroundStyle(.valTextSecondary)
+                    }
+                }
+            }
+            .listRowInsets(EdgeInsets(top: ValgateSpacing.space2, leading: ValgateSpacing.space4, bottom: ValgateSpacing.space2, trailing: ValgateSpacing.space4))
+            .listRowSeparator(.hidden)
+
+            // MARK: Property Info
+            Section {
+                detailRow(icon: "building.2", label: "Type", value: property.type)
+                detailRow(icon: "tag", label: "Status", value: property.status)
+            }
+            .listRowBackground(Color.valSurfaceBase)
+
+            // MARK: Location
+            Section("Location") {
+                detailRow(icon: "house", label: "Address", value: property.addressLine ?? "—")
+                detailRow(icon: "mappin", label: "City", value: property.city ?? "—")
+                detailRow(icon: "map", label: "Province", value: property.province ?? "—")
+                detailRow(icon: "globe", label: "Country", value: property.country ?? "—")
+            }
+            .listRowBackground(Color.valSurfaceBase)
+
+            // MARK: Details
+            Section("Details") {
+                detailRow(icon: "ruler", label: "Total Area", value: property.totalArea)
+                detailRow(icon: "bed.double", label: "Bedrooms", value: property.bedrooms ?? "—")
+                detailRow(icon: "drop", label: "Bathrooms", value: property.bathrooms ?? "—")
+                detailRow(icon: "calendar", label: "Year Built", value: property.yearBuilt ?? "—")
+            }
+            .listRowBackground(Color.valSurfaceBase)
+
+            // MARK: Metadata
+            Section("Metadata") {
+                detailRow(icon: "clock", label: "Created", value: "\(property.createdAt)")
+                detailRow(icon: "number", label: "ID", value: property.id)
+            }
+            .listRowBackground(Color.valSurfaceBase)
+
+            // MARK: Delete
+            Section {
+                VGButton("Delete Property", icon: "trash", variant: .destructive, size: .standard) {
+                    showDeleteConfirmation = true
+                }
+                .listRowBackground(Color.clear)
+            }
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle(property.name)
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                HStack(spacing: ValgateSpacing.space2) {
+                    VGIconButton(icon: "pencil", variant: .ghost) {
+                        showEditSheet = true
+                    }
+                    .accessibilityIdentifier("property-detail-edit-button")
+
+                    VGIconButton(icon: "trash", variant: .ghost) {
+                        showDeleteConfirmation = true
+                    }
+                    .foregroundStyle(.valStatusDanger)
+                    .accessibilityIdentifier("property-detail-delete-button")
+                }
+            }
+        }
+        .confirmationDialog("Delete Property", isPresented: $showDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                Task { await viewModel.delete() }
+            }
+            Button("Cancel", role: .cancel) { }
+        }
+        .sheet(isPresented: $showEditSheet) {
+            NavigationStack {
+                EditPropertyView(
+                    client: viewModel.client,
+                    propertyId: viewModel.propertyId,
+                    property: property,
+                    sessionToken: viewModel.sessionToken,
+                    onUnauthorized: viewModel.onUnauthorized,
+                    onUpdated: {
+                        Task { await viewModel.load() }
+                    }
+                )
+            }
+        }
+        .accessibilityIdentifier("property-detail-loaded")
+    }
+
+    // MARK: - Detail Row
+    private func detailRow(icon: String, label: String, value: String) -> some View {
+        HStack(spacing: ValgateSpacing.space3) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundStyle(.valTextTertiary)
+                .frame(width: 20)
+
+            Text(label)
+                .font(ValgateTypography.Body.standard)
+                .foregroundStyle(.valTextSecondary)
+
+            Spacer()
+
+            Text(value)
+                .font(ValgateTypography.Body.standardEmphasis)
+                .foregroundStyle(.valTextPrimary)
+        }
+        .padding(.vertical, ValgateSpacing.space1)
     }
 }
