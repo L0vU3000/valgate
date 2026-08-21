@@ -38,6 +38,16 @@ final class HomeViewModel: ObservableObject {
             state = .error("Something went wrong. Please check your connection and try again.")
         }
     }
+
+    var portfolioStats: PortfolioStatsDto? {
+        guard case .loaded(let items) = state else { return nil }
+        return PortfolioStatsDto(
+            totalProperties: items.count,
+            activeCount: items.filter { $0.status.lowercased() == "active" || $0.status.lowercased() == "rented" }.count,
+            pendingCount: items.filter { $0.status.lowercased() == "pending" }.count,
+            vacantCount: items.filter { $0.status.lowercased() == "vacant" }.count
+        )
+    }
 }
 
 struct HomeView: View {
@@ -57,59 +67,45 @@ struct HomeView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                // Always show map underneath
+        Group {
+            switch viewModel.state {
+            case .loading:
+                MapLoadingView()
+            case .loaded(let properties), .empty:
                 PropertyMapView(
                     properties: loadedProperties,
+                    portfolioStats: viewModel.portfolioStats,
                     onSelect: { property in
                         // TODO: Navigate to property detail
                     },
                     onAddProperty: {
                         // TODO: Show add property sheet
+                    },
+                    onSearch: {
+                        // TODO: Show search/command palette
+                    },
+                    onPortfolio: {
+                        // TODO: Navigate to portfolio
+                    },
+                    onDocuments: {
+                        // TODO: Navigate to documents
+                    },
+                    onRental: {
+                        // TODO: Navigate to rental
                     }
                 )
-                .opacity(mapOpacity)
-
-                // Overlay states
-                switch viewModel.state {
-                case .loading:
-                    ProgressView("Loading...")
-                        .background(.ultraThinMaterial)
-                        .cornerRadius(8)
-                case .empty:
-                    VStack(spacing: 12) {
-                        Image(systemName: "building.2")
-                            .font(.largeTitle)
-                            .foregroundStyle(.secondary)
-                        Text("No Properties Yet")
-                            .font(.headline)
-                        Text("Add your first property to see it on the map.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Button("Add Property") {
-                            // TODO: Show add property sheet
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                    .padding(24)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(16)
-                case .unauthorized:
-                    ContentUnavailableView(
-                        "Session Expired",
-                        systemImage: "lock",
-                        description: Text("Please sign in again.")
-                    )
-                case .error(let message):
-                    ContentUnavailableView(
-                        "Error",
-                        systemImage: "exclamationmark.triangle",
-                        description: Text(message)
-                    )
-                case .loaded:
-                    EmptyView()
-                }
+            case .unauthorized:
+                ContentUnavailableView(
+                    "Session Expired",
+                    systemImage: "lock",
+                    description: Text("Please sign in again.")
+                )
+            case .error(let message):
+                ContentUnavailableView(
+                    "Error",
+                    systemImage: "exclamationmark.triangle",
+                    description: Text(message)
+                )
             }
         }
         .task {
@@ -126,13 +122,50 @@ struct HomeView: View {
         }
         return []
     }
+}
 
-    private var mapOpacity: Double {
-        switch viewModel.state {
-        case .loaded:
-            return 1.0
-        default:
-            return 0.4 // Dim map when loading/empty/error
+struct MapLoadingView: View {
+    var body: some View {
+        ZStack {
+            // Gray placeholder map background
+            Color(.systemGray6)
+                .overlay(
+                    Image(systemName: "map.fill")
+                        .font(.system(size: 60))
+                        .foregroundStyle(.secondary.opacity(0.3))
+                )
+
+            VStack(spacing: 16) {
+                ProgressView()
+                    .scaleEffect(1.2)
+
+                HStack(spacing: 8) {
+                    Image(systemName: "map")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(.blue)
+                    Text("Loading map…")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+
+                // Loading bar
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(.secondary.opacity(0.15))
+                            .frame(height: 4)
+
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(.blue)
+                            .frame(width: geo.size.width * 0.6, height: 4)
+                            .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: true)
+                    }
+                }
+                .frame(width: 180, height: 4)
+            }
+            .padding(24)
+            .background(.ultraThinMaterial)
+            .cornerRadius(16)
         }
     }
 }
