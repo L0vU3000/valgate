@@ -66,70 +66,85 @@ struct HomeView: View {
         )
     }
 
+    @State private var navigationDestination: HomeNavigationDestination?
+
     var body: some View {
-        Group {
-            switch viewModel.state {
-            case .loading:
-                MapLoadingView()
-            case .loaded(let properties):
-                PropertyMapView(
-                    properties: properties,
-                    portfolioStats: viewModel.portfolioStats,
-                    onSelect: { property in
-                        // TODO: Navigate to property detail
-                    },
-                    onAddProperty: {
-                        // TODO: Show add property sheet
-                    },
-                    onSearch: {
-                        // TODO: Show search/command palette
-                    },
-                    onPortfolio: {
-                        // TODO: Navigate to portfolio
-                    },
-                    onDocuments: {
-                        // TODO: Navigate to documents
-                    },
-                    onRental: {
-                        // TODO: Navigate to rental
-                    }
-                )
-            case .empty:
-                PropertyMapView(
-                    properties: [],
-                    portfolioStats: viewModel.portfolioStats,
-                    onSelect: { _ in },
-                    onAddProperty: {},
-                    onSearch: {},
-                    onPortfolio: {},
-                    onDocuments: {},
-                    onRental: {}
-                )
-            case .unauthorized:
-                ContentUnavailableView(
-                    "Session Expired",
-                    systemImage: "lock",
-                    description: Text("Please sign in again.")
-                        .font(ValgateTypography.Content.subheadline)
-                        .foregroundStyle(Color.valTextSecondary)
-                )
-                .background(Color.valSurfacePage)
-            case .error(let message):
-                ContentUnavailableView(
-                    "Error",
-                    systemImage: "exclamationmark.triangle",
-                    description: Text(message)
-                        .font(ValgateTypography.Content.subheadline)
-                        .foregroundStyle(Color.valTextSecondary)
-                )
-                .background(Color.valSurfacePage)
+        NavigationStack {
+            Group {
+                switch viewModel.state {
+                case .loading:
+                    MapLoadingView()
+                case .loaded(let properties):
+                    PropertyMapView(
+                        properties: properties,
+                        portfolioStats: viewModel.portfolioStats,
+                        onSelect: { property in
+                            navigationDestination = HomeNavigationResolver.resolve(property: property)
+                        },
+                        onAddProperty: {
+                            // TODO: Show add property sheet
+                        },
+                        onSearch: {
+                            // TODO: Show search/command palette
+                        },
+                        onPortfolio: {
+                            // TODO: Navigate to portfolio
+                        },
+                        onDocuments: {
+                            // TODO: Navigate to documents
+                        },
+                        onRental: {
+                            // TODO: Navigate to rental
+                        }
+                    )
+                case .empty:
+                    PropertyMapView(
+                        properties: [],
+                        portfolioStats: viewModel.portfolioStats,
+                        onSelect: { _ in },
+                        onAddProperty: {},
+                        onSearch: {},
+                        onPortfolio: {},
+                        onDocuments: {},
+                        onRental: {}
+                    )
+                case .unauthorized:
+                    ContentUnavailableView(
+                        "Session Expired",
+                        systemImage: "lock",
+                        description: Text("Please sign in again.")
+                            .font(ValgateTypography.Content.subheadline)
+                            .foregroundStyle(Color.valTextSecondary)
+                    )
+                    .background(Color.valSurfacePage)
+                case .error(let message):
+                    ContentUnavailableView(
+                        "Error",
+                        systemImage: "exclamationmark.triangle",
+                        description: Text(message)
+                            .font(ValgateTypography.Content.subheadline)
+                            .foregroundStyle(Color.valTextSecondary)
+                    )
+                    .background(Color.valSurfacePage)
+                }
             }
-        }
-        .task {
-            await viewModel.load()
-        }
-        .refreshable {
-            await viewModel.load()
+            .navigationDestination(item: $navigationDestination) { destination in
+                switch destination {
+                case .propertyDetail(let id):
+                    PropertyDetailView(
+                        client: client,
+                        propertyId: id,
+                        sessionToken: sessionToken,
+                        onUnauthorized: onUnauthorized
+                    )
+                }
+            }
+            .task {
+                await viewModel.load()
+            }
+            .refreshable {
+                await viewModel.load()
+            }
         }
     }
 }
