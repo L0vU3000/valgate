@@ -97,6 +97,8 @@ describe("toPropertyListItemDto", () => {
       city: "Manila",
       province: "Metro Manila",
       createdAt: 1700000000000,
+      lat: 14.5995,
+      lng: 120.9842,
     });
   });
 });

@@ -70,11 +70,12 @@ jobs:
         env:
           # Neon DEV branch — required by lib/env.ts and test suite.
           # Configure in: repo Settings → Secrets → DATABASE_URL
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://localhost:5432/test' }}
           # Staging demo mode for CI (no real Clerk keys needed)
           STAGING_DEMO_MODE: true
           DEMO_MODE: true
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.test_token' }}
 
   # ── iOS gates ────────────────────────────────────────────────────────
   ios-build-and-test:
