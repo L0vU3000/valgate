@@ -10,6 +10,8 @@ final class PropertiesLoadStateResolverTests: XCTestCase {
         status: "active",
         city: "Cape Town",
         province: "Western Cape",
+        lat: -33.9249,
+        lng: 18.4241,
         createdAt: 1700000000000
     )
 
@@ -23,7 +25,8 @@ final class PropertiesLoadStateResolverTests: XCTestCase {
         }
         XCTAssertEqual(resultMe.email, me.email)
         XCTAssertEqual(resultMe.orgName, me.orgName)
-        XCTAssertEqual(properties, [item])
+        XCTAssertEqual(properties.count, 1)
+        XCTAssertEqual(properties.first, item)
     }
 
     func test_successWithEmptyItems_yieldsEmpty() {

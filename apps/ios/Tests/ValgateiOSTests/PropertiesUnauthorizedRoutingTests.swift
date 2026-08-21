@@ -120,7 +120,7 @@ final class PropertiesUnauthorizedRoutingTests: XCTestCase {
     func test_loadedList_doesNotFireCallback() async {
         let propertiesJSON = """
         {"items":[{"id":"prop_1","name":"Lakeview House","type":"residential","status":"active",\
-        "city":"Cape Town","province":"Western Cape","createdAt":1705312800000}],"nextCursor":null}
+        "city":"Cape Town","province":"Western Cape","lat":-33.9249,"lng":18.4241,"createdAt":1705312800000}],"nextCursor":null}
         """.data(using: .utf8)!
         StubProtocol.handler = { [meJSON] request in
             request.url?.path.hasSuffix("/me") == true

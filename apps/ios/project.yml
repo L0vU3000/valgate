@@ -20,7 +20,12 @@ targets:
     type: application
     platform: iOS
     sources:
-      - path: Sources/ValgateiOS
+      - path: Sources/ValgateiOS/App
+      - path: Sources/ValgateiOS/Configuration
+      - path: Sources/ValgateiOS/DesignSystem
+      - path: Sources/ValgateiOS/Models
+      - path: Sources/ValgateiOS/Networking
+      - path: Sources/ValgateiOS/Views
     info:
       path: Sources/ValgateiOS/Info.plist
       properties:
