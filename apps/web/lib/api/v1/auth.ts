@@ -33,9 +33,8 @@ export async function resolveApiV1Ctx(): Promise<ApiV1AuthResult> {
   let ctx: Ctx;
   try {
     // Reads: no requestedOrgId/requireExplicitOrg -> primary-org default, same as /mcp reads.
-    // provisionIfMissing: false -> an unknown user is a plain auth failure here, never a JIT
-    // provisioning write (that side effect is /mcp-only; see mcp-server/ctxFor.ts).
-    ctx = await ctxFromMcpAuth(clerkUserId, { provisionIfMissing: false });
+    // provisionIfMissing: true -> allow iOS and other clients to bootstrap on first API call.
+    ctx = await ctxFromMcpAuth(clerkUserId, { provisionIfMissing: true });
   } catch {
     // Never leak *why* (unknown user, no membership, …) — same generic 401 either way.
     logger.info("api-v1-auth: identity-resolution-failed");
