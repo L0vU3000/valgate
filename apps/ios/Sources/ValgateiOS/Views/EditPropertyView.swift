@@ -99,16 +99,16 @@ struct EditPropertyView: View {
                 LabeledContent {
                     TextField("Property Name", text: $viewModel.name)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "building.2")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Name")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
@@ -119,11 +119,11 @@ struct EditPropertyView: View {
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "square.grid.2x2")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Type")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
@@ -134,17 +134,17 @@ struct EditPropertyView: View {
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "checkmark.shield")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Status")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
             } header: {
                 Text("General Information")
                     .font(ValgateTypography.Content.label)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
                     .textCase(.uppercase)
             }
 
@@ -153,70 +153,70 @@ struct EditPropertyView: View {
                 LabeledContent {
                     TextField("City", text: $viewModel.city)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "mappin.and.ellipse")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("City")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
                 LabeledContent {
                     TextField("Province", text: $viewModel.province)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "map")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Province")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
                 LabeledContent {
                     TextField("Country", text: $viewModel.country)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "globe")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Country")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
                 LabeledContent {
                     TextField("Address", text: $viewModel.addressLine)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "location.fill")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Address")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
             } header: {
                 Text("Location")
                     .font(ValgateTypography.Content.label)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
                     .textCase(.uppercase)
             }
 
@@ -225,81 +225,81 @@ struct EditPropertyView: View {
                 LabeledContent {
                     TextField("Total Area", text: $viewModel.totalArea)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "ruler")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Total Area")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
                 LabeledContent {
                     TextField("Year Built", text: $viewModel.yearBuilt)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "calendar")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Year Built")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
                 LabeledContent {
                     TextField("Bedrooms", text: $viewModel.bedrooms)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "bed.double")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Bedrooms")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
                 LabeledContent {
                     TextField("Bathrooms", text: $viewModel.bathrooms)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "shower")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Bathrooms")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
             } header: {
                 Text("Details")
                     .font(ValgateTypography.Content.label)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
                     .textCase(.uppercase)
             }
         }
         .navigationTitle("Edit Property")
         .navigationBarTitleDisplayMode(.large)
-        .background(.valSurfacePage)
+        .background(Color.valSurfacePage)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") { dismiss() }
                     .font(ValgateTypography.Body.standardEmphasis)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
             }
             ToolbarItem(placement: .confirmationAction) {
                 if case .saving = viewModel.state {

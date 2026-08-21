@@ -93,7 +93,7 @@ struct PropertyDetailView: View {
 
     // MARK: - Loaded Content
     @ViewBuilder
-    private func propertyContent(property: PropertyDto) -> some View {
+    private func propertyContent(property: PropertyDetailDto) -> some View {
         List {
             // MARK: Hero Card
             VGCard(variant: .elevated, padding: ValgateSpacing.space4) {
@@ -108,12 +108,12 @@ struct PropertyDetailView: View {
 
                     Text(property.name)
                         .font(ValgateTypography.Headline.title1)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
 
                     if let city = property.city, let province = property.province {
                         Label("\(city), \(province)", systemImage: "mappin")
                             .font(ValgateTypography.Content.subheadline)
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                     }
                 }
             }
@@ -174,7 +174,7 @@ struct PropertyDetailView: View {
                     VGIconButton(icon: "trash", variant: .ghost) {
                         showDeleteConfirmation = true
                     }
-                    .foregroundStyle(.valStatusDanger)
+                    .foregroundStyle(Color.valStatusDanger)
                     .accessibilityIdentifier("property-detail-delete-button")
                 }
             }
@@ -207,18 +207,18 @@ struct PropertyDetailView: View {
         HStack(spacing: ValgateSpacing.space3) {
             Image(systemName: icon)
                 .font(.system(size: 14))
-                .foregroundStyle(.valTextTertiary)
+                .foregroundStyle(Color.valTextTertiary)
                 .frame(width: 20)
 
             Text(label)
                 .font(ValgateTypography.Body.standard)
-                .foregroundStyle(.valTextSecondary)
+                .foregroundStyle(Color.valTextSecondary)
 
             Spacer()
 
             Text(value)
                 .font(ValgateTypography.Body.standardEmphasis)
-                .foregroundStyle(.valTextPrimary)
+                .foregroundStyle(Color.valTextPrimary)
         }
         .padding(.vertical, ValgateSpacing.space1)
     }

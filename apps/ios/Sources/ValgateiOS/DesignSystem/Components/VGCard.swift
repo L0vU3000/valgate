@@ -118,7 +118,7 @@ struct VGSectionCard<Content: View>: View {
             if let title = title {
                 Text(title.uppercased())
                     .font(ValgateTypography.Content.label)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
                     .padding(.horizontal, ValgateSpacing.space4)
             }
             VGCard(variant: variant) {

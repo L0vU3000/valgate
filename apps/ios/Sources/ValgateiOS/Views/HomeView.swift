@@ -111,18 +111,18 @@ struct HomeView: View {
                     systemImage: "lock",
                     description: Text("Please sign in again.")
                         .font(ValgateTypography.Content.subheadline)
-                        .foregroundStyle(.valTextSecondary)
+                        .foregroundStyle(Color.valTextSecondary)
                 )
-                .background(.valSurfacePage)
+                .background(Color.valSurfacePage)
             case .error(let message):
                 ContentUnavailableView(
                     "Error",
                     systemImage: "exclamationmark.triangle",
                     description: Text(message)
                         .font(ValgateTypography.Content.subheadline)
-                        .foregroundStyle(.valTextSecondary)
+                        .foregroundStyle(Color.valTextSecondary)
                 )
-                .background(.valSurfacePage)
+                .background(Color.valSurfacePage)
             }
         }
         .task {
@@ -141,32 +141,32 @@ struct MapLoadingView: View {
                 .overlay(
                     Image(systemName: "map.fill")
                         .font(.system(size: 60))
-                        .foregroundStyle(.valTextSecondary.opacity(0.3))
+                        .foregroundStyle(Color.valTextSecondary.opacity(0.3))
                 )
 
             VStack(spacing: ValgateSpacing.space4) {
                 ProgressView()
                     .scaleEffect(1.2)
-                    .tint(.valInteractivePrimary)
+                    .tint(Color.valInteractivePrimary)
 
                 HStack(spacing: ValgateSpacing.space2) {
                     Image(systemName: "map")
                         .font(ValgateTypography.Content.subheadlineEmphasis)
-                        .foregroundStyle(.valInteractivePrimary)
+                        .foregroundStyle(Color.valInteractivePrimary)
                     Text("Loading map…")
                         .font(ValgateTypography.Content.subheadlineEmphasis)
-                        .foregroundStyle(.valTextSecondary)
+                        .foregroundStyle(Color.valTextSecondary)
                 }
 
                 // Loading bar
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: ValgateRadius.sm)
-                            .fill(.valBorderSubtle.opacity(0.15))
+                            .fill(Color.valBorderSubtle.opacity(0.15))
                             .frame(height: 4)
 
                         RoundedRectangle(cornerRadius: ValgateRadius.sm)
-                            .fill(.valInteractivePrimary)
+                            .fill(Color.valInteractivePrimary)
                             .frame(width: geo.size.width * 0.6, height: 4)
                             .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: true)
                     }

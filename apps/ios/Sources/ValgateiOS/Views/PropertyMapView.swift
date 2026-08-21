@@ -46,11 +46,11 @@ struct PropertyMapView: View {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 17, weight: .medium))
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
 
                         Text("Search properties, documents, tenants...")
                             .font(ValgateTypography.Body.standard)
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
 
                         Spacer()
 
@@ -60,7 +60,7 @@ struct PropertyMapView: View {
                             Text("K")
                                 .font(ValgateTypography.Content.caption)
                         }
-                        .foregroundStyle(.valTextSecondary)
+                        .foregroundStyle(Color.valTextSecondary)
                         .padding(.horizontal, ValgateSpacing.space1)
                         .padding(.vertical, ValgateSpacing.space0_5)
                         .background(.regularMaterial)
@@ -72,7 +72,7 @@ struct PropertyMapView: View {
                     .cornerRadius(ValgateRadius.lg)
                     .overlay(
                         RoundedRectangle(cornerRadius: ValgateRadius.lg)
-                            .stroke(.valBorderSubtle.opacity(0.15), lineWidth: 1)
+                            .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
                     )
                 }
                 .buttonStyle(.plain)
@@ -199,7 +199,7 @@ struct PropertyPin: View {
 
                     Image(systemName: "building.2.fill")
                         .font(.system(size: isSelected ? 18 : 14, weight: .semibold))
-                        .foregroundStyle(.valTextInverse)
+                        .foregroundStyle(Color.valTextInverse)
                 }
 
                 Triangle()
@@ -250,14 +250,14 @@ struct QuickActionChip: View {
                 Text(label)
                     .font(ValgateTypography.Content.subheadlineEmphasis)
             }
-            .foregroundStyle(.valTextPrimary)
+            .foregroundStyle(Color.valTextPrimary)
             .padding(.horizontal, ValgateSpacing.space3)
             .padding(.vertical, ValgateSpacing.space2)
             .background(.ultraThinMaterial)
             .cornerRadius(ValgateRadius.pill)
             .overlay(
                 RoundedRectangle(cornerRadius: ValgateRadius.pill)
-                    .stroke(.valBorderSubtle.opacity(0.15), lineWidth: 1)
+                    .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -276,7 +276,7 @@ struct MapControlButton: View {
             .cornerRadius(ValgateRadius.md)
             .overlay(
                 RoundedRectangle(cornerRadius: ValgateRadius.md)
-                    .stroke(.valBorderSubtle.opacity(0.15), lineWidth: 1)
+                    .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
             )
     }
 }
@@ -308,7 +308,7 @@ struct PortfolioLegend: View {
         .cornerRadius(ValgateRadius.lg)
         .overlay(
             RoundedRectangle(cornerRadius: ValgateRadius.lg)
-                .stroke(.valBorderSubtle.opacity(0.15), lineWidth: 1)
+                .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
         )
     }
 }
@@ -346,12 +346,12 @@ struct PropertyDetailSheet: View {
                                 VGStatusBadge(status: property.status)
                                 Spacer()
                                 VGIconButton(icon: "pencil", variant: .ghost, size: 32, action: onEdit)
-                                    .foregroundStyle(.valTextInverse)
+                                    .foregroundStyle(Color.valTextInverse)
                             }
 
                             Text(property.name)
                                 .font(ValgateTypography.Headline.title2)
-                                .foregroundStyle(.valTextInverse)
+                                .foregroundStyle(Color.valTextInverse)
 
                             if let city = property.city, let province = property.province {
                                 HStack(spacing: ValgateSpacing.space1) {
@@ -360,7 +360,7 @@ struct PropertyDetailSheet: View {
                                     Text("\(city), \(province)")
                                         .font(ValgateTypography.Content.subheadline)
                                 }
-                                .foregroundStyle(.valTextInverse.opacity(0.7))
+                                .foregroundStyle(Color.valTextInverse.opacity(0.7))
                             }
                         }
                         .padding(ValgateSpacing.space4)
@@ -371,28 +371,28 @@ struct PropertyDetailSheet: View {
                         HStack {
                             Text("PROGRESS")
                                 .font(ValgateTypography.Content.label)
-                                .foregroundStyle(.valTextSecondary)
+                                .foregroundStyle(Color.valTextSecondary)
                             Spacer()
                             Text("0%")
                                 .font(ValgateTypography.Body.standardEmphasis)
-                                .foregroundStyle(.valInteractivePrimary)
+                                .foregroundStyle(Color.valInteractivePrimary)
                         }
 
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
                                 RoundedRectangle(cornerRadius: ValgateRadius.sm)
-                                    .fill(.valBorderSubtle.opacity(0.15))
+                                    .fill(Color.valBorderSubtle.opacity(0.15))
                                     .frame(height: 6)
 
                                 RoundedRectangle(cornerRadius: ValgateRadius.sm)
-                                    .fill(.valInteractivePrimary)
+                                    .fill(Color.valInteractivePrimary)
                                     .frame(width: 0, height: 6)
                             }
                         }
                         .frame(height: 6)
                     }
                     .padding(ValgateSpacing.space4)
-                    .background(.valSurfaceBase)
+                    .background(Color.valSurfaceBase)
 
                     Divider()
 
@@ -416,7 +416,7 @@ struct PropertyDetailSheet: View {
                     .padding(ValgateSpacing.space4)
                 }
             }
-            .background(.valSurfacePage)
+            .background(Color.valSurfacePage)
             .navigationTitle("Property Details")
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -433,7 +433,7 @@ struct DetailSection<Content: View>: View {
         VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
             Text(title.uppercased())
                 .font(ValgateTypography.Content.label)
-                .foregroundStyle(.valTextSecondary)
+                .foregroundStyle(Color.valTextSecondary)
             content
         }
     }
@@ -448,16 +448,16 @@ struct LabeledDetailRow: View {
         LabeledContent {
             Text(value)
                 .font(ValgateTypography.Body.standardEmphasis)
-                .foregroundStyle(.valTextPrimary)
+                .foregroundStyle(Color.valTextPrimary)
         } label: {
             HStack(spacing: ValgateSpacing.space2) {
                 Image(systemName: icon)
                     .font(.system(size: 14))
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
                     .frame(width: 20)
                 Text(label)
                     .font(ValgateTypography.Body.standard)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
             }
         }
     }
@@ -484,19 +484,19 @@ struct PropertyListSheet: View {
                         VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
                             Text(property.name)
                                 .font(ValgateTypography.Headline.title3)
-                                .foregroundStyle(.valTextPrimary)
+                                .foregroundStyle(Color.valTextPrimary)
 
                             HStack(spacing: ValgateSpacing.space2) {
                                 Text(property.type)
                                     .font(ValgateTypography.Content.subheadline)
-                                    .foregroundStyle(.valTextSecondary)
+                                    .foregroundStyle(Color.valTextSecondary)
 
                                 if let city = property.city {
                                     Text("·")
-                                        .foregroundStyle(.valTextSecondary)
+                                        .foregroundStyle(Color.valTextSecondary)
                                     Text(city)
                                         .font(ValgateTypography.Content.subheadline)
-                                        .foregroundStyle(.valTextSecondary)
+                                        .foregroundStyle(Color.valTextSecondary)
                                 }
                             }
                         }

@@ -117,7 +117,7 @@ struct VGGlassFloatingButton: View {
         Button(action: action) {
             Image(systemName: icon)
                 .font(.system(size: 22, weight: .semibold))
-                .foregroundStyle(.valInteractivePrimaryText)
+                .foregroundStyle(Color.valInteractivePrimaryText)
                 .frame(width: 56, height: 56)
                 .background(
                     ZStack {

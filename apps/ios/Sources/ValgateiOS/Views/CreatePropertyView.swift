@@ -60,18 +60,18 @@ struct CreatePropertyView: View {
                 LabeledContent {
                     TextField("Property Name", text: $form.name)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                         .accessibilityIdentifier("create-property-name")
                         .focused($focusedField, equals: .name)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "building.2")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Name")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
@@ -82,11 +82,11 @@ struct CreatePropertyView: View {
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "square.grid.2x2")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Type")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
                 .accessibilityIdentifier("create-property-type")
@@ -98,18 +98,18 @@ struct CreatePropertyView: View {
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "checkmark.shield")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Status")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
                 .accessibilityIdentifier("create-property-status")
             } header: {
                 Text("Basic Info")
                     .font(ValgateTypography.Content.label)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
                     .textCase(.uppercase)
             }
 
@@ -118,36 +118,36 @@ struct CreatePropertyView: View {
                 LabeledContent {
                     TextField("City", text: $form.city)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                         .accessibilityIdentifier("create-property-city")
                         .focused($focusedField, equals: .city)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "mappin.and.ellipse")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("City")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
                 LabeledContent {
                     TextField("Province", text: $form.province)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                         .accessibilityIdentifier("create-property-province")
                         .focused($focusedField, equals: .province)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "map")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Province")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
@@ -156,18 +156,18 @@ struct CreatePropertyView: View {
                         TextField("Latitude", value: $form.lat, format: .number)
                             .keyboardType(.decimalPad)
                             .font(ValgateTypography.Body.standard)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                             .multilineTextAlignment(.trailing)
                             .accessibilityIdentifier("create-property-lat")
                             .focused($focusedField, equals: .lat)
                     } label: {
                         HStack(spacing: ValgateSpacing.space2) {
                             Image(systemName: "location.north")
-                                .foregroundStyle(.valTextSecondary)
+                                .foregroundStyle(Color.valTextSecondary)
                                 .font(.system(size: 14))
                             Text("Lat")
                                 .font(ValgateTypography.Body.standardEmphasis)
-                                .foregroundStyle(.valTextPrimary)
+                                .foregroundStyle(Color.valTextPrimary)
                         }
                     }
 
@@ -178,25 +178,25 @@ struct CreatePropertyView: View {
                         TextField("Longitude", value: $form.lng, format: .number)
                             .keyboardType(.decimalPad)
                             .font(ValgateTypography.Body.standard)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                             .multilineTextAlignment(.trailing)
                             .accessibilityIdentifier("create-property-lng")
                             .focused($focusedField, equals: .lng)
                     } label: {
                         HStack(spacing: ValgateSpacing.space2) {
                             Image(systemName: "location")
-                                .foregroundStyle(.valTextSecondary)
+                                .foregroundStyle(Color.valTextSecondary)
                                 .font(.system(size: 14))
                             Text("Lng")
                                 .font(ValgateTypography.Body.standardEmphasis)
-                                .foregroundStyle(.valTextPrimary)
+                                .foregroundStyle(Color.valTextPrimary)
                         }
                     }
                 }
             } header: {
                 Text("Location")
                     .font(ValgateTypography.Content.label)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
                     .textCase(.uppercase)
             }
 
@@ -205,18 +205,18 @@ struct CreatePropertyView: View {
                 LabeledContent {
                     TextField("Total Area", text: $form.totalArea)
                         .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
                         .multilineTextAlignment(.trailing)
                         .accessibilityIdentifier("create-property-area")
                         .focused($focusedField, equals: .totalArea)
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "ruler")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Total Area")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
 
@@ -227,18 +227,18 @@ struct CreatePropertyView: View {
                 } label: {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "doc.text")
-                            .foregroundStyle(.valTextSecondary)
+                            .foregroundStyle(Color.valTextSecondary)
                             .font(.system(size: 14))
                         Text("Title")
                             .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(.valTextPrimary)
+                            .foregroundStyle(Color.valTextPrimary)
                     }
                 }
                 .accessibilityIdentifier("create-property-title")
             } header: {
                 Text("Details")
                     .font(ValgateTypography.Content.label)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
                     .textCase(.uppercase)
             }
 
@@ -256,7 +256,7 @@ struct CreatePropertyView: View {
         }
         .navigationTitle("Add Property")
         .navigationBarTitleDisplayMode(.large)
-        .background(.valSurfacePage)
+        .background(Color.valSurfacePage)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 VGToolbarButton(icon: "checkmark") {
@@ -270,7 +270,7 @@ struct CreatePropertyView: View {
                     Spacer()
                     Button("Done") { focusedField = nil }
                         .font(ValgateTypography.Body.standardEmphasis)
-                        .foregroundStyle(.valInteractivePrimary)
+                        .foregroundStyle(Color.valInteractivePrimary)
                 }
             }
         }

@@ -7,9 +7,9 @@ struct ConfigurationMissingView: View {
             systemImage: "gearshape.2",
             description: Text("The API base URL is missing or invalid. This build cannot reach the Valgate API.")
                 .font(ValgateTypography.Content.subheadline)
-                .foregroundStyle(.valTextSecondary)
+                .foregroundStyle(Color.valTextSecondary)
         )
-        .background(.valSurfacePage)
+        .background(Color.valSurfacePage)
         .accessibilityIdentifier("configurationMissingView")
     }
 }

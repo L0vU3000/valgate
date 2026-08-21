@@ -154,10 +154,10 @@ struct PortfolioDashboardView: View {
             VStack(spacing: ValgateSpacing.space2) {
                 Text("\(count)")
                     .font(ValgateTypography.Display.medium)
-                    .foregroundStyle(.valTextPrimary)
+                    .foregroundStyle(Color.valTextPrimary)
                 Text(count == 1 ? "Property" : "Properties")
                     .font(ValgateTypography.Headline.brand)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
             }
             .frame(maxWidth: .infinity)
         }
@@ -181,12 +181,12 @@ struct PortfolioDashboardView: View {
                             Text("\(item.1)")
                                 .font(ValgateTypography.Content.subheadlineEmphasis)
                         }
-                        .foregroundStyle(.valTextPrimary)
+                        .foregroundStyle(Color.valTextPrimary)
 
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
                                 RoundedRectangle(cornerRadius: ValgateRadius.sm)
-                                    .fill(.valBorderSubtle)
+                                    .fill(Color.valBorderSubtle)
                                     .frame(height: 8)
                                 RoundedRectangle(cornerRadius: ValgateRadius.sm)
                                     .fill(color)
@@ -213,13 +213,13 @@ struct PortfolioDashboardView: View {
             VStack(spacing: ValgateSpacing.space2) {
                 Image(systemName: icon)
                     .font(.title2)
-                    .foregroundStyle(.valInteractivePrimary)
+                    .foregroundStyle(Color.valInteractivePrimary)
                 Text("\(value)")
                     .font(ValgateTypography.Display.small)
-                    .foregroundStyle(.valTextPrimary)
+                    .foregroundStyle(Color.valTextPrimary)
                 Text(label)
                     .font(ValgateTypography.Content.subheadline)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
             }
             .frame(maxWidth: .infinity)
         }
@@ -242,10 +242,10 @@ struct PortfolioDashboardView: View {
                             VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
                                 Text(property.name)
                                     .font(ValgateTypography.Headline.brand)
-                                    .foregroundStyle(.valTextPrimary)
+                                    .foregroundStyle(Color.valTextPrimary)
                                 Text([property.city, property.province].compactMap { $0 }.joined(separator: ", "))
                                     .font(ValgateTypography.Content.footnote)
-                                    .foregroundStyle(.valTextSecondary)
+                                    .foregroundStyle(Color.valTextSecondary)
                             }
                             Spacer()
                             VGBadge(property.type.capitalized, variant: .primary, size: .small)

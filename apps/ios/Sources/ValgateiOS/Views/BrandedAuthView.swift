@@ -16,12 +16,12 @@ struct BrandedAuthView: View {
             VStack(spacing: ValgateSpacing.space2) {
                 Text("Valgate")
                     .font(ValgateTypography.Headline.title1)
-                    .foregroundStyle(.valTextPrimary)
+                    .foregroundStyle(Color.valTextPrimary)
                     .multilineTextAlignment(.center)
                 
                 Text("Property management, simplified")
                     .font(ValgateTypography.Content.subheadline)
-                    .foregroundStyle(.valTextSecondary)
+                    .foregroundStyle(Color.valTextSecondary)
                     .multilineTextAlignment(.center)
             }
             
@@ -42,6 +42,6 @@ struct BrandedAuthView: View {
             .padding(.bottom, ValgateSpacing.space10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.valSurfacePage)
+        .background(Color.valSurfacePage)
     }
 }

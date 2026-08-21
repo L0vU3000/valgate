@@ -18,6 +18,9 @@ extension Color {
 
     /// Subtle background tint — derived from accent
     static let valSurfaceTint = Color.accentColor.opacity(0.06)
+
+    /// Sunken/inset surface — systemGray6
+    static let valSurfaceSunken = Color(.systemGray6)
 }
 
 // MARK: - Text Colors

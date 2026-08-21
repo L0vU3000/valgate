@@ -160,25 +160,25 @@ struct PropertiesView: View {
             // Property thumbnail / icon
             ZStack {
                 Circle()
-                    .fill(.valBrandSubtle)
+                    .fill(Color.valBrandSubtle)
                     .frame(width: 40, height: 40)
                 Image(systemName: "house.fill")
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.valInteractivePrimary)
+                    .foregroundStyle(Color.valInteractivePrimary)
             }
 
             VStack(alignment: .leading, spacing: ValgateSpacing.space0_5) {
                 Text(property.name)
                     .font(ValgateTypography.Headline.brand)
-                    .foregroundStyle(.valTextPrimary)
+                    .foregroundStyle(Color.valTextPrimary)
                 HStack(spacing: ValgateSpacing.space1) {
                     Text(property.city ?? "—")
                         .font(ValgateTypography.Content.subheadline)
-                        .foregroundStyle(.valTextSecondary)
-                    if let status = property.status {
+                        .foregroundStyle(Color.valTextSecondary)
+                    if true { let status = property.status;
                         Text("·")
                             .font(ValgateTypography.Content.subheadline)
-                            .foregroundStyle(.valTextTertiary)
+                            .foregroundStyle(Color.valTextTertiary)
                         Text(status.capitalized)
                             .font(ValgateTypography.Content.caption)
                             .foregroundStyle(statusColor(status))
