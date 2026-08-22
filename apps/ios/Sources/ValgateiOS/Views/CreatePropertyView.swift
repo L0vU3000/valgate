@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreLocation
 
 @MainActor
 final class CreatePropertyViewModel: ObservableObject {
@@ -42,6 +43,7 @@ final class CreatePropertyViewModel: ObservableObject {
 struct CreatePropertyView: View {
     @StateObject private var viewModel: CreatePropertyViewModel
     @State private var form = CreatePropertyForm()
+    @State private var showLocationPicker = false
     @FocusState private var focusedField: Field?
 
     private let onCreated: @MainActor (PropertyDetailDto) -> Void
@@ -151,48 +153,23 @@ struct CreatePropertyView: View {
                     }
                 }
 
-                HStack(spacing: ValgateSpacing.space3) {
-                    LabeledContent {
-                        TextField("Latitude", value: $form.lat, format: .number)
-                            .keyboardType(.decimalPad)
-                            .font(ValgateTypography.Body.standard)
-                            .foregroundStyle(Color.valTextPrimary)
-                            .multilineTextAlignment(.trailing)
-                            .accessibilityIdentifier("create-property-lat")
-                            .focused($focusedField, equals: .lat)
-                    } label: {
+                Button(action: { showLocationPicker = true }) {
+                    HStack {
                         HStack(spacing: ValgateSpacing.space2) {
-                            Image(systemName: "location.north")
+                            Image(systemName: "mappin.and.ellipse")
                                 .foregroundStyle(Color.valTextSecondary)
                                 .font(.system(size: 14))
-                            Text("Lat")
+                            Text("Pick location")
                                 .font(ValgateTypography.Body.standardEmphasis)
                                 .foregroundStyle(Color.valTextPrimary)
                         }
-                    }
-
-                    Divider()
-                        .frame(height: 20)
-
-                    LabeledContent {
-                        TextField("Longitude", value: $form.lng, format: .number)
-                            .keyboardType(.decimalPad)
+                        Spacer()
+                        Text(String(format: "%.4f, %.4f", form.lat, form.lng))
                             .font(ValgateTypography.Body.standard)
-                            .foregroundStyle(Color.valTextPrimary)
-                            .multilineTextAlignment(.trailing)
-                            .accessibilityIdentifier("create-property-lng")
-                            .focused($focusedField, equals: .lng)
-                    } label: {
-                        HStack(spacing: ValgateSpacing.space2) {
-                            Image(systemName: "location")
-                                .foregroundStyle(Color.valTextSecondary)
-                                .font(.system(size: 14))
-                            Text("Lng")
-                                .font(ValgateTypography.Body.standardEmphasis)
-                                .foregroundStyle(Color.valTextPrimary)
-                        }
+                            .foregroundStyle(Color.valTextSecondary)
                     }
                 }
+                .accessibilityIdentifier("create-property-pick-location")
             } header: {
                 Text("Location")
                     .font(ValgateTypography.Content.label)
@@ -280,6 +257,16 @@ struct CreatePropertyView: View {
             if case .error(let message) = viewModel.state {
                 Text(message)
             }
+        }
+        .sheet(isPresented: $showLocationPicker) {
+            LocationPickerView(
+                initialCoordinate: CLLocationCoordinate2D(latitude: form.lat, longitude: form.lng),
+                onConfirm: { coord in
+                    form.lat = coord.latitude
+                    form.lng = coord.longitude
+                    showLocationPicker = false
+                }
+            )
         }
         .onChange(of: viewModel.state) { _, newState in
             if case .submitted(let dto) = newState {

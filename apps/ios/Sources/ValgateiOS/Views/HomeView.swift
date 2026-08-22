@@ -67,6 +67,8 @@ struct HomeView: View {
     }
 
     @State private var navigationDestination: HomeNavigationDestination?
+    @State private var showCreateProperty = false
+
 
     var body: some View {
         NavigationStack {
@@ -82,7 +84,7 @@ struct HomeView: View {
                             navigationDestination = HomeNavigationResolver.resolve(property: property)
                         },
                         onAddProperty: {
-                            // TODO: Show add property sheet
+                            showCreateProperty = true
                         },
                         onSearch: {
                             // TODO: Show search/command palette
@@ -102,7 +104,9 @@ struct HomeView: View {
                         properties: [],
                         portfolioStats: viewModel.portfolioStats,
                         onSelect: { _ in },
-                        onAddProperty: {},
+                        onAddProperty: {
+                            showCreateProperty = true
+                        },
                         onSearch: {},
                         onPortfolio: {},
                         onDocuments: {},
@@ -136,6 +140,22 @@ struct HomeView: View {
                         propertyId: id,
                         sessionToken: sessionToken,
                         onUnauthorized: onUnauthorized
+                    )
+                }
+            }
+            .sheet(isPresented: $showCreateProperty) {
+                NavigationStack {
+                    CreatePropertyView(
+                        client: client,
+                        sessionToken: sessionToken,
+                        onUnauthorized: onUnauthorized,
+                        onCreated: { created in
+                            showCreateProperty = false
+                            Task {
+                                await viewModel.load()
+                                navigationDestination = HomeNavigationResolver.resolve(created: created)
+                            }
+                        }
                     )
                 }
             }
