@@ -1,5 +1,10 @@
 import SwiftUI
-import MapKit
+import CoreLocation
+import Turf
+import MapboxMaps
+
+private let vgDefaultMapCenter = CLLocationCoordinate2D(latitude: 12.5657, longitude: 104.9910)
+private let vgDefaultMapZoom: Double = 6.2
 
 struct PropertyMapView: View {
     let properties: [PropertyListItemDto]
@@ -11,23 +16,17 @@ struct PropertyMapView: View {
     let onDocuments: () -> Void
     let onRental: () -> Void
 
-    @State private var position: MapCameraPosition = .region(
-        MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 12.5657, longitude: 104.9910),
-            span: MKCoordinateSpan(latitudeDelta: 2.0, longitudeDelta: 2.0)
-        )
-    )
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var viewport: Viewport = .camera(center: vgDefaultMapCenter, zoom: vgDefaultMapZoom)
     @State private var selectedProperty: PropertyListItemDto?
-    @State private var showPropertyList = false
-    @State private var isSatellite = false
-    @State private var searchText = ""
+    @State private var mapStyleOption: MapStyleOption = .light
 
     var body: some View {
         ZStack {
             // Full-screen map
-            Map(position: $position) {
-                ForEach(properties) { property in
-                    Annotation(property.name, coordinate: CLLocationCoordinate2D(
+            Map(viewport: $viewport) {
+                ForEvery(properties) { property in
+                    MapViewAnnotation(coordinate: CLLocationCoordinate2D(
                         latitude: property.lat,
                         longitude: property.lng
                     )) {
@@ -35,13 +34,14 @@ struct PropertyMapView: View {
                             selectedProperty = property
                         }
                     }
+                    .allowOverlap(true)
                 }
             }
-            .mapStyle(isSatellite ? .imagery : .standard)
+            .mapStyle(mapStyleOption.style)
+            .ignoresSafeArea()
 
-            // Top floating search + quick actions
+            // Top floating search bar
             VStack(spacing: ValgateSpacing.space3) {
-                // Search bar
                 Button(action: onSearch) {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "magnifyingglass")
@@ -77,45 +77,32 @@ struct PropertyMapView: View {
                 }
                 .buttonStyle(.plain)
 
-                // Quick action chips
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: ValgateSpacing.space2) {
-                        QuickActionChip(icon: "plus", label: "New Property", action: onAddProperty)
-                        QuickActionChip(icon: "chart.bar.fill", label: "Portfolio", action: onPortfolio)
-                        QuickActionChip(icon: "doc.text", label: "Documents", action: onDocuments)
-                        QuickActionChip(icon: "person.2", label: "Rental", action: onRental)
-                    }
-                    .padding(.horizontal, ValgateSpacing.space1)
-                }
-
                 Spacer()
             }
             .padding(.horizontal, ValgateSpacing.space4)
             .padding(.top, ValgateSpacing.safeAreaTop + ValgateSpacing.space4)
 
-            // Bottom controls
+            // Lower-right control cluster + New Property action
             VStack {
                 Spacer()
 
                 HStack(alignment: .bottom) {
-                    // Portfolio stats legend
-                    if let stats = portfolioStats {
-                        PortfolioLegend(stats: stats)
-                    }
-
                     Spacer()
 
-                    // Map controls
                     VStack(spacing: ValgateSpacing.space2) {
-                        MapControlButton(icon: "list.bullet") {
-                            showPropertyList = true
+                        VGIconButton(icon: "plus", variant: .primary, size: ValgateTouchTarget.iconVisual, action: onAddProperty)
+                            .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                            .accessibilityLabel("New Property")
+
+                        MapControlButton(icon: mapStyleOption.icon) {
+                            mapStyleOption = mapStyleOption.next
                         }
-                        MapControlButton(icon: isSatellite ? "map.fill" : "globe") {
-                            isSatellite.toggle()
-                        }
+                        .accessibilityLabel("Change map style")
+
                         MapControlButton(icon: "location.fill") {
-                            fitToProperties()
+                            recenter()
                         }
+                        .accessibilityLabel("Recenter map")
                     }
                 }
                 .padding(.horizontal, ValgateSpacing.space4)
@@ -129,55 +116,77 @@ struct PropertyMapView: View {
             .presentationDetents([.fraction(0.55), .large])
             .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $showPropertyList) {
-            PropertyListSheet(
-                properties: properties,
-                onSelect: { property in
-                    showPropertyList = false
-                    selectedProperty = property
-                    position = .region(MKCoordinateRegion(
-                        center: CLLocationCoordinate2D(latitude: property.lat, longitude: property.lng),
-                        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-                    ))
-                },
-                onAddProperty: onAddProperty
-            )
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
-        }
         .onAppear {
-            if !properties.isEmpty {
-                position = .region(regionForProperties(properties))
-            }
+            mapStyleOption = colorScheme == .dark ? .dark : .light
+            recenter(animated: false)
         }
         .onChange(of: properties) { _, newProperties in
-            if !newProperties.isEmpty {
-                position = .region(regionForProperties(newProperties))
+            recenter(for: newProperties)
+        }
+    }
+
+    private func recenter(animated: Bool = true) {
+        recenter(for: properties, animated: animated)
+    }
+
+    private func recenter(for properties: [PropertyListItemDto], animated: Bool = true) {
+        let target = viewportForProperties(properties)
+        if animated {
+            withViewportAnimation {
+                viewport = target
             }
+        } else {
+            viewport = target
         }
     }
 
-    private func fitToProperties() {
-        if !properties.isEmpty {
-            position = .region(regionForProperties(properties))
+    private func viewportForProperties(_ properties: [PropertyListItemDto]) -> Viewport {
+        guard !properties.isEmpty else {
+            return .camera(center: vgDefaultMapCenter, zoom: vgDefaultMapZoom)
+        }
+        if properties.count == 1, let only = properties.first {
+            return .camera(center: CLLocationCoordinate2D(latitude: only.lat, longitude: only.lng), zoom: 14)
+        }
+        let coordinates = properties.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lng) }
+        return .overview(
+            geometry: MultiPoint(coordinates),
+            geometryPadding: EdgeInsets(top: 120, leading: 60, bottom: 220, trailing: 60)
+        )
+    }
+}
+
+// MARK: - Map Style Option (app-local; distinct from MapboxMaps.MapStyle)
+
+enum MapStyleOption {
+    case light
+    case dark
+    case satellite
+
+    var style: MapStyle {
+        switch self {
+        case .light:
+            return MapStyle(uri: StyleURI(rawValue: "mapbox://styles/mapbox/light-v11")!)
+        case .dark:
+            return MapStyle(uri: StyleURI(rawValue: "mapbox://styles/mapbox/dark-v11")!)
+        case .satellite:
+            return MapStyle(uri: StyleURI(rawValue: "mapbox://styles/mapbox/satellite-streets-v12")!)
         }
     }
 
-    private func regionForProperties(_ properties: [PropertyListItemDto]) -> MKCoordinateRegion {
-        let coords = properties.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lng) }
-        let minLat = coords.map { $0.latitude }.min() ?? 12.5657
-        let maxLat = coords.map { $0.latitude }.max() ?? 12.5657
-        let minLng = coords.map { $0.longitude }.min() ?? 104.9910
-        let maxLng = coords.map { $0.longitude }.max() ?? 104.9910
-        let center = CLLocationCoordinate2D(
-            latitude: (minLat + maxLat) / 2,
-            longitude: (minLng + maxLng) / 2
-        )
-        let span = MKCoordinateSpan(
-            latitudeDelta: max(0.05, (maxLat - minLat) * 1.5),
-            longitudeDelta: max(0.05, (maxLng - minLng) * 1.5)
-        )
-        return MKCoordinateRegion(center: center, span: span)
+    var icon: String {
+        switch self {
+        case .light: return "sun.max.fill"
+        case .dark: return "moon.fill"
+        case .satellite: return "globe.americas.fill"
+        }
+    }
+
+    var next: MapStyleOption {
+        switch self {
+        case .light: return .dark
+        case .dark: return .satellite
+        case .satellite: return .light
+        }
     }
 }
 
@@ -235,35 +244,6 @@ struct Triangle: Shape {
     }
 }
 
-// MARK: - Quick Action Chip (Design System)
-
-struct QuickActionChip: View {
-    let icon: String
-    let label: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: ValgateSpacing.space1) {
-                Image(systemName: icon)
-                    .font(.system(size: 13, weight: .medium))
-                Text(label)
-                    .font(ValgateTypography.Content.subheadlineEmphasis)
-            }
-            .foregroundStyle(Color.valTextPrimary)
-            .padding(.horizontal, ValgateSpacing.space3)
-            .padding(.vertical, ValgateSpacing.space2)
-            .background(.ultraThinMaterial)
-            .cornerRadius(ValgateRadius.pill)
-            .overlay(
-                RoundedRectangle(cornerRadius: ValgateRadius.pill)
-                    .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-}
-
 // MARK: - Map Control Button (Design System)
 
 struct MapControlButton: View {
@@ -288,29 +268,6 @@ struct PortfolioStatsDto: Equatable {
     let activeCount: Int
     let pendingCount: Int
     let vacantCount: Int
-}
-
-// MARK: - Portfolio Legend (Design System)
-
-struct PortfolioLegend: View {
-    let stats: PortfolioStatsDto
-
-    var body: some View {
-        HStack(spacing: ValgateSpacing.space4) {
-            VGBadge("\\(stats.totalProperties) Total", variant: .primary, size: .small)
-            VGBadge("\\(stats.activeCount) Active", variant: .success, size: .small)
-            VGBadge("\\(stats.pendingCount) Pending", variant: .warning, size: .small)
-            VGBadge("\\(stats.vacantCount) Vacant", variant: .info, size: .small)
-        }
-        .padding(.horizontal, ValgateSpacing.space3)
-        .padding(.vertical, ValgateSpacing.space2)
-        .background(.ultraThinMaterial)
-        .cornerRadius(ValgateRadius.lg)
-        .overlay(
-            RoundedRectangle(cornerRadius: ValgateRadius.lg)
-                .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
-        )
-    }
 }
 
 // MARK: - Property Detail Sheet (Design System)
@@ -459,74 +416,6 @@ struct LabeledDetailRow: View {
                     .font(ValgateTypography.Body.standard)
                     .foregroundStyle(Color.valTextSecondary)
             }
-        }
-    }
-}
-
-// MARK: - Property List Sheet (Design System)
-
-struct PropertyListSheet: View {
-    let properties: [PropertyListItemDto]
-    let onSelect: (PropertyListItemDto) -> Void
-    let onAddProperty: () -> Void
-
-    var body: some View {
-        NavigationStack {
-            List(properties) { property in
-                Button {
-                    onSelect(property)
-                } label: {
-                    HStack(spacing: ValgateSpacing.space3) {
-                        Circle()
-                            .fill(statusColor(property.status))
-                            .frame(width: 10, height: 10)
-
-                        VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
-                            Text(property.name)
-                                .font(ValgateTypography.Headline.title3)
-                                .foregroundStyle(Color.valTextPrimary)
-
-                            HStack(spacing: ValgateSpacing.space2) {
-                                Text(property.type)
-                                    .font(ValgateTypography.Content.subheadline)
-                                    .foregroundStyle(Color.valTextSecondary)
-
-                                if let city = property.city {
-                                    Text("·")
-                                        .foregroundStyle(Color.valTextSecondary)
-                                    Text(city)
-                                        .font(ValgateTypography.Content.subheadline)
-                                        .foregroundStyle(Color.valTextSecondary)
-                                }
-                            }
-                        }
-
-                        Spacer()
-
-                        VGStatusBadge(status: property.status)
-                    }
-                    .padding(.vertical, ValgateSpacing.space1)
-                }
-                .buttonStyle(.plain)
-            }
-            .listStyle(.plain)
-            .navigationTitle("\(properties.count) Properties")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    VGToolbarButton(icon: "plus", action: onAddProperty)
-                }
-            }
-        }
-    }
-
-    private func statusColor(_ status: String) -> Color {
-        switch status.lowercased() {
-        case "active", "rented": return .valStatusSuccess
-        case "pending", "vacant": return .valStatusWarning
-        case "sold": return .valStatusInfo
-        case "archived": return .valTextSecondary
-        default: return .valStatusInfo
         }
     }
 }

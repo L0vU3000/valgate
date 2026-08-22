@@ -4,4 +4,6 @@ CLERK_PUBLISHABLE_KEY = pk_test_d2hvbGUtY2l2ZXQtODkuY2xlcmsuYWNjb3VudHMuZGV2JA
 LOCAL_VERCEL_PROTECTION_BYPASS =
 VERCEL_PROTECTION_BYPASS =
 VERCEL_PROTECTION_BYPASS[config=Debug] = $(LOCAL_VERCEL_PROTECTION_BYPASS)
+// Mapbox public (pk.*) token — safe to ship in a client build. Override locally via Secrets.xcconfig.
+MAPBOX_PUBLIC_TOKEN =
 #include? "Secrets.xcconfig"
