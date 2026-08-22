@@ -55,6 +55,7 @@
 		C769FD1BBDD44B803E933C99 /* PropertyMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E302CEBABE5B42CA2C9E065 /* PropertyMapView.swift */; };
 		C78CF7EADA92D96CCEB01128 /* PropertiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95881E49D31608658D848396 /* PropertiesView.swift */; };
 		C82A414FFF0F027189FCD952 /* HomeNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6923C31EECA8CDC7CB7220 /* HomeNavigation.swift */; };
+		CDF4652767A0E1A3DE7F6C87 /* LocationPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90F29EBA660296B451314A0 /* LocationPickerView.swift */; };
 		CFD410C8FA3DCCF022FA4FDB /* HomeNavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBAEC0494720B4DDB84D0C63 /* HomeNavigationTests.swift */; };
 		D460E247996484CFF715B832 /* APIClientBoundaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90DBB4F9B1936BD73002203B /* APIClientBoundaryTests.swift */; };
 		D8AA4E85E777E3ECD19719CD /* AppConfigurationHTTPSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E194D47930E007A951FF7972 /* AppConfigurationHTTPSTests.swift */; };
@@ -62,6 +63,7 @@
 		E51239B4397243244A693204 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248E1E918FEC8F041875AFEF /* APIClient.swift */; };
 		E6B0B839DF87962F02200781 /* BrandedAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC20330114E4958D492AB4CE /* BrandedAuthView.swift */; };
 		EB7828BA9E818C2D99843E33 /* SessionRefresherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */; };
+		F45C0A5D9AD421175DBA4D70 /* AddPropertyFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66F917824C1E486CB791764 /* AddPropertyFlowTests.swift */; };
 		FA53128627B9327563E3EBA3 /* PropertyListItemDtoDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -114,10 +116,12 @@
 		9854FCD35DC8EE84879593F7 /* CreatePropertyRequestFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyRequestFactoryTests.swift; sourceTree = "<group>"; };
 		995F851414A21A1643ABAD0F /* CreatePropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyView.swift; sourceTree = "<group>"; };
 		9B82043C37B19C268E190FFE /* APIRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequestFactory.swift; sourceTree = "<group>"; };
+		A90F29EBA660296B451314A0 /* LocationPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPickerView.swift; sourceTree = "<group>"; };
 		AACA31A90B9AEA25486D27FE /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		AB80C0C33CF08F8EE03F4D98 /* PropertyDetailStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailStateResolverTests.swift; sourceTree = "<group>"; };
 		AE169C1226B764464E8AE204 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		B1C66DAA48C7B1DC2B673FF3 /* APIRequestFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequestFactoryTests.swift; sourceTree = "<group>"; };
+		B66F917824C1E486CB791764 /* AddPropertyFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPropertyFlowTests.swift; sourceTree = "<group>"; };
 		B740F353870900732EDE4C4A /* APIErrorEnvelopeDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrorEnvelopeDecodingTests.swift; sourceTree = "<group>"; };
 		BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyListItemDtoDecodingTests.swift; sourceTree = "<group>"; };
 		BB29D23DCAAE734153F110D0 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
@@ -167,6 +171,7 @@
 				D40432FFA6FC85128F0BD817 /* EditPropertyView.swift */,
 				CE6923C31EECA8CDC7CB7220 /* HomeNavigation.swift */,
 				1F1BFB816426B649022E99BF /* HomeView.swift */,
+				A90F29EBA660296B451314A0 /* LocationPickerView.swift */,
 				732F9A268A79F1FC285872C1 /* PortfolioDashboardView.swift */,
 				48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */,
 				95881E49D31608658D848396 /* PropertiesView.swift */,
@@ -292,6 +297,7 @@
 		FA254FFAD43CF9D887304F94 /* ValgateiOSTests */ = {
 			isa = PBXGroup;
 			children = (
+				B66F917824C1E486CB791764 /* AddPropertyFlowTests.swift */,
 				90DBB4F9B1936BD73002203B /* APIClientBoundaryTests.swift */,
 				B740F353870900732EDE4C4A /* APIErrorEnvelopeDecodingTests.swift */,
 				B1C66DAA48C7B1DC2B673FF3 /* APIRequestFactoryTests.swift */,
@@ -401,6 +407,7 @@
 				D460E247996484CFF715B832 /* APIClientBoundaryTests.swift in Sources */,
 				743ABA6C62B3476892C08D00 /* APIErrorEnvelopeDecodingTests.swift in Sources */,
 				3656D535B0E9DE3800BF088E /* APIRequestFactoryTests.swift in Sources */,
+				F45C0A5D9AD421175DBA4D70 /* AddPropertyFlowTests.swift in Sources */,
 				D8AA4E85E777E3ECD19719CD /* AppConfigurationHTTPSTests.swift in Sources */,
 				4DD8DED426BECEFB87C5DBAE /* AppConfigurationTests.swift in Sources */,
 				BA302DC659E36BEE5FC61798 /* CreatePropertyRequestEncodingTests.swift in Sources */,
@@ -438,6 +445,7 @@
 				16F75C8C6352D1C74CBCFB2F /* EditPropertyView.swift in Sources */,
 				C82A414FFF0F027189FCD952 /* HomeNavigation.swift in Sources */,
 				8C799C7F62BF9D3791CF5088 /* HomeView.swift in Sources */,
+				CDF4652767A0E1A3DE7F6C87 /* LocationPickerView.swift in Sources */,
 				094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */,
 				E0BA42A02CB73195008E45AE /* PortfolioDashboardView.swift in Sources */,
 				1F3679E3417AC3A408AB1F80 /* PropertiesLoadStateResolver.swift in Sources */,
@@ -476,10 +484,17 @@
 		4CCEB48DBFEB092B6CB4A5BD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Sources/ValgateiOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation;
 				PRODUCT_MODULE_NAME = ValgateiOS;
 				PRODUCT_NAME = Valgate;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -489,9 +504,16 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation.tests;
 				PRODUCT_NAME = ValgateiOSTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Valgate.app/Valgate";
 				TEST_TARGET_NAME = ValgateiOS;
 			};
@@ -502,8 +524,54 @@
 			baseConfigurationReference = AACA31A90B9AEA25486D27FE /* Base.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -513,8 +581,15 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation.tests;
 				PRODUCT_NAME = ValgateiOSTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Valgate.app/Valgate";
 				TEST_TARGET_NAME = ValgateiOS;
 			};
@@ -523,12 +598,19 @@
 		B4C1B9911D0D375CAABC4042 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = Sources/ValgateiOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation;
 				PRODUCT_MODULE_NAME = ValgateiOS;
 				PRODUCT_NAME = Valgate;
+				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -539,8 +621,61 @@
 			baseConfigurationReference = AACA31A90B9AEA25486D27FE /* Base.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
