@@ -6,6 +6,8 @@ import { apiReadLimiter, allowed } from "@/lib/ratelimit";
 import type { Ctx } from "@/lib/services/_mapping";
 import { apiError } from "./http";
 import { logger } from "@/lib/logger";
+import { isRealClerkKey } from "@/lib/auth/clerk-check";
+import { env } from "@/lib/env";
 
 // The single auth seam for every HTTP API v1 route (additive, read-only surface).
 //
@@ -17,8 +19,20 @@ export type ApiV1AuthResult = { ok: true; ctx: Ctx } | { ok: false; response: Ne
 
 export async function resolveApiV1Ctx(): Promise<ApiV1AuthResult> {
   // Staging preview: short-circuit Clerk entirely when running with demo credentials.
-  // Skip during tests so mock-based Clerk assertions still run.
-  if (process.env.NODE_ENV !== "test" && (process.env.STAGING_DEMO_MODE === "true" || process.env.DEMO_MODE === "true")) {
+  // Skip during tests so mock-based Clerk assertions still run. Refused outright in
+  // production (stricter than the browser ctx.ts STAGING_DEMO_MODE exception) — this
+  // API surface has no Tailscale-preview use case, so neither flag may ever bypass Clerk here.
+  //
+  // Browser parity (ctx.ts): a real configured Clerk secret means DEMO_MODE was left on by
+  // mistake, so DEMO_MODE alone must not win — fall through to real Clerk auth instead. The
+  // explicit STAGING_DEMO_MODE=true preview override still bypasses the real-key check, same
+  // as ctx.ts's documented Tailscale-preview exception.
+  if (
+    process.env.NODE_ENV !== "test" &&
+    process.env.NODE_ENV !== "production" &&
+    (process.env.STAGING_DEMO_MODE === "true" || process.env.DEMO_MODE === "true") &&
+    (process.env.STAGING_DEMO_MODE === "true" || !isRealClerkKey(env.CLERK_SECRET_KEY))
+  ) {
     const demoCtx: Ctx = { userId: "USR-0001", orgId: "ORG-0001", orgRole: "owner" };
     return { ok: true, ctx: demoCtx };
   }

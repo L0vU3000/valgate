@@ -242,6 +242,9 @@ export async function bulkAssignProperties(
 ): Promise<{ assigned: number; conflicts: string[] }> {
   assertCanMutate();
   requireMember(ctx);
+  if (targetOrgId !== ctx.orgId) {
+    return { assigned: 0, conflicts: propertyIds };
+  }
   const conflicts: string[] = [];
   const toAssign: string[] = [];
 
@@ -250,7 +253,7 @@ export async function bulkAssignProperties(
       const [row] = await tx
         .select({ orgId: properties.orgId, clientId: properties.clientId })
         .from(properties)
-        .where(eq(properties.id, propertyId))
+        .where(and(eq(properties.id, propertyId), eq(properties.orgId, ctx.orgId)))
         .limit(1);
 
       if (!row) {
@@ -275,7 +278,7 @@ export async function bulkAssignProperties(
       await tx
         .update(properties)
         .set({ clientId: targetUserId, updatedAt: new Date() })
-        .where(eq(properties.id, propertyId));
+        .where(and(eq(properties.id, propertyId), eq(properties.orgId, ctx.orgId)));
     }
   });
 

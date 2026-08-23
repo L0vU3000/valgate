@@ -4,7 +4,7 @@ import { db } from "@/lib/db/client";
 import { propertyDrafts, propertyDraftFiles } from "@/lib/db/schema";
 import { convertRowToDb } from "@/lib/db/column-classifier";
 import { toDomain, type Ctx } from "@/lib/services/_mapping";
-import { scopedInsert, requireMember } from "@/lib/services/_crud";
+import { scopedInsert, requireMember, assertOrgAdmin } from "@/lib/services/_crud";
 import { assertCanMutate } from "@/lib/services/_mapping";
 // storage.ts exports this as `deleteStorageObject`; aliased to keep the
 // call sites below short and unchanged after the v1.0.2 merge renamed it.
@@ -87,6 +87,7 @@ function rowToDraftFile(r: typeof propertyDraftFiles.$inferSelect): PropertyDraf
 // so it never returns another member's drafts. Read-only — allowed in demo mode.
 // Accepts an optional targetOrgId override to filter drafts by a different org (Pro wizard).
 export async function listPropertyDrafts(ctx: Ctx, targetOrgId?: string): Promise<PropertyDraft[]> {
+  if (targetOrgId && targetOrgId !== ctx.orgId) await assertOrgAdmin(ctx, targetOrgId);
   const orgFilter = targetOrgId ?? ctx.orgId;
   const rows = await db.select().from(propertyDrafts)
     .where(and(eq(propertyDrafts.orgId, orgFilter), eq(propertyDrafts.userId, ctx.userId))) // C3 + personal
@@ -116,6 +117,9 @@ export async function createPropertyDraft(
   input: { title: string; step: number; form: Record<string, unknown> },
   targetOrgId?: string,
 ): Promise<PropertyDraft> {
+  if (targetOrgId && targetOrgId !== ctx.orgId) {
+    await assertOrgAdmin(ctx, targetOrgId);
+  }
   return scopedInsert(ctx, propertyDrafts, "DRFT", input, rowToDraft, targetOrgId ? { orgId: targetOrgId } : undefined);
 }
 
@@ -131,6 +135,9 @@ export async function updatePropertyDraft(
 ): Promise<PropertyDraft | null> {
   assertCanMutate();     // D9 — demo mode is read-only
   requireMember(ctx);    // role gate
+  if (targetOrgId && targetOrgId !== ctx.orgId) {
+    await assertOrgAdmin(ctx, targetOrgId);
+  }
   const dbPatch = convertRowToDb(propertyDrafts, patch);
   // Stamp updated_at with the DB clock (now()), the SAME source create uses (column defaultNow()).
   // Using the app clock here instead would let app↔DB skew invert the ordering, and the drafts
@@ -319,6 +326,7 @@ export async function convertDraftToDocumentsForOrg(
 ): Promise<number> {
   assertCanMutate();
   requireMember(ctx);
+  await assertOrgAdmin(ctx, targetOrgId);
 
   const files = await listDraftFiles(ctx, draftId);
   const photos = files.filter((f) => f.kind === "photo");
