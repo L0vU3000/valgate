@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PgDialect } from "drizzle-orm/pg-core";
 import type { Ctx } from "@/lib/services/_mapping";
 
+vi.mock("server-only", () => ({}));
+
 // ---------------------------------------------------------------------------
 // property-drafts cross-org authorization: regression tests for the already-shipped
 // P0 fix. createPropertyDraft / updatePropertyDraft now call assertOrgAdmin(ctx,
@@ -49,6 +51,7 @@ const store = vi.hoisted(() => ({
   updateCalls: 0,
   updateWheres: [] as { sql: string; params: unknown[] }[],
   updateSets: [] as Record<string, unknown>[],
+  selectCalls: 0,
 }));
 
 vi.mock("@/lib/env", () => ({
@@ -105,7 +108,6 @@ vi.mock("@/lib/db/client", () => {
             where: (cond: unknown) => {
               store.updateWheres.push(render(cond));
               return {
-                // A single freshly-updated draft row (identity mapping reads these fields).
                 returning: () =>
                   Promise.resolve([
                     { id: "DRFT-0001", title: vals.title ?? "t", step: vals.step ?? 1, form: vals.form ?? {}, updatedAt: 2 },
@@ -116,11 +118,38 @@ vi.mock("@/lib/db/client", () => {
         },
       };
     },
+    select: () => {
+      store.callOrder.push("db.select");
+      store.selectCalls += 1;
+      return {
+        from: () => ({
+          where: (cond: unknown) => {
+            store.updateWheres.push(render(cond));
+            return {
+              orderBy: () => {
+                return Object.assign(Promise.resolve([] as unknown[]), {
+                  limit: () => Promise.resolve([] as unknown[]),
+                }) as Promise<unknown[]> & { limit: () => Promise<unknown[]> };
+              },
+            };
+          },
+        }),
+      };
+    },
+    delete: () => {
+      store.callOrder.push("db.delete");
+      return {
+        where: (cond: unknown) => {
+          store.updateWheres.push(render(cond));
+          return Promise.resolve(1);
+        },
+      };
+    },
   };
   return { db };
 });
 
-import { createPropertyDraft, updatePropertyDraft } from "./property-drafts";
+import { createPropertyDraft, updatePropertyDraft, listPropertyDrafts, convertDraftToDocumentsForOrg } from "./property-drafts";
 import { assertOrgAdmin, scopedInsert } from "@/lib/services/_crud";
 
 const CTX: Ctx = { userId: "USR-0001", orgId: "ORG-0001", orgRole: "member" };
@@ -132,6 +161,7 @@ beforeEach(() => {
   store.updateCalls = 0;
   store.updateWheres.length = 0;
   store.updateSets.length = 0;
+  store.selectCalls = 0;
   vi.mocked(assertOrgAdmin).mockClear();
   vi.mocked(scopedInsert).mockClear();
 });
@@ -244,5 +274,57 @@ describe("updatePropertyDraft — own-org (member) path", () => {
     expect(store.callOrder).toEqual(["db.update"]);
     const w = store.updateWheres[0]!;
     expect(w.params).toContain(CTX.orgId);
+  });
+});
+
+describe("listPropertyDrafts — cross-org authorization", () => {
+  it("asserts org-admin in the target org BEFORE the DB select", async () => {
+    await listPropertyDrafts(CTX, TARGET_ORG);
+
+    expect(assertOrgAdmin).toHaveBeenCalledWith(CTX, TARGET_ORG);
+    expect(store.callOrder).toEqual(["assertOrgAdmin", "db.select"]);
+    expect(store.selectCalls).toBe(1);
+
+    const w = store.updateWheres[0]!;
+    expect(w.params).toContain(TARGET_ORG);
+    expect(w.params).toContain(CTX.userId);
+  });
+
+  it("does not select when the target-org admin check fails", async () => {
+    store.assertOrgAdminRejects = true;
+
+    await expect(listPropertyDrafts(CTX, TARGET_ORG)).rejects.toThrow("forbidden");
+
+    expect(store.selectCalls).toBe(0);
+    expect(store.callOrder).toEqual(["assertOrgAdmin"]);
+  });
+
+  it("does NOT assert org-admin when no targetOrgId is supplied", async () => {
+    await listPropertyDrafts(CTX);
+
+    expect(assertOrgAdmin).not.toHaveBeenCalled();
+    expect(store.callOrder).toEqual(["db.select"]);
+    const w = store.updateWheres[0]!;
+    expect(w.params).toContain(CTX.orgId);
+  });
+});
+
+describe("convertDraftToDocumentsForOrg — cross-org authorization", () => {
+  it("asserts org-admin in the target org BEFORE any target-org operations", async () => {
+    await convertDraftToDocumentsForOrg(CTX, "DRFT-0001", "PROP-0001", TARGET_ORG);
+
+    expect(assertOrgAdmin).toHaveBeenCalledWith(CTX, TARGET_ORG);
+    expect(store.callOrder[0]).toBe("assertOrgAdmin");
+  });
+
+  it("does not perform any target-org operations when the admin check fails", async () => {
+    store.assertOrgAdminRejects = true;
+
+    await expect(
+      convertDraftToDocumentsForOrg(CTX, "DRFT-0001", "PROP-0001", TARGET_ORG),
+    ).rejects.toThrow("forbidden");
+
+    expect(store.callOrder).toEqual(["assertOrgAdmin"]);
+    expect(store.updateCalls).toBe(0);
   });
 });

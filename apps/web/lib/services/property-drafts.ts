@@ -87,6 +87,7 @@ function rowToDraftFile(r: typeof propertyDraftFiles.$inferSelect): PropertyDraf
 // so it never returns another member's drafts. Read-only — allowed in demo mode.
 // Accepts an optional targetOrgId override to filter drafts by a different org (Pro wizard).
 export async function listPropertyDrafts(ctx: Ctx, targetOrgId?: string): Promise<PropertyDraft[]> {
+  if (targetOrgId && targetOrgId !== ctx.orgId) await assertOrgAdmin(ctx, targetOrgId);
   const orgFilter = targetOrgId ?? ctx.orgId;
   const rows = await db.select().from(propertyDrafts)
     .where(and(eq(propertyDrafts.orgId, orgFilter), eq(propertyDrafts.userId, ctx.userId))) // C3 + personal
@@ -325,6 +326,7 @@ export async function convertDraftToDocumentsForOrg(
 ): Promise<number> {
   assertCanMutate();
   requireMember(ctx);
+  await assertOrgAdmin(ctx, targetOrgId);
 
   const files = await listDraftFiles(ctx, draftId);
   const photos = files.filter((f) => f.kind === "photo");
