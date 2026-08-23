@@ -1,0 +1,289 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "$description": "Cross-platform semantic design tokens for Valgate mobile apps (SwiftUI now, Android Compose later). Values are derived from apps/web/tokens.json, apps/web/DESIGN.md, and apps/web/styles/theme.css — those remain canonical for exact web color math; this file translates the same semantic intent into a portable mobile contract. Typography pixel sizes and native interaction mechanics are intentionally excluded: platforms implement type using native Dynamic-Type-equivalent scalable text and own their own interaction/feedback mechanics. See VALGATE-MOBILE-DESIGN.md for the full ownership split and component specification that consumes these tokens.",
+
+  "color": {
+    "$type": "color",
+    "$description": "Semantic color roles only — never bind a component directly to a hex value. Each role is defined once per mode (light/dark); consuming platforms select the active mode from the OS appearance setting.",
+
+    "light": {
+      "surface": {
+        "$description": "Source: apps/web/styles/theme.css :root surface-* custom properties.",
+        "page": { "$value": "#f5f6f7", "$description": "App/screen background. Source: --surface-page." },
+        "base": { "$value": "#ffffff", "$description": "Default card/content surface. Source: --surface-base." },
+        "elevated": { "$value": "#f5f6f7", "$description": "Elevated surface (sheets, popovers) — paired with elevation.level1+ rather than a distinct tint in the web source. Source: --surface-elevated." },
+        "sunken": { "$value": "#e8eaed", "$description": "Inset/recessed surface (e.g. segmented control track). Source: --surface-sunken." },
+        "overlay": { "$value": "#14181b", "$description": "Scrim behind modals/sheets — apply with reduced opacity (~0.4-0.6), never opaque, so underlying content stays legible. Source: --surface-overlay." },
+        "tint": { "$value": "#eef2f8", "$description": "Blue-tinted neutral for hover/selection washes and subtle brand surfaces. Source: --surface-tint." }
+      },
+      "text": {
+        "$description": "Source: apps/web/styles/theme.css :root text-* custom properties.",
+        "primary": { "$value": "#14181b", "$description": "Source: --foreground / --text primary." },
+        "secondary": { "$value": "#515d66", "$description": "Source: --text-secondary." },
+        "tertiary": { "$value": "#6b7684", "$description": "Source: --text-tertiary." },
+        "disabled": { "$value": "#acb4bc", "$description": "Source: --text-disabled." },
+        "inverse": { "$value": "#ffffff", "$description": "Text on filled brand/dark surfaces. Source: --text-inverse." },
+        "link": { "$value": "#2563eb", "$description": "Source: --text-link." },
+        "linkHover": { "$value": "#1d4ed8", "$description": "Source: --text-link-hover; on touch platforms apply on press, not hover." }
+      },
+      "border": {
+        "$description": "Source: apps/web/styles/theme.css :root border-* custom properties.",
+        "default": { "$value": "#d1d5db", "$description": "Source: --border-default." },
+        "strong": { "$value": "#acb4bc", "$description": "Source: --border-strong." },
+        "subtle": { "$value": "#e8eaed", "$description": "Source: --border-subtle." },
+        "focus": { "$value": "#2563eb", "$description": "Focus ring/outline color. Source: --border-focus / --ring." }
+      },
+      "interactive": {
+        "$description": "Source: apps/web/styles/theme.css :root interactive-* custom properties. Web defines default+hover only; mobile has no mouse hover, so 'hover' doubles as the press/selected feedback color. Additional native press feedback (scale/opacity) is a platform interaction concern, not a token — see VALGATE-MOBILE-DESIGN.md ownership split.",
+        "primary": {
+          "default": { "$value": "#2563eb", "$description": "Source: --interactive-primary." },
+          "hover": { "$value": "#1d4ed8", "$description": "Source: --interactive-primary-hover; use as the pressed/selected state on touch." },
+          "text": { "$value": "#ffffff", "$description": "Source: --interactive-primary-text." },
+          "disabledSurface": { "$value": "#e8eaed", "$description": "Derived (not a literal web token): reuses border-subtle as the disabled fill, matching the web app's muted-surface disabled convention." },
+          "disabledText": { "$value": "#acb4bc", "$description": "Derived: reuses text.disabled." }
+        },
+        "secondary": {
+          "default": { "$value": "#f5f6f7", "$description": "Source: --interactive-secondary." },
+          "hover": { "$value": "#e8eaed", "$description": "Source: --interactive-secondary-hover; use as pressed/selected on touch." },
+          "text": { "$value": "#14181b", "$description": "Source: --interactive-secondary-text." },
+          "disabledSurface": { "$value": "#e8eaed", "$description": "Derived, see interactive.primary.disabledSurface." },
+          "disabledText": { "$value": "#acb4bc", "$description": "Derived: reuses text.disabled." }
+        },
+        "destructive": {
+          "default": { "$value": "#e11d48", "$description": "Source: --destructive / status.danger.base." },
+          "text": { "$value": "#ffffff", "$description": "Source: --destructive-foreground." }
+        }
+      },
+      "accent": {
+        "subtle": { "$value": "#dbeafe", "$description": "Subtle brand tint for badges, highlights, and the AI/premium opaque fallback accent. Source: --brand-subtle." }
+      },
+      "status": {
+        "$description": "Each status role carries base/background/border/text so color is never the only signal (pair with an icon or label). Source: apps/web/styles/theme.css :root status-* custom properties.",
+        "success": {
+          "base": { "$value": "#059669" }, "bg": { "$value": "#ecfdf5" }, "border": { "$value": "#a7f3d0" }, "text": { "$value": "#065f46" }
+        },
+        "warning": {
+          "base": { "$value": "#f59e0b" }, "bg": { "$value": "#fffbeb" }, "border": { "$value": "#fde68a" }, "text": { "$value": "#92400e" }
+        },
+        "danger": {
+          "base": { "$value": "#e11d48" }, "bg": { "$value": "#fff1f2" }, "border": { "$value": "#fecdd3" }, "text": { "$value": "#881337" }
+        },
+        "info": {
+          "base": { "$value": "#0284c7" }, "bg": { "$value": "#f0f9ff" }, "border": { "$value": "#bae6fd" }, "text": { "$value": "#0369a1" }
+        }
+      },
+      "transparency": {
+        "$description": "The ONLY three roles permitted to use translucency/blur. Every role ships an opaqueFallback pair to render when the OS 'Reduce Transparency' setting is on — that fallback is mandatory, not optional. See VALGATE-MOBILE-DESIGN.md for usage rules.",
+        "mapOverlay": {
+          "$description": "Floating controls/badges rendered directly over map imagery (recenter button, pin cluster count, property callout chip). Source: --glass-icon-btn-fill / --glass-icon-btn-border / --glass-nav-item-fill / --glass-nav-item-border.",
+          "fill": { "$value": "#ffffff6b" },
+          "border": { "$value": "#ffffff8c" },
+          "opaqueFallback": {
+            "fill": { "$value": "#ffffff", "$description": "= color.light.surface.base" },
+            "border": { "$value": "#d1d5db", "$description": "= color.light.border.default" }
+          }
+        },
+        "contextual": {
+          "$description": "Transient, dismissible surfaces anchored to a trigger: popovers, quick-action menus, tooltips, contextual sheets. Not for persistent screen chrome. Source: --glass-panel-fill / --glass-panel-border.",
+          "fill": { "$value": "#ffffffa6" },
+          "border": { "$value": "#ffffffb2" },
+          "opaqueFallback": {
+            "fill": { "$value": "#f5f6f7", "$description": "= color.light.surface.elevated" },
+            "border": { "$value": "#d1d5db", "$description": "= color.light.border.default" }
+          }
+        },
+        "aiPremium": {
+          "$description": "The AI Hub / premium-feature surface only. Flat approximation of the layered gradient glass shell (gradients/radial tints are a decorative component detail, not a token value). Source: .ai-glass-shell base fill/border.",
+          "fill": { "$value": "#ffffff99" },
+          "border": { "$value": "#ffffffa6" },
+          "opaqueFallback": {
+            "fill": { "$value": "#f5f6f7", "$description": "= color.light.surface.elevated" },
+            "border": { "$value": "#acb4bc", "$description": "= color.light.border.strong" }
+          }
+        }
+      }
+    },
+
+    "dark": {
+      "surface": {
+        "page": { "$value": "#0f1117", "$description": "Source: .dark --surface-page." },
+        "base": { "$value": "#111420", "$description": "Source: .dark --surface-base." },
+        "elevated": { "$value": "#202334", "$description": "Source: .dark --surface-elevated." },
+        "sunken": { "$value": "#0f1117", "$description": "Source: .dark --surface-sunken." },
+        "overlay": { "$value": "#0f1117", "$description": "Source: .dark --surface-overlay; apply with reduced opacity, never opaque." },
+        "tint": { "$value": "#202334", "$description": "Source: .dark --surface-tint." }
+      },
+      "text": {
+        "primary": { "$value": "#f5f6f7", "$description": "Source: .dark --foreground." },
+        "secondary": { "$value": "#8591a0", "$description": "Source: .dark --text-secondary." },
+        "tertiary": { "$value": "#6b7684", "$description": "Source: .dark --text-tertiary." },
+        "disabled": { "$value": "#3e4850", "$description": "Source: .dark --text-disabled." },
+        "inverse": { "$value": "#14181b", "$description": "Source: .dark --text-inverse." },
+        "link": { "$value": "#60a5fa", "$description": "Source: .dark --text-link." },
+        "linkHover": { "$value": "#93c5fd", "$description": "Source: .dark --text-link-hover; apply on press on touch." }
+      },
+      "border": {
+        "default": { "$value": "#202334", "$description": "Source: .dark --border-default." },
+        "strong": { "$value": "#515d66", "$description": "Source: .dark --border-strong." },
+        "subtle": { "$value": "#171b2b", "$description": "Source: .dark --border-subtle." },
+        "focus": { "$value": "#3b82f6", "$description": "Source: .dark --border-focus / --ring." }
+      },
+      "interactive": {
+        "primary": {
+          "default": { "$value": "#3b82f6", "$description": "Source: .dark --interactive-primary." },
+          "hover": { "$value": "#60a5fa", "$description": "Source: .dark --interactive-primary-hover; pressed/selected on touch." },
+          "text": { "$value": "#ffffff", "$description": "Source: .dark --interactive-primary-text." },
+          "disabledSurface": { "$value": "#171b2b", "$description": "Derived: reuses border.subtle." },
+          "disabledText": { "$value": "#3e4850", "$description": "Derived: reuses text.disabled." }
+        },
+        "secondary": {
+          "default": { "$value": "#202334", "$description": "Source: .dark --interactive-secondary." },
+          "hover": { "$value": "#202334", "$description": "Source: .dark --interactive-secondary-hover — identical to default in the web source; on touch, rely on a native press overlay (opacity/scale) for feedback rather than a color change." },
+          "text": { "$value": "#eef2f8", "$description": "Source: .dark --interactive-secondary-text." },
+          "disabledSurface": { "$value": "#171b2b", "$description": "Derived, see interactive.primary.disabledSurface (dark)." },
+          "disabledText": { "$value": "#3e4850", "$description": "Derived: reuses text.disabled." }
+        },
+        "destructive": {
+          "default": { "$value": "#f43f5e", "$description": "Source: .dark --destructive / status.danger.base." },
+          "text": { "$value": "#ffffff", "$description": "Source: .dark --destructive-foreground." }
+        }
+      },
+      "accent": {
+        "subtle": { "$value": "#1e3a8a", "$description": "Source: .dark --brand-subtle." }
+      },
+      "status": {
+        "success": {
+          "base": { "$value": "#10b981" }, "bg": { "$value": "#064e3b" }, "border": { "$value": "#065f46" }, "text": { "$value": "#6ee7b7" }
+        },
+        "warning": {
+          "base": { "$value": "#f59e0b" }, "bg": { "$value": "#78350f" }, "border": { "$value": "#92400e" }, "text": { "$value": "#fcd34d" }
+        },
+        "danger": {
+          "base": { "$value": "#f43f5e" }, "bg": { "$value": "#881337" }, "border": { "$value": "#9f1239" }, "text": { "$value": "#fda4af" }
+        },
+        "info": {
+          "base": { "$value": "#38bdf8" }, "bg": { "$value": "#0c4a6e" }, "border": { "$value": "#075985" }, "text": { "$value": "#7dd3fc" }
+        }
+      },
+      "transparency": {
+        "mapOverlay": {
+          "fill": { "$value": "#16192666" },
+          "border": { "$value": "#ffffff1f" },
+          "opaqueFallback": {
+            "fill": { "$value": "#111420", "$description": "= color.dark.surface.base" },
+            "border": { "$value": "#202334", "$description": "= color.dark.border.default" }
+          }
+        },
+        "contextual": {
+          "fill": { "$value": "#0f111799" },
+          "border": { "$value": "#ffffff29" },
+          "opaqueFallback": {
+            "fill": { "$value": "#202334", "$description": "= color.dark.surface.elevated" },
+            "border": { "$value": "#202334", "$description": "= color.dark.border.default" }
+          }
+        },
+        "aiPremium": {
+          "fill": { "$value": "#0f111794" },
+          "border": { "$value": "#ffffff1a" },
+          "opaqueFallback": {
+            "fill": { "$value": "#202334", "$description": "= color.dark.surface.elevated" },
+            "border": { "$value": "#515d66", "$description": "= color.dark.border.strong" }
+          }
+        }
+      }
+    }
+  },
+
+  "spacing": {
+    "$type": "dimension",
+    "$description": "4px base scale. Treat the unit as density-independent (pt on iOS, dp on Android), not raw device pixels. Source: apps/web/tokens.json spacing + apps/web/DESIGN.md layout scale.",
+    "1": { "$value": { "value": 4, "unit": "px" } },
+    "2": { "$value": { "value": 8, "unit": "px" } },
+    "3": { "$value": { "value": 12, "unit": "px" } },
+    "4": { "$value": { "value": 16, "unit": "px" }, "$description": "Default padding / standard screen edge inset." },
+    "5": { "$value": { "value": 20, "unit": "px" }, "$description": "Default rhythm between page content groups (web gap-5)." },
+    "6": { "$value": { "value": 24, "unit": "px" } },
+    "8": { "$value": { "value": 32, "unit": "px" } },
+    "10": { "$value": { "value": 40, "unit": "px" } }
+  },
+
+  "radius": {
+    "$type": "dimension",
+    "$description": "Source: apps/web/tokens.json rounded.* / apps/web/DESIGN.md Shapes section.",
+    "xs": { "$value": { "value": 2, "unit": "px" } },
+    "sm": { "$value": { "value": 4, "unit": "px" }, "$description": "Compact controls." },
+    "md": { "$value": { "value": 6, "unit": "px" }, "$description": "Core/default radius — buttons and compact controls. Source: --radius (0.375rem)." },
+    "lg": { "$value": { "value": 10, "unit": "px" }, "$description": "Content cards." },
+    "xl": { "$value": { "value": 14, "unit": "px" }, "$description": "Large surfaces where a bigger radius is warranted." },
+    "full": { "$value": { "value": 9999, "unit": "px" }, "$description": "Inferred, not a literal web token: fully-round pill shape for filters/tags/compact status, per DESIGN.md's 'pills are reserved for filters, tags, and compact state' guidance." }
+  },
+
+  "elevation": {
+    "$type": "shadow",
+    "$description": "Border-first depth model: prefer surface + border.subtle/default over shadow (see apps/web/DESIGN.md Elevation & Depth — 'do not nest cards inside cards', 'prefer border over decorative shadow'). Use level1 for a resting card, level2 only for a genuinely raised/actionable element, level3 only for overlays/sheets/modals or the AI premium surface.",
+    "light": {
+      "level0": { "$value": [], "$description": "Flat — border only, no shadow. Default for cards and rows." },
+      "level1": {
+        "$value": { "color": "#00000004", "offsetX": { "value": 0, "unit": "px" }, "offsetY": { "value": 1, "unit": "px" }, "blur": { "value": 2, "unit": "px" }, "spread": { "value": 0, "unit": "px" } },
+        "$description": "Subtle resting elevation. Source: .ai-glass-divider-h box-shadow (0 1px 2px rgba(0,0,0,0.04)), the clearest documented light+dark small-shadow pair in theme.css."
+      },
+      "level2": {
+        "$value": { "color": "#00000014", "offsetX": { "value": 0, "unit": "px" }, "offsetY": { "value": 4, "unit": "px" }, "blur": { "value": 14, "unit": "px" }, "spread": { "value": 0, "unit": "px" } },
+        "$description": "Raised/active elevation for a genuinely actionable, lifted element. Source: .auth-google-btn:hover / .auth-submit-btn:hover box-shadow (0 4px 14px rgba(0,0,0,0.08))."
+      },
+      "level3": {
+        "$value": [
+          { "color": "#0000002e", "offsetX": { "value": 0, "unit": "px" }, "offsetY": { "value": 32, "unit": "px" }, "blur": { "value": 64, "unit": "px" }, "spread": { "value": -16, "unit": "px" } },
+          { "color": "#00000014", "offsetX": { "value": 0, "unit": "px" }, "offsetY": { "value": 16, "unit": "px" }, "blur": { "value": 32, "unit": "px" }, "spread": { "value": -8, "unit": "px" } }
+        ],
+        "$description": "Overlay/modal/AI-premium elevation. Source: .ai-glass-shell box-shadow outer-depth layers."
+      }
+    },
+    "dark": {
+      "level0": { "$value": [], "$description": "Flat — border only, no shadow." },
+      "level1": {
+        "$value": { "color": "#00000033", "offsetX": { "value": 0, "unit": "px" }, "offsetY": { "value": 1, "unit": "px" }, "blur": { "value": 2, "unit": "px" }, "spread": { "value": 0, "unit": "px" } },
+        "$description": "Source: .dark .ai-glass-divider-h box-shadow (0 1px 2px rgba(0,0,0,0.2))."
+      },
+      "level2": {
+        "$value": { "color": "#0000004d", "offsetX": { "value": 0, "unit": "px" }, "offsetY": { "value": 4, "unit": "px" }, "blur": { "value": 14, "unit": "px" }, "spread": { "value": 0, "unit": "px" } },
+        "$description": "ESTIMATED — theme.css does not define a dark-mode counterpart for .auth-google-btn/.auth-submit-btn hover shadow. Alpha scaled from the light value (0.08) using the same ~2.5-3x light-to-dark ratio observed at level1 (0.04 -> 0.2), rounded to 0.3 for legibility. Flagged as an uncertain mapping — verify against a real dark-mode raised control before treating as final."
+      },
+      "level3": {
+        "$value": [
+          { "color": "#00000080", "offsetX": { "value": 0, "unit": "px" }, "offsetY": { "value": 32, "unit": "px" }, "blur": { "value": 64, "unit": "px" }, "spread": { "value": -16, "unit": "px" } },
+          { "color": "#0000004d", "offsetX": { "value": 0, "unit": "px" }, "offsetY": { "value": 16, "unit": "px" }, "blur": { "value": 32, "unit": "px" }, "spread": { "value": -8, "unit": "px" } }
+        ],
+        "$description": "Source: .dark .ai-glass-shell box-shadow outer-depth layers."
+      }
+    }
+  },
+
+  "motion": {
+    "$description": "Purposeful, non-decorative motion only (apps/web/DESIGN.md: 'keep motion purposeful: state feedback or transition only'). Never animate layout properties; animate opacity/transform. Source durations/easing are the documented transition rules in apps/web/styles/theme.css.",
+    "duration": {
+      "$type": "duration",
+      "instant": { "$value": { "value": 100, "unit": "ms" }, "$description": "Press/active feedback. Source: .auth-google-btn:active / .auth-submit-btn:active transition-duration." },
+      "fast": { "$value": { "value": 150, "unit": "ms" }, "$description": "Simple color/opacity change. Source: .auth-back-btn transition." },
+      "base": { "$value": { "value": 200, "unit": "ms" }, "$description": "Default interactive transition (border, background, shadow). Source: .auth-submit-btn / .ai-glass-input transitions." },
+      "slow": { "$value": { "value": 250, "unit": "ms" }, "$description": "Card/panel hover-lift transition. Source: .ai-glass-card transition." },
+      "overlay": { "$value": { "value": 350, "unit": "ms" }, "$description": "Sheet/modal/overlay presentation. Source: backdrop-frost animation." }
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "standard": { "$value": [0.25, 0.1, 0.25, 1], "$description": "Generic 'ease' transitions used throughout theme.css for color/shadow/border changes." },
+      "emphasized": { "$value": [0.25, 1, 0.5, 1], "$description": "Decelerated easing for button/press transform feedback. Source: .auth-google-btn / .auth-submit-btn transform transitions." },
+      "entrance": { "$value": [0.16, 1, 0.3, 1], "$description": "Panel/sheet/dialog entrance choreography. Source: auth-panel-in / auth-fade-up keyframe animations." }
+    },
+    "reducedMotion": {
+      "duration": { "$type": "duration", "$value": { "value": 0.01, "unit": "ms" }, "$description": "When the platform's reduce-motion accessibility setting is on, collapse every motion duration to effectively-instant rather than removing the state transition outright. Source: theme.css @media (prefers-reduced-motion: reduce) block." }
+    }
+  },
+
+  "touchTarget": {
+    "$type": "dimension",
+    "$description": "Minimum interactive hit-area sizes. Unit is density-independent (pt on iOS, dp on Android).",
+    "minimum": { "$value": { "value": 44, "unit": "px" }, "$description": "Apple HIG floor. Matches web's touch-44 utility (44x44 CSS px) and apps/web/DESIGN.md's stated touch-target minimum." },
+    "comfortable": { "$value": { "value": 48, "unit": "px" }, "$description": "Not present in apps/web/tokens.json — included for cross-platform consistency: Android's Material Design minimum touch target is 48dp, and the existing apps/ios DesignSystem already uses 48pt as its 'comfortable' tier (ValgateTouchTarget.comfortable). Flagged as a cross-referenced, not web-sourced, value." }
+  }
+}
