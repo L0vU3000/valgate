@@ -57,6 +57,10 @@ const REAL_CLERK_KEY_FIXTURE = "sk_test_not_a_real_secret_fixture_00000000000000
 beforeEach(() => {
   vi.clearAllMocks();
   mockEnv.CLERK_SECRET_KEY = undefined;
+  // CI intentionally enables both demo flags for integration coverage. Keep each
+  // unit test isolated, then opt into the specific demo state it is asserting.
+  vi.stubEnv("DEMO_MODE", "false");
+  vi.stubEnv("STAGING_DEMO_MODE", "false");
 });
 
 afterEach(() => {
