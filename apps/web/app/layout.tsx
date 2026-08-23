@@ -11,9 +11,32 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
+const SITE_URL = "https://www.valgate.co";
+const SITE_DESCRIPTION =
+  "Valgate is a property portfolio management platform for tracking rentals, properties, and portfolio performance in one place.";
+
 export const metadata: Metadata = {
-  title: "Valgate",
-  description: "Property portfolio management",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Valgate",
+    template: "%s | Valgate",
+  },
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Valgate",
+    title: "Valgate",
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary",
+    title: "Valgate",
+    description: SITE_DESCRIPTION,
+  },
   // .ico first so clients that hard-request /favicon.ico (e.g. some connector UIs) get a
   // real raster mark; svg second for crisp rendering in browsers that support it.
   icons: {
