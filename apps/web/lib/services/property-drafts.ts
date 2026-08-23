@@ -4,7 +4,7 @@ import { db } from "@/lib/db/client";
 import { propertyDrafts, propertyDraftFiles } from "@/lib/db/schema";
 import { convertRowToDb } from "@/lib/db/column-classifier";
 import { toDomain, type Ctx } from "@/lib/services/_mapping";
-import { scopedInsert, requireMember } from "@/lib/services/_crud";
+import { scopedInsert, requireMember, assertOrgAdmin } from "@/lib/services/_crud";
 import { assertCanMutate } from "@/lib/services/_mapping";
 // storage.ts exports this as `deleteStorageObject`; aliased to keep the
 // call sites below short and unchanged after the v1.0.2 merge renamed it.
@@ -116,6 +116,9 @@ export async function createPropertyDraft(
   input: { title: string; step: number; form: Record<string, unknown> },
   targetOrgId?: string,
 ): Promise<PropertyDraft> {
+  if (targetOrgId && targetOrgId !== ctx.orgId) {
+    await assertOrgAdmin(ctx, targetOrgId);
+  }
   return scopedInsert(ctx, propertyDrafts, "DRFT", input, rowToDraft, targetOrgId ? { orgId: targetOrgId } : undefined);
 }
 
@@ -131,6 +134,9 @@ export async function updatePropertyDraft(
 ): Promise<PropertyDraft | null> {
   assertCanMutate();     // D9 — demo mode is read-only
   requireMember(ctx);    // role gate
+  if (targetOrgId && targetOrgId !== ctx.orgId) {
+    await assertOrgAdmin(ctx, targetOrgId);
+  }
   const dbPatch = convertRowToDb(propertyDrafts, patch);
   // Stamp updated_at with the DB clock (now()), the SAME source create uses (column defaultNow()).
   // Using the app clock here instead would let app↔DB skew invert the ordering, and the drafts
