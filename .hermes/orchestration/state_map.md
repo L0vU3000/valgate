@@ -18,7 +18,7 @@
 ## Active control-plane bootstrap
 | ID | Atomic task | RED evidence | GREEN evidence | Xcode registration | Commit | Push | Status |
 |---|---|---|---|---|---|---|---|
-| OPS-001 | Provision Atomic-Gated control plane: state map, test gate, xcodeproj verification, SSH-agent Git transport | N/A — workflow infrastructure | 96/96 iPhone 17 Pro tests passed via `run_test.sh` | `xcodeproj` API verified app + test targets | Pending | Pending | Verified — ready to commit |
+| OPS-001 | Provision Atomic-Gated control plane: state map, test gate, xcodeproj verification, SSH-agent Git transport | N/A — workflow infrastructure | 96/96 iPhone 17 Pro tests passed via `run_test.sh` | `xcodeproj` API verified app + test targets | `18fad92` | PR #7 CI green | Complete |
 
 ## Next Capture task (blocked until OPS-001 is pushed)
 | ID | Atomic task | Required RED test | Required GREEN test | Status |
