@@ -38,7 +38,11 @@ export interface paths {
          */
         get: operations["listProperties"];
         put?: never;
-        post?: never;
+        /**
+         * Create a property
+         * @description Creates a new property under the caller's organization.
+         */
+        post: operations["createProperty"];
         delete?: never;
         options?: never;
         head?: never;
@@ -59,10 +63,18 @@ export interface paths {
         get: operations["getPropertyDetail"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete a property
+         * @description Deletes a property. Idempotent — returns 204 even if already deleted.
+         */
+        delete: operations["deleteProperty"];
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update a property
+         * @description Partially updates a property. Any omitted field is left unchanged.
+         */
+        patch: operations["updateProperty"];
         trace?: never;
     };
 }
@@ -86,6 +98,8 @@ export interface components {
             status: string;
             city: string | null;
             province: string | null;
+            lat: number;
+            lng: number;
             /** @description Unix timestamp (milliseconds) */
             createdAt: number;
         };
@@ -213,6 +227,50 @@ export interface operations {
             500: components["responses"]["InternalError"];
         };
     };
+    createProperty: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name: string;
+                    /** @enum {string} */
+                    type: "residential" | "commercial" | "multi-unit" | "retail" | "land" | "industrial" | "construction" | "other";
+                    /** @enum {string} */
+                    status: "Rented" | "Vacant" | "For Sale" | "Sold" | "Archived" | "Owner-Occupied";
+                    lat: number;
+                    lng: number;
+                    buyNumeric: number;
+                    totalArea: string;
+                    /** @enum {string} */
+                    title: "Hard title" | "Soft title" | "—";
+                    addressLine?: string;
+                    city?: string;
+                    province?: string;
+                    zip?: string;
+                    country?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Property created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyDetailDtoV1"];
+                };
+            };
+            400: components["responses"]["InvalidRequest"];
+            401: components["responses"]["Unauthorized"];
+            500: components["responses"]["InternalError"];
+        };
+    };
     getPropertyDetail: {
         parameters: {
             query?: never;
@@ -234,6 +292,77 @@ export interface operations {
                     "application/json": components["schemas"]["PropertyDetailDtoV1"];
                 };
             };
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+        };
+    };
+    deleteProperty: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Property ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Property deleted (or already absent) */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: components["responses"]["Unauthorized"];
+            500: components["responses"]["InternalError"];
+        };
+    };
+    updateProperty: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Property ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    name?: string;
+                    /** @enum {string} */
+                    type?: "residential" | "commercial" | "multi-unit" | "retail" | "land" | "industrial" | "construction" | "other";
+                    /** @enum {string} */
+                    status?: "Rented" | "Vacant" | "For Sale" | "Sold" | "Archived" | "Owner-Occupied";
+                    lat?: number;
+                    lng?: number;
+                    buyNumeric?: number;
+                    totalArea?: string;
+                    /** @enum {string} */
+                    title?: "Hard title" | "Soft title" | "—";
+                    addressLine?: string;
+                    city?: string;
+                    province?: string;
+                    zip?: string;
+                    country?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Property updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyDetailDtoV1"];
+                };
+            };
+            400: components["responses"]["InvalidRequest"];
             401: components["responses"]["Unauthorized"];
             404: components["responses"]["NotFound"];
             500: components["responses"]["InternalError"];
