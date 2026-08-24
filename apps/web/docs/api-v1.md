@@ -1,11 +1,13 @@
 # HTTP API v1
 
-> **Not deployed.** This surface exists in the codebase but is not exposed/announced in
-> production yet. Treat everything below as the contract it will have when it ships, not a
-> live integration point.
+> **Not deployed to production.** This surface is implemented and source-tested in this
+> repository but is not exposed/announced in production. Some routes are additionally deployed
+> to a protected staging Preview branch (see `apps/ios/docs/API-CONTRACT.md` for what that
+> unlocks) — treat anything not explicitly called out as staging-deployed as local/tested only,
+> not a live integration point.
 
-Read-only, additive HTTP surface alongside the existing MCP server (`/mcp`). It reuses the
-same identity/org resolution as MCP (`ctxFromMcpAuth`) rather than duplicating auth logic.
+Additive HTTP surface alongside the existing MCP server (`/mcp`). It reuses the same
+identity/org resolution as MCP (`ctxFromMcpAuth`) rather than duplicating auth logic.
 
 ## Auth
 
@@ -15,10 +17,9 @@ same identity/org resolution as MCP (`ctxFromMcpAuth`) rather than duplicating a
 - The token resolves to a Valgate `{ userId, orgId, orgRole }` Ctx via the same org-lookup
   `/mcp` uses. A multi-org user with no explicit org gets their primary org (most senior role,
   tie-broken by org id) — identical to an MCP read.
-- **Read-only, no JIT provisioning.** Unlike `/mcp`, an unknown Clerk user (no existing
-  Valgate row) is never auto-provisioned here — `ctxFromMcpAuth` is called with
-  `provisionIfMissing: false`. A read must never have the side effect of creating a
-  user/org/membership row; an unknown caller just gets a generic 401.
+- **No JIT provisioning.** Unlike `/mcp`, an unknown Clerk user (no existing Valgate row) is
+  never auto-provisioned here — `ctxFromMcpAuth` is called with `provisionIfMissing: false`.
+  An API request never creates a user/org/membership row; an unknown caller gets a generic 401.
 
 ## Routes
 
@@ -26,7 +27,11 @@ same identity/org resolution as MCP (`ctxFromMcpAuth`) rather than duplicating a
 |---|---|---|
 | GET | `/api/v1/me` | The caller's own profile |
 | GET | `/api/v1/properties` | Opaque-cursor page of the caller's org's properties |
+| POST | `/api/v1/properties` | Create a property under the caller's org |
 | GET | `/api/v1/properties/{id}` | A single property's detail, org-scoped |
+| PATCH | `/api/v1/properties/{id}` | Partially update a property, org-scoped |
+| DELETE | `/api/v1/properties/{id}` | Delete a property, org-scoped (idempotent) |
+| POST | `/api/v1/properties/{id}/documents` | Upload one file for an org-scoped property (**local/tested only**) |
 
 ### `GET /api/v1/me`
 
@@ -56,12 +61,23 @@ Response body:
 { "items": [PropertyListItemDto, ...], "nextCursor": "opaque-string-or-null" }
 ```
 
-`PropertyListItemDto` fields: `id`, `name`, `type`, `status`, `city`, `province`, `createdAt`.
+`PropertyListItemDto` fields: `id`, `name`, `type`, `status`, nullable `city`, nullable
+`province`, numeric `lat`, numeric `lng`, `createdAt`.
 
 Pagination is a real DB cursor (ordered by `createdAt, id`), not offset/limit — `nextCursor` is
 `null` once there is no further page. The cursor is validated on decode: it must carry a finite,
 nonnegative `createdAt` and a nonempty `id`, or the request is rejected as a 400 before any
 query runs (a tampered/foreign cursor is never silently ignored or partially trusted).
+
+### `POST /api/v1/properties`
+
+Creates an org-scoped property and returns `PropertyDetailDto` with status `201`. The JSON body
+requires `name`, `type`, `status`, `lat`, `lng`, `buyNumeric`, `totalArea`, and `title`; address
+fields are optional. Invalid JSON or property data returns the standard `400 invalid_request`
+envelope.
+
+> **Local/tested only:** this mutation is implemented and covered by the source contract, but
+> this document does not claim it is available on the protected staging Preview deployment.
 
 ### `GET /api/v1/properties/{id}`
 
@@ -71,6 +87,32 @@ Response body (`PropertyDetailDto`): the list fields above plus `addressLine`, `
 A property that doesn't exist and a property that exists in a **different** org are
 indistinguishable here — both return a plain 404. The lookup is org-scoped
 (`WHERE orgId = ctx.orgId`), so there is no separate "exists but not yours" case to leak.
+
+### `PATCH /api/v1/properties/{id}`
+
+Partially updates an org-scoped property. Omitted fields are left unchanged; invalid JSON or
+patch data returns `400`, and an absent or cross-org property returns the same `404 not_found`
+envelope. A successful update returns `PropertyDetailDto`.
+
+### `DELETE /api/v1/properties/{id}`
+
+Deletes an org-scoped property and returns `204`. It is idempotent: an absent or cross-org id
+also returns `204`, so the endpoint does not reveal whether another org owns an id.
+
+### `POST /api/v1/properties/{id}/documents`
+
+Uploads exactly one `file` part as `multipart/form-data` and returns status `201`. The file must be
+non-empty, at most 10 MB, and have one of the allowed MIME types: JPEG, PNG, WebP, PDF, DOC,
+DOCX, XLS, or XLSX. No other multipart field is permitted: clients must never send a storage ID,
+category, evidence/verification data, or any identity field.
+
+The property lookup is org-scoped and happens before storage: an absent or cross-org property is
+`404` and does not upload/persist anything. The server creates the storage key and derives
+`kind` (`photo` or `document`) itself. The success DTO contains only `id`, `propertyId`, `name`,
+`kind`, `mimeType`, `sizeBytes`, and `uploadedAt`; it never exposes a storage identifier.
+
+> **Local/tested only:** this upload route is source-tested, but is not asserted to be available
+> on protected staging or production and is not yet an approved live iOS integration target.
 
 ## DTO omissions (by design)
 
@@ -103,15 +145,11 @@ unexpected error from the services layer or DTO serialization is logged server-s
 with the same generic 500 `internal_error` envelope — the surface fails closed rather than
 letting a raw error reach Next's default error handling.
 
-## Rate limit
+## Non-goals
 
-120 requests / minute / user (`apiReadLimiter`, keyed on the resolved internal `userId`, after
-auth succeeds — unauthenticated requests never count against it). Looser than the MCP limiter
-(60/min) since every route here is a plain read.
-
-## Non-goals (read-only surface)
-
-- No write/mutation endpoints (no POST/PUT/PATCH/DELETE).
+- No document listing, retrieval, download, metadata update, or deletion endpoint. The one-file
+  property upload route above is the only document HTTP operation; no client should infer a
+  broader documents API from it.
 - No JIT user/org/membership provisioning on an unknown caller (see Auth above).
 - No endpoints beyond `me` and `properties` today — no leases, payments, documents, tenants,
   etc.

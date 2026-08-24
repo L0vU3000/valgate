@@ -4,7 +4,7 @@ import { resolveApiV1Ctx } from "@/lib/api/v1/auth";
 import { apiError } from "@/lib/api/v1/http";
 import { toPropertyDetailDto } from "@/lib/api/v1/dto";
 import { getProperty, updateProperty, deleteProperty } from "@/lib/services/properties";
-import { PropertyPatchSchema } from "@/lib/data/types/property";
+import { PropertyPatchRequestSchema } from "@/lib/api/v1/property-create.schema";
 import { logger } from "@/lib/logger";
 
 // This route hits the database per request and reads request auth — never statically prerender.
@@ -48,7 +48,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return apiError(400, "invalid_request", "Request body must be valid JSON.");
   }
 
-  const parsed = PropertyPatchSchema.safeParse(body);
+  const parsed = PropertyPatchRequestSchema.safeParse(body);
   if (!parsed.success) {
     return apiError(400, "invalid_request", "Invalid property patch data.");
   }

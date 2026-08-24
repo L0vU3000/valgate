@@ -1,13 +1,18 @@
 import SwiftUI
 import CoreLocation
+import PhotosUI
+import UIKit
+import UniformTypeIdentifiers
 
 @MainActor
 final class CreatePropertyViewModel: ObservableObject {
     @Published private(set) var state: CreatePropertyState = .idle
+    @Published private(set) var documentUploads: [DocumentUploadItem] = []
 
     private let client: APIClient
     private let sessionToken: String
     private let onUnauthorized: @MainActor () -> Void
+    private var createdPropertyId: String?
 
     init(client: APIClient, sessionToken: String, onUnauthorized: @escaping @MainActor () -> Void = {}) {
         self.client = client
@@ -15,12 +20,13 @@ final class CreatePropertyViewModel: ObservableObject {
         self.onUnauthorized = onUnauthorized
     }
 
-    func submit(_ request: CreatePropertyRequest) async {
+    func submit(_ request: CreatePropertyRequest, documents: [PendingDocument]) async {
         state = .submitting
         let resolved: CreatePropertyState
         do {
             let dto = try await client.createProperty(request, sessionToken: sessionToken)
             resolved = CreatePropertyStateResolver.resolve(result: .success(dto))
+            createdPropertyId = dto.id
         } catch let error as APIClientError {
             resolved = CreatePropertyStateResolver.resolve(result: .failure(error))
         } catch {
@@ -30,11 +36,47 @@ final class CreatePropertyViewModel: ObservableObject {
         if case .unauthorized = resolved {
             onUnauthorized()
         }
+        if case .submitted = resolved, !documents.isEmpty {
+            await uploadDocuments(documents)
+        }
     }
 
     func dismissError() {
         guard case .error = state else { return }
         state = .idle
+    }
+
+    /// Uploads each staged document independently after property creation.
+    /// A failure here never rolls back the already-created property — it
+    /// only marks that single file as failed and retryable.
+    func uploadDocuments(_ documents: [PendingDocument]) async {
+        documentUploads = documents.map { DocumentUploadItem(document: $0, status: .uploading) }
+        for index in documentUploads.indices {
+            await performUpload(at: index)
+        }
+    }
+
+    func retryUpload(id: UUID) async {
+        guard let index = documentUploads.firstIndex(where: { $0.id == id }) else { return }
+        documentUploads[index].status = .uploading
+        await performUpload(at: index)
+    }
+
+    private func performUpload(at index: Int) async {
+        guard let propertyId = createdPropertyId else { return }
+        let document = documentUploads[index].document
+        do {
+            let dto = try await client.uploadDocument(
+                propertyId: propertyId,
+                filename: document.filename,
+                mimeType: document.mimeType,
+                fileData: document.data,
+                sessionToken: sessionToken
+            )
+            documentUploads[index].status = .uploaded(dto)
+        } catch {
+            documentUploads[index].status = .failed("Upload failed. Tap to retry.")
+        }
     }
 }
 
@@ -42,8 +84,14 @@ final class CreatePropertyViewModel: ObservableObject {
 
 struct CreatePropertyView: View {
     @StateObject private var viewModel: CreatePropertyViewModel
+    @StateObject private var locationService = UserLocationService()
     @State private var form = CreatePropertyForm()
     @State private var showLocationPicker = false
+    @State private var pendingDocuments: [PendingDocument] = []
+    @State private var photoPickerItem: PhotosPickerItem?
+    @State private var showCameraPicker = false
+    @State private var showDocumentFilePicker = false
+    @State private var attachmentErrorMessage: String?
     @FocusState private var focusedField: Field?
 
     private let onCreated: @MainActor (PropertyDetailDto) -> Void
@@ -170,6 +218,39 @@ struct CreatePropertyView: View {
                     }
                 }
                 .accessibilityIdentifier("create-property-pick-location")
+
+                Button(action: { locationService.requestOneTapLocation() }) {
+                    HStack {
+                        HStack(spacing: ValgateSpacing.space2) {
+                            Image(systemName: "location.fill")
+                                .foregroundStyle(Color.valTextSecondary)
+                                .font(.system(size: 14))
+                            Text("Use My Location")
+                                .font(ValgateTypography.Body.standardEmphasis)
+                                .foregroundStyle(Color.valTextPrimary)
+                        }
+                        Spacer()
+                        if locationService.state == .requesting {
+                            ProgressView()
+                        }
+                    }
+                }
+                .disabled(locationService.state == .requesting)
+                .accessibilityIdentifier("create-property-use-my-location")
+
+                if case .authorizationDenied = locationService.state {
+                    Text("Location access denied. Enable it in Settings to use this.")
+                        .font(ValgateTypography.Content.caption)
+                        .foregroundStyle(Color.valStatusDanger)
+                } else if case .failure(let message) = locationService.state {
+                    Text(message)
+                        .font(ValgateTypography.Content.caption)
+                        .foregroundStyle(Color.valStatusDanger)
+                } else if case .unavailable = locationService.state {
+                    Text("Location services are unavailable on this device.")
+                        .font(ValgateTypography.Content.caption)
+                        .foregroundStyle(Color.valStatusDanger)
+                }
             } header: {
                 Text("Location")
                     .font(ValgateTypography.Content.label)
@@ -214,6 +295,54 @@ struct CreatePropertyView: View {
                 .accessibilityIdentifier("create-property-title")
             } header: {
                 Text("Details")
+                    .font(ValgateTypography.Content.label)
+                    .foregroundStyle(Color.valTextSecondary)
+                    .textCase(.uppercase)
+            }
+
+            // Attachments Section
+            Section {
+                ForEach(attachmentRows) { row in
+                    AttachmentRowView(
+                        row: row,
+                        onRetry: { Task { await viewModel.retryUpload(id: row.id) } },
+                        onRemove: { pendingDocuments.removeAll { $0.id == row.id } }
+                    )
+                }
+
+                if let attachmentErrorMessage {
+                    Text(attachmentErrorMessage)
+                        .font(ValgateTypography.Content.caption)
+                        .foregroundStyle(Color.valStatusDanger)
+                }
+
+                HStack(spacing: ValgateSpacing.space4) {
+                    PhotosPicker(selection: $photoPickerItem, matching: .images) {
+                        Label("Photo", systemImage: "photo")
+                    }
+                    .accessibilityIdentifier("create-property-add-photo")
+
+                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        Button {
+                            showCameraPicker = true
+                        } label: {
+                            Label("Camera", systemImage: "camera")
+                        }
+                        .accessibilityIdentifier("create-property-add-camera")
+                    }
+
+                    Button {
+                        showDocumentFilePicker = true
+                    } label: {
+                        Label("File", systemImage: "doc")
+                    }
+                    .accessibilityIdentifier("create-property-add-file")
+                }
+                .buttonStyle(.borderless)
+                .font(ValgateTypography.Body.standard)
+                .foregroundStyle(Color.valInteractivePrimary)
+            } header: {
+                Text("Attachments")
                     .font(ValgateTypography.Content.label)
                     .foregroundStyle(Color.valTextSecondary)
                     .textCase(.uppercase)
@@ -278,7 +407,17 @@ struct CreatePropertyView: View {
 
     private func submit() {
         Task {
-            await viewModel.submit(form.toRequest())
+            await viewModel.submit(form.toRequest(), documents: pendingDocuments)
+        }
+    }
+
+    /// Staged documents joined with their upload status, if uploading has
+    /// started. Before submission every row has a `nil` status (removable);
+    /// after submission the view model owns status per document id.
+    private var attachmentRows: [AttachmentRow] {
+        pendingDocuments.map { document in
+            let status = viewModel.documentUploads.first { $0.id == document.id }?.status
+            return AttachmentRow(id: document.id, filename: document.filename, status: status)
         }
     }
 

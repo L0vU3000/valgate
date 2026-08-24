@@ -10,9 +10,10 @@ import { apiError } from "./http";
 // Next.js 15 `params: Promise<{ id }>` convention.
 // ---------------------------------------------------------------------------
 
-const { resolveApiV1CtxMock, getPropertyMock } = vi.hoisted(() => ({
+const { resolveApiV1CtxMock, getPropertyMock, updatePropertyMock } = vi.hoisted(() => ({
   resolveApiV1CtxMock: vi.fn(),
   getPropertyMock: vi.fn(),
+  updatePropertyMock: vi.fn(),
 }));
 
 vi.mock("./auth", () => ({
@@ -21,9 +22,10 @@ vi.mock("./auth", () => ({
 
 vi.mock("@/lib/services/properties", () => ({
   getProperty: getPropertyMock,
+  updateProperty: updatePropertyMock,
 }));
 
-import { GET } from "@/app/api/v1/properties/[id]/route";
+import { GET, PATCH } from "@/app/api/v1/properties/[id]/route";
 
 const CTX: Ctx = { userId: "USR-0001", orgId: "ORG-0001", orgRole: "owner" };
 
@@ -117,5 +119,32 @@ describe("GET /api/v1/properties/[id]", () => {
     const body = await res.json();
     expect(body).toEqual({ error: { code: "internal_error", message: expect.any(String) } });
     expect(JSON.stringify(body)).not.toContain("SECRET-DB-ERROR-MARKER");
+  });
+});
+
+function patchRequest(id: string, jsonBody: unknown) {
+  return new Request(`http://localhost/api/v1/properties/${id}`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(jsonBody),
+  });
+}
+
+describe("PATCH /api/v1/properties/[id]", () => {
+  it("rejects a public-boundary field (photoStorageIds) with 400 invalid_request, without calling updateProperty", async () => {
+    resolveApiV1CtxMock.mockResolvedValue({ ok: true, ctx: CTX });
+    // If the (buggy) route lets this slip through, updateProperty must still resolve a valid
+    // property so a pre-fix run fails on status/code (200 vs 400), not on undefined/serialization.
+    updatePropertyMock.mockResolvedValue(PROPERTY);
+
+    const res = await PATCH(
+      patchRequest("PROP-0001", { name: "Renamed", photoStorageIds: ["STORAGE-SECRET"] }),
+      ctxParams("PROP-0001"),
+    );
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error.code).toBe("invalid_request");
+    expect(updatePropertyMock).not.toHaveBeenCalled();
   });
 });

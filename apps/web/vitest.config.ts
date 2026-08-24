@@ -42,4 +42,5 @@ export default defineConfig({
     // which creates the Neon Pool at module-load time using env.DATABASE_URL).
     setupFiles: ["./test/setup/env.ts"],
   },
+  oxc: { jsx: { runtime: "automatic" } },
 });

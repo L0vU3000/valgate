@@ -2,11 +2,12 @@
 
 ## Status: implemented and deployed to protected staging only, not production
 
-`/api/v1/me`, `/api/v1/properties`, and `/api/v1/properties/{id}` are
-implemented, tested, and documented in the web repo, and are deployed to the
-web repo's **protected staging Preview branch deployment** (originally as of
-local web commit `76331d6`). This document mirrors that contract for
-cross-repo planning purposes.
+The read foundation (`GET /api/v1/me`, `GET /api/v1/properties`, and
+`GET /api/v1/properties/{id}`) is implemented, tested, documented in the web
+repo, and deployed to the web repo's **protected staging Preview branch
+deployment** (originally as of local web commit `76331d6`). This document also
+records source-tested local property mutations for cross-repo planning; it does
+not claim those mutations are staging- or production-deployed.
 
 **This is a protected staging integration point, not a production one.** The
 surface is deployed to a private, access-controlled staging Preview branch
@@ -78,10 +79,9 @@ production-facing or App Store release build, additionally requires:
   the same org-lookup the MCP surface uses. A multi-org user with no
   explicit org gets their primary org (most senior role, tie-broken by org
   id) — identical to an MCP read.
-- **Read-only, no JIT provisioning.** Unlike `/mcp`, an unknown Clerk user
-  (no existing Valgate row) is never auto-provisioned here. A read must
-  never have the side effect of creating a user/org/membership row; an
-  unknown caller just gets a generic 401.
+- **No JIT provisioning.** Unlike `/mcp`, an unknown Clerk user (no existing
+  Valgate row) is never auto-provisioned here. An API request never creates a
+  user/org/membership row; an unknown caller gets a generic 401.
 - No credentials, tokens, or secrets are ever committed to this repository.
   See [`AGENTS.md`](../AGENTS.md).
 
@@ -91,7 +91,11 @@ production-facing or App Store release build, additionally requires:
 |---|---|---|
 | GET | `/api/v1/me` | The caller's own profile |
 | GET | `/api/v1/properties` | Opaque-cursor page of the caller's org's properties |
+| POST | `/api/v1/properties` | Create a property under the caller's org (**local/tested only**) |
 | GET | `/api/v1/properties/{id}` | A single property's detail, org-scoped |
+| PATCH | `/api/v1/properties/{id}` | Partially update a property (**local/tested only**) |
+| DELETE | `/api/v1/properties/{id}` | Delete a property, idempotently (**local/tested only**) |
+| POST | `/api/v1/properties/{id}/documents` | Upload one property file (**local/tested only**) |
 
 ### `GET /api/v1/me`
 
@@ -121,8 +125,8 @@ Response body:
 { "items": [PropertyListItemDto, ...], "nextCursor": "opaque-string-or-null" }
 ```
 
-`PropertyListItemDto` fields: `id`, `name`, `type`, `status`, `city`,
-`province`, `createdAt`.
+`PropertyListItemDto` fields: `id`, `name`, `type`, `status`, nullable `city`, nullable
+`province`, numeric `lat`, numeric `lng`, `createdAt`.
 
 Pagination is a real DB cursor (ordered by `createdAt, id`), not
 offset/limit — `nextCursor` is `null` once there is no further page. A
@@ -135,12 +139,31 @@ Response body (`PropertyDetailDto`): the list fields above plus
 
 A property that doesn't exist and a property that exists in a **different**
 org are indistinguishable here — both return a plain 404. The lookup is
-org-scoped, so there is no separate "exists but not yours" case to leak.
+(`WHERE orgId = ctx.orgId`), so there is no separate "exists but not yours" case to leak.
 
-### Property documents: not yet available
+### Property mutations: local/tested only
 
-There is no documents read endpoint. Property documents were considered for
-this phase but are deferred — see "Non-goals" below.
+`POST /api/v1/properties` creates a property and returns `PropertyDetailDto` with `201`. It
+requires JSON fields `name`, `type`, `status`, `lat`, `lng`, `buyNumeric`, `totalArea`, and
+`title`; address fields are optional. `PATCH /api/v1/properties/{id}` accepts a partial property
+body and returns the updated detail DTO. `DELETE /api/v1/properties/{id}` returns `204` and is
+idempotent, including for absent or cross-org ids.
+
+These mutation routes are documented from source-tested local web code only. They are **not** an
+approved iOS integration target until the delivery gates above are met for the deployed
+environment.
+
+### Property document upload: local/tested only
+
+`POST /api/v1/properties/{id}/documents` accepts exactly one non-empty multipart `file` part
+(maximum 10 MB; JPEG, PNG, WebP, PDF, DOC, DOCX, XLS, or XLSX). The property lookup is
+org-scoped before storage; a missing or cross-org property returns `404`. Clients cannot supply
+storage IDs, categories, evidence, verification, or identity fields. On `201`, the response is
+limited to `id`, `propertyId`, `name`, `kind`, `mimeType`, `sizeBytes`, and `uploadedAt`.
+
+This route is implemented and source-tested locally only. It is not evidence that it is deployed
+to protected staging or production, and it does not by itself authorize a live iOS integration.
+There is still no document listing, retrieval, download, metadata-update, or deletion endpoint.
 
 ## DTO omissions (by design)
 
@@ -170,14 +193,10 @@ Every failure returns the same stable envelope:
 A caught internal error's `message` is never echoed to the client — every
 response uses a fixed, generic string per status/code.
 
-## Rate limit
+## Non-goals
 
-120 requests / minute / user, keyed on the resolved internal `userId`, after
-auth succeeds — unauthenticated requests never count against it.
-
-## Non-goals (read-only surface)
-
-- No write/mutation endpoints (no POST/PUT/PATCH/DELETE).
+- No property-documents endpoint. Upload, document listing, and document retrieval remain
+  deferred; no client should infer a documents API from the property mutations above.
 - No JIT user/org/membership provisioning on an unknown caller (see Auth
   above).
 - No endpoints beyond `me` and `properties` today — no leases, payments,

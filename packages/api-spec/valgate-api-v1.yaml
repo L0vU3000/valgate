@@ -91,35 +91,39 @@ paths:
               properties:
                 name:
                   type: string
+                  minLength: 1
                 type:
                   type: string
+                  enum: [residential, commercial, multi-unit, retail, land, industrial, construction, other]
                 status:
                   type: string
+                  enum: [Rented, Vacant, For Sale, Sold, Archived, Owner-Occupied]
                 lat:
                   type: number
+                  minimum: -90
+                  maximum: 90
                 lng:
                   type: number
+                  minimum: -180
+                  maximum: 180
                 buyNumeric:
                   type: number
+                  minimum: 0
                 totalArea:
                   type: string
                 title:
                   type: string
+                  enum: [Hard title, Soft title, "—"]
                 addressLine:
                   type: string
-                  nullable: true
                 city:
                   type: string
-                  nullable: true
                 province:
                   type: string
-                  nullable: true
                 zip:
                   type: string
-                  nullable: true
                 country:
                   type: string
-                  nullable: true
       responses:
         "201":
           description: Property created
@@ -179,29 +183,39 @@ paths:
               properties:
                 name:
                   type: string
+                  minLength: 1
                 type:
                   type: string
+                  enum: [residential, commercial, multi-unit, retail, land, industrial, construction, other]
                 status:
                   type: string
+                  enum: [Rented, Vacant, For Sale, Sold, Archived, Owner-Occupied]
                 lat:
                   type: number
+                  minimum: -90
+                  maximum: 90
                 lng:
                   type: number
+                  minimum: -180
+                  maximum: 180
                 buyNumeric:
                   type: number
+                  minimum: 0
                 totalArea:
                   type: string
                 title:
                   type: string
+                  enum: [Hard title, Soft title, "—"]
                 addressLine:
                   type: string
-                  nullable: true
                 city:
                   type: string
-                  nullable: true
                 province:
                   type: string
-                  nullable: true
+                zip:
+                  type: string
+                country:
+                  type: string
       responses:
         "200":
           description: Property updated
@@ -236,6 +250,46 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /properties/{id}/documents:
+    post:
+      operationId: uploadPropertyDocument
+      summary: Upload one document for a property
+      description: Uploads one allowed file for a property in the caller's org. Storage identifiers are never client inputs or response fields.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Property ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              additionalProperties: false
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Document uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentUploadDtoV1"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   schemas:
     MeDto:
@@ -256,7 +310,7 @@ components:
 
     PropertyListItemDtoV1:
       type: object
-      required: [id, name, type, status, city, province, createdAt]
+      required: [id, name, type, status, city, province, lat, lng, createdAt]
       properties:
         id:
           type: string
@@ -274,6 +328,10 @@ components:
         province:
           type: string
           nullable: true
+        lat:
+          type: number
+        lng:
+          type: number
         createdAt:
           type: integer
           description: Unix timestamp (milliseconds)
@@ -301,6 +359,28 @@ components:
         yearBuilt:
           type: string
           nullable: true
+
+    DocumentUploadDtoV1:
+      type: object
+      required: [id, propertyId, name, kind, mimeType, sizeBytes, uploadedAt]
+      properties:
+        id:
+          type: string
+        propertyId:
+          type: string
+        name:
+          type: string
+        kind:
+          type: string
+          enum: [photo, document]
+        mimeType:
+          type: string
+        sizeBytes:
+          type: integer
+          minimum: 0
+        uploadedAt:
+          type: integer
+          description: Unix timestamp (milliseconds)
 
     ErrorEnvelope:
       type: object

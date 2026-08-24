@@ -25,7 +25,7 @@ public iOS API, regardless of how directly they back a web page.
 | Profile / account | `app/(shell)/settings/page.tsx` | API: `app/api/v1/me/route.ts` (mirrored in [`docs/API-CONTRACT.md`](API-CONTRACT.md) `GET /api/v1/me`) | `supported` | Read-only profile/org context (`email`, `displayName`, `role`, `orgName`) is exposed by a documented, staging-deployed `v1` endpoint. |
 | Portfolio (property list) | `app/(shell)/portfolio/page.tsx` | API: `app/api/v1/properties/route.ts` (mirrored `GET /api/v1/properties`) | `supported` | Cursor-paginated property list is exposed by a documented `v1` endpoint; matches the MVP's read-only portfolio-list screen. |
 | Property detail | `app/(shell)/property/[id]/overview/page.tsx` | API: `app/api/v1/properties/[id]/route.ts` (mirrored `GET /api/v1/properties/{id}`) | `partial` | A documented `v1` endpoint exists, but it returns only the bounded `PropertyDetailDto` fields (list fields plus `addressLine`, `country`, `totalArea`, `bedrooms`, `bathrooms`, `yearBuilt`) — not the full web overview page's content. Native detail must be scoped to those DTO fields only. |
-| Property writes / imports | `app/actions/properties.ts` | Web Server Action → Drizzle (no `/api/v1/*` route) | `blocked` | Server Action, not a public API. No `v1` write endpoints exist (`docs/API-CONTRACT.md` Non-goals: "No write/mutation endpoints"). Per `AGENTS.md` rule 3, Server Actions are never a valid iOS integration surface. |
+| Property writes / imports | `app/actions/properties.ts` | API: `POST /api/v1/properties`, `PATCH`/`DELETE /api/v1/properties/{id}` (also backed by web Server Actions) | `blocked` | The v1 mutation routes are source-tested/local only, not an established staging or production iOS integration target. Server Actions remain invalid for iOS; only the documented HTTP routes may be considered after the delivery gates in `docs/API-CONTRACT.md` are met. |
 | Documents | `app/(shell)/property/[id]/documents/page.tsx`, `cachedListDocuments` | Server-only cached helper (no `/api/v1/*` route) | `blocked` | No documents read endpoint exists anywhere (`docs/API-CONTRACT.md`: "Property documents: not yet available"). `cachedListDocuments` is a server-only helper, not an API boundary. |
 | Rental / lease / tenant data | `app/(shell)/rental/page.tsx`, `cachedListLeases`, `cachedListTenants` | Server-only cached helpers (no `/api/v1/*` route) | `blocked` | No lease or tenant endpoints exist in the `v1` contract (`docs/API-CONTRACT.md` Non-goals: "no leases, ... tenants, etc."). These helpers are internal to the web repo. |
 | Ownership | `app/(shell)/property/[id]/ownership/page.tsx`, `cachedListOwnershipRecords` | Server-only cached helper (no `/api/v1/*` route) | `blocked` | No ownership-records endpoint is published in `v1`. `cachedListOwnershipRecords` is a server-only helper, not an API boundary. |
@@ -56,8 +56,10 @@ The following are out of scope for the first vertical slice, and for the
 read-only foundation generally, regardless of how directly they appear to
 map to an existing web page:
 
-- **Property mutations / imports** — `app/actions/properties.ts` is a
-  Server Action → Drizzle write path with no `/api/v1/*` equivalent.
+- **Property mutations / imports** — the source-tested local v1 routes
+  (`POST /api/v1/properties`, `PATCH`/`DELETE /api/v1/properties/{id}`) are
+  not an established staging or production iOS integration target. The web
+  Server Action → Drizzle path remains invalid for iOS.
 - **Documents** — `app/(shell)/property/[id]/documents/page.tsx` and
   `cachedListDocuments` have no read endpoint in `v1`.
 - **Rental / lease / tenant data** — `app/(shell)/rental/page.tsx`,

@@ -7,4 +7,5 @@ enum APIRoute {
     case createProperty
     case updateProperty(id: String)
     case deleteProperty(id: String)
+    case uploadDocument(propertyId: String)
 }

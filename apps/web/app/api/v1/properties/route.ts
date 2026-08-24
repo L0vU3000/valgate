@@ -5,6 +5,7 @@ import { apiError } from "@/lib/api/v1/http";
 import { toPropertyListItemDto, toPropertyDetailDto } from "@/lib/api/v1/dto";
 import { listPropertiesPage, createProperty } from "@/lib/services/properties";
 import { NewPropertySchema } from "@/lib/data/types/property";
+import { PropertyCreateRequestSchema } from "@/lib/api/v1/property-create.schema";
 import { logger } from "@/lib/logger";
 
 // This route hits the database per request and reads request auth — never statically prerender.
@@ -64,7 +65,16 @@ export async function POST(request: Request) {
     return apiError(400, "invalid_request", "Request body must be valid JSON.");
   }
 
-  const parsed = NewPropertySchema.safeParse(body);
+  // Public boundary first: only the fields published in the OpenAPI createProperty request
+  // are accepted — anything else (internal storage/evidence ids, verification flags, ...)
+  // is rejected here rather than reaching NewPropertySchema, which is the internal create
+  // shape shared with the properties service and is intentionally broader.
+  const publicParsed = PropertyCreateRequestSchema.safeParse(body);
+  if (!publicParsed.success) {
+    return apiError(400, "invalid_request", "Invalid property data.");
+  }
+
+  const parsed = NewPropertySchema.safeParse(publicParsed.data);
   if (!parsed.success) {
     return apiError(400, "invalid_request", "Invalid property data.");
   }

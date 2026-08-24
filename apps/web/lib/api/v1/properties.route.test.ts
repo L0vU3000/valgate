@@ -9,9 +9,10 @@ import { apiError } from "./http";
 // ids leaked).
 // ---------------------------------------------------------------------------
 
-const { resolveApiV1CtxMock, listPropertiesPageMock } = vi.hoisted(() => ({
+const { resolveApiV1CtxMock, listPropertiesPageMock, createPropertyMock } = vi.hoisted(() => ({
   resolveApiV1CtxMock: vi.fn(),
   listPropertiesPageMock: vi.fn(),
+  createPropertyMock: vi.fn(),
 }));
 
 vi.mock("./auth", () => ({
@@ -20,9 +21,10 @@ vi.mock("./auth", () => ({
 
 vi.mock("@/lib/services/properties", () => ({
   listPropertiesPage: listPropertiesPageMock,
+  createProperty: createPropertyMock,
 }));
 
-import { GET } from "@/app/api/v1/properties/route";
+import { GET, POST } from "@/app/api/v1/properties/route";
 
 const CTX: Ctx = { userId: "USR-0001", orgId: "ORG-0001", orgRole: "owner" };
 
@@ -40,6 +42,14 @@ const PROPERTY = {
 
 function req(query = ""): Request {
   return new Request(`http://localhost/api/v1/properties${query}`);
+}
+
+function postReq(body: unknown): Request {
+  return new Request("http://localhost/api/v1/properties", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  });
 }
 
 beforeEach(() => {
@@ -149,5 +159,41 @@ describe("GET /api/v1/properties", () => {
     const body = await res.json();
     expect(body).toEqual({ error: { code: "internal_error", message: expect.any(String) } });
     expect(JSON.stringify(body)).not.toContain("SECRET-DB-ERROR-MARKER");
+  });
+});
+
+describe("POST /api/v1/properties", () => {
+  it("rejects an otherwise-valid create request that smuggles internal-only documentStorageIds with 400 invalid_request, and never calls createProperty", async () => {
+    resolveApiV1CtxMock.mockResolvedValue({ ok: true, ctx: CTX });
+    createPropertyMock.mockResolvedValue({
+      ...PROPERTY,
+      lat: 14.6,
+      lng: 120.9,
+      addressLine: undefined,
+      country: undefined,
+      totalArea: "1",
+      bedrooms: undefined,
+      bathrooms: undefined,
+      yearBuilt: undefined,
+    });
+
+    const res = await POST(
+      postReq({
+        name: "42 Ocean Ave",
+        type: "residential",
+        status: "Rented",
+        lat: 14.6,
+        lng: 120.9,
+        buyNumeric: 1,
+        totalArea: "1",
+        title: "Hard title",
+        documentStorageIds: ["STORAGE-SECRET"],
+      }),
+    );
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error.code).toBe("invalid_request");
+    expect(createPropertyMock).not.toHaveBeenCalled();
   });
 });
