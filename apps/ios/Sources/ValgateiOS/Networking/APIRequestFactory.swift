@@ -43,7 +43,7 @@ struct APIRequestFactory {
 
     private func httpMethod(for route: APIRoute) -> String {
         switch route {
-        case .createProperty:
+        case .createProperty, .uploadDocument:
             return "POST"
         case .updateProperty:
             return "PATCH"
@@ -64,6 +64,8 @@ struct APIRequestFactory {
             return "api/v1/properties/\(id)"
         case .createProperty:
             return "api/v1/properties"
+        case .uploadDocument(let propertyId):
+            return "api/v1/properties/\(propertyId)/documents"
         }
     }
 }

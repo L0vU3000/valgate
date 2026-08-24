@@ -55,6 +55,15 @@ actor APIClient {
         let _: Void = try await sendVoid(request, route: .deleteProperty(id: id))
     }
 
+    func uploadDocument(propertyId: String, filename: String, mimeType: String, fileData: Data, sessionToken: String) async throws -> PropertyDocumentDto {
+        let route = APIRoute.uploadDocument(propertyId: propertyId)
+        let boundary = MultipartFormDataBuilder.makeBoundary()
+        var request = factory.urlRequest(for: route, sessionToken: sessionToken)
+        request.httpBody = MultipartFormDataBuilder.body(filename: filename, mimeType: mimeType, fileData: fileData, boundary: boundary)
+        request.setValue(MultipartFormDataBuilder.contentTypeHeaderValue(boundary: boundary), forHTTPHeaderField: "Content-Type")
+        return try await send(request, route: route)
+    }
+
     private static func safeRouteLabel(for route: APIRoute) -> String {
         switch route {
         case .me:
@@ -69,6 +78,8 @@ actor APIClient {
             "updateProperty"
         case .deleteProperty:
             "deleteProperty"
+        case .uploadDocument:
+            "uploadDocument"
         }
     }
 
