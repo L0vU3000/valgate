@@ -535,8 +535,9 @@ export const ownershipWizardConfig: WizardConfig<typeof OwnershipWizardSchema> =
       const currentResult = await listCoOwnersForPropertyAction(propertyId);
       const currentCoOwners = currentResult.ok ? currentResult.data : [];
 
-      if (values.holdingType === "Sole Ownership") {
-        // No co-owner action for Sole Ownership
+      if (values.holdingType === "Sole Ownership" || values.coOwners.length === 0) {
+        // No co-owner action for Sole Ownership, or when the form submitted no
+        // co-owners (defensive/legacy state, not a deliberate delete-all).
       } else {
         const formCoOwnerIds = new Set(
           values.coOwners.filter((c) => c.id).map((c) => c.id!),

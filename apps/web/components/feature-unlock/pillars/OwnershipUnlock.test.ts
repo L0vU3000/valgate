@@ -74,4 +74,39 @@ describe("ownershipWizardConfig.onSubmitData", () => {
     // saw (or emptied) the existing co-owner list. Submitting must not delete it.
     expect(removeCoOwner).not.toHaveBeenCalled();
   });
+
+  it("does not delete existing co-owners when a non-sole holding type submits an empty co-owner list", async () => {
+    updateOwnershipRecord.mockResolvedValue({
+      ok: true,
+      data: { id: "own-1" },
+    });
+    listCoOwnersForPropertyAction.mockResolvedValue({
+      ok: true,
+      data: [
+        {
+          id: "co-1",
+          propertyId: "prop-1",
+          name: "Jane Doe",
+          role: "Primary",
+          sharePercent: 100,
+        },
+      ],
+    });
+
+    const result = await ownershipWizardConfig.onSubmitData({
+      propertyId: "prop-1",
+      entityId: "own-1",
+      values: {
+        holdingType: "Joint Tenancy",
+        distributionMethod: undefined,
+        coOwners: [],
+      },
+    });
+
+    expect(result.ok).toBe(true);
+    // An empty co-owner list on a non-sole holding type is a defensive/legacy
+    // state (e.g. the step was never populated), not the user deliberately
+    // clearing every co-owner. Submitting must not delete-all.
+    expect(removeCoOwner).not.toHaveBeenCalled();
+  });
 });
