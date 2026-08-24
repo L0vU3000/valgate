@@ -536,10 +536,7 @@ export const ownershipWizardConfig: WizardConfig<typeof OwnershipWizardSchema> =
       const currentCoOwners = currentResult.ok ? currentResult.data : [];
 
       if (values.holdingType === "Sole Ownership") {
-        // Remove all existing co-owners
-        for (const existing of currentCoOwners) {
-          await removeCoOwner(existing.id);
-        }
+        // No co-owner action for Sole Ownership
       } else {
         const formCoOwnerIds = new Set(
           values.coOwners.filter((c) => c.id).map((c) => c.id!),
