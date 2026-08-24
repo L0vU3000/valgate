@@ -77,6 +77,26 @@ export interface paths {
         patch: operations["updateProperty"];
         trace?: never;
     };
+    "/properties/{id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload one document for a property
+         * @description Uploads one allowed file for a property in the caller's org. Storage identifiers are never client inputs or response fields.
+         */
+        post: operations["uploadPropertyDocument"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -111,6 +131,17 @@ export interface components {
             bathrooms: string | null;
             yearBuilt: string | null;
         } & components["schemas"]["PropertyListItemDtoV1"];
+        DocumentUploadDtoV1: {
+            id: string;
+            propertyId: string;
+            name: string;
+            /** @enum {string} */
+            kind: "photo" | "document";
+            mimeType: string;
+            sizeBytes: number;
+            /** @description Unix timestamp (milliseconds) */
+            uploadedAt: number;
+        };
         ErrorEnvelope: {
             error: {
                 /** @enum {string} */
@@ -360,6 +391,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PropertyDetailDtoV1"];
+                };
+            };
+            400: components["responses"]["InvalidRequest"];
+            401: components["responses"]["Unauthorized"];
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalError"];
+        };
+    };
+    uploadPropertyDocument: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Property ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Document uploaded */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentUploadDtoV1"];
                 };
             };
             400: components["responses"]["InvalidRequest"];

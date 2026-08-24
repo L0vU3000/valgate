@@ -250,6 +250,46 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /properties/{id}/documents:
+    post:
+      operationId: uploadPropertyDocument
+      summary: Upload one document for a property
+      description: Uploads one allowed file for a property in the caller's org. Storage identifiers are never client inputs or response fields.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Property ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              additionalProperties: false
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Document uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocumentUploadDtoV1"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   schemas:
     MeDto:
@@ -319,6 +359,28 @@ components:
         yearBuilt:
           type: string
           nullable: true
+
+    DocumentUploadDtoV1:
+      type: object
+      required: [id, propertyId, name, kind, mimeType, sizeBytes, uploadedAt]
+      properties:
+        id:
+          type: string
+        propertyId:
+          type: string
+        name:
+          type: string
+        kind:
+          type: string
+          enum: [photo, document]
+        mimeType:
+          type: string
+        sizeBytes:
+          type: integer
+          minimum: 0
+        uploadedAt:
+          type: integer
+          description: Unix timestamp (milliseconds)
 
     ErrorEnvelope:
       type: object

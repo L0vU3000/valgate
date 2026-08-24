@@ -31,6 +31,7 @@ identity/org resolution as MCP (`ctxFromMcpAuth`) rather than duplicating auth l
 | GET | `/api/v1/properties/{id}` | A single property's detail, org-scoped |
 | PATCH | `/api/v1/properties/{id}` | Partially update a property, org-scoped |
 | DELETE | `/api/v1/properties/{id}` | Delete a property, org-scoped (idempotent) |
+| POST | `/api/v1/properties/{id}/documents` | Upload one file for an org-scoped property (**local/tested only**) |
 
 ### `GET /api/v1/me`
 
@@ -98,6 +99,21 @@ envelope. A successful update returns `PropertyDetailDto`.
 Deletes an org-scoped property and returns `204`. It is idempotent: an absent or cross-org id
 also returns `204`, so the endpoint does not reveal whether another org owns an id.
 
+### `POST /api/v1/properties/{id}/documents`
+
+Uploads exactly one `file` part as `multipart/form-data` and returns status `201`. The file must be
+non-empty, at most 10 MB, and have one of the allowed MIME types: JPEG, PNG, WebP, PDF, DOC,
+DOCX, XLS, or XLSX. No other multipart field is permitted: clients must never send a storage ID,
+category, evidence/verification data, or any identity field.
+
+The property lookup is org-scoped and happens before storage: an absent or cross-org property is
+`404` and does not upload/persist anything. The server creates the storage key and derives
+`kind` (`photo` or `document`) itself. The success DTO contains only `id`, `propertyId`, `name`,
+`kind`, `mimeType`, `sizeBytes`, and `uploadedAt`; it never exposes a storage identifier.
+
+> **Local/tested only:** this upload route is source-tested, but is not asserted to be available
+> on protected staging or production and is not yet an approved live iOS integration target.
+
 ## DTO omissions (by design)
 
 None of the v1 DTOs ever include: internal `userId`/`orgId`/`clientId`, any storage id
@@ -131,8 +147,9 @@ letting a raw error reach Next's default error handling.
 
 ## Non-goals
 
-- No property-documents endpoint. Upload, document listing, and document retrieval remain
-  deferred; no client should infer a documents API from the property mutations above.
+- No document listing, retrieval, download, metadata update, or deletion endpoint. The one-file
+  property upload route above is the only document HTTP operation; no client should infer a
+  broader documents API from it.
 - No JIT user/org/membership provisioning on an unknown caller (see Auth above).
 - No endpoints beyond `me` and `properties` today — no leases, payments, documents, tenants,
   etc.

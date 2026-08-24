@@ -70,4 +70,25 @@ describe("OpenAPI v1 contract sync: YAML source vs generated TypeScript", () => 
     expect(dtoBlock).toContain("lat: number;");
     expect(dtoBlock).toContain("lng: number;");
   });
+
+  it("YAML and generated types declare the multipart property document upload operation (regen required)", () => {
+    const documentPathBlock = yamlSource.slice(
+      yamlSource.indexOf("  /properties/{id}/documents:"),
+      yamlSource.indexOf("\ncomponents:"),
+    );
+    expect(documentPathBlock).toMatch(/operationId:\s*uploadPropertyDocument/);
+    expect(documentPathBlock).toMatch(/multipart\/form-data/);
+    expect(documentPathBlock).toMatch(/required:\s*\[file\]/);
+    expect(documentPathBlock).toMatch(/DocumentUploadDtoV1/);
+
+    expect(generatedSource).toMatch(
+      /"\/properties\/\{id\}\/documents":\s*\{[\s\S]*?post: operations\["uploadPropertyDocument"\];/,
+    );
+    const operationsBlock = extractBlock(generatedSource, "export interface operations {");
+    expect(operationsBlock).toMatch(/\buploadPropertyDocument:\s*\{/);
+    const documentDtoBlock = extractBlock(generatedSource, "DocumentUploadDtoV1: {");
+    expect(documentDtoBlock).toContain("id: string;");
+    expect(documentDtoBlock).toContain('kind: "photo" | "document";');
+    expect(documentDtoBlock).not.toContain("storageId");
+  });
 });

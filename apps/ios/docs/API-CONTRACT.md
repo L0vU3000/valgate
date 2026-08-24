@@ -95,6 +95,7 @@ production-facing or App Store release build, additionally requires:
 | GET | `/api/v1/properties/{id}` | A single property's detail, org-scoped |
 | PATCH | `/api/v1/properties/{id}` | Partially update a property (**local/tested only**) |
 | DELETE | `/api/v1/properties/{id}` | Delete a property, idempotently (**local/tested only**) |
+| POST | `/api/v1/properties/{id}/documents` | Upload one property file (**local/tested only**) |
 
 ### `GET /api/v1/me`
 
@@ -152,10 +153,17 @@ These mutation routes are documented from source-tested local web code only. The
 approved iOS integration target until the delivery gates above are met for the deployed
 environment.
 
-### Property documents: not yet available
+### Property document upload: local/tested only
 
-There is no documents read endpoint. Property documents were considered for
-this phase but are deferred — see "Non-goals" below.
+`POST /api/v1/properties/{id}/documents` accepts exactly one non-empty multipart `file` part
+(maximum 10 MB; JPEG, PNG, WebP, PDF, DOC, DOCX, XLS, or XLSX). The property lookup is
+org-scoped before storage; a missing or cross-org property returns `404`. Clients cannot supply
+storage IDs, categories, evidence, verification, or identity fields. On `201`, the response is
+limited to `id`, `propertyId`, `name`, `kind`, `mimeType`, `sizeBytes`, and `uploadedAt`.
+
+This route is implemented and source-tested locally only. It is not evidence that it is deployed
+to protected staging or production, and it does not by itself authorize a live iOS integration.
+There is still no document listing, retrieval, download, metadata-update, or deletion endpoint.
 
 ## DTO omissions (by design)
 
