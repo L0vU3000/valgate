@@ -93,6 +93,20 @@ final class APIClientBoundaryTests: XCTestCase {
         XCTAssertEqual(leases.first?.unit, "Unit A")
     }
 
+    func test_validResponseDecodesThroughListValuationsIntoDtos() async throws {
+        let json = """
+        [{"id":"valuation_1","price":450000.75,"valuationDate":1700000000000,"month":"2023-11","recordedAt":1700000000000}]
+        """.data(using: .utf8)!
+        StubProtocol.handler = { _ in .init(statusCode: 200, body: json) }
+
+        let valuations = try await makeClient().listValuations(propertyId: "prop_1", sessionToken: "token")
+
+        XCTAssertEqual(valuations.count, 1)
+        XCTAssertEqual(valuations.first?.id, "valuation_1")
+        XCTAssertEqual(valuations.first?.price, 450000.75)
+        XCTAssertEqual(valuations.first?.month, "2023-11")
+    }
+
     func test_wellFormedErrorEnvelopeBecomesServerErrorWithParsedValues() async {
         let json = """
         {"error":{"code":"not_found","message":"Property not found."}}

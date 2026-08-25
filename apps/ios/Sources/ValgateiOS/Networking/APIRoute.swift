@@ -10,4 +10,5 @@ enum APIRoute {
     case uploadDocument(propertyId: String)
     case listDocuments(propertyId: String)
     case listLeases(propertyId: String)
+    case listValuations(propertyId: String)
 }

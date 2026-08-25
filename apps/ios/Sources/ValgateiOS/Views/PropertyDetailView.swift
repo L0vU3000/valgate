@@ -184,6 +184,22 @@ struct PropertyDetailView: View {
             }
             .listRowBackground(Color.valSurfaceBase)
 
+            // MARK: Valuations
+            Section {
+                NavigationLink {
+                    PropertyValuationView(
+                        client: viewModel.client,
+                        propertyId: viewModel.propertyId,
+                        sessionToken: viewModel.sessionToken,
+                        onUnauthorized: viewModel.onUnauthorized
+                    )
+                } label: {
+                    Label("Valuations", systemImage: "chart.line.uptrend.xyaxis")
+                }
+                .accessibilityIdentifier("property-detail-valuation-link")
+            }
+            .listRowBackground(Color.valSurfaceBase)
+
             // MARK: Delete
             Section {
                 VGButton("Delete Property", icon: "trash", variant: .destructive, size: .standard) {
