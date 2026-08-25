@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Ctx } from "@/lib/services/_mapping";
 
-const { resolveApiV1CtxMock, getPropertyMock, presignUploadMock, createDocumentMock } = vi.hoisted(() => ({
+const { resolveApiV1CtxMock, getPropertyMock, presignUploadMock, createDocumentMock, listDocumentsMock } = vi.hoisted(() => ({
   resolveApiV1CtxMock: vi.fn(),
   getPropertyMock: vi.fn(),
   presignUploadMock: vi.fn(),
   createDocumentMock: vi.fn(),
+  listDocumentsMock: vi.fn(),
 }));
 
 vi.mock("./auth", () => ({
@@ -22,9 +23,10 @@ vi.mock("@/lib/services/storage", () => ({
 
 vi.mock("@/lib/services/documents", () => ({
   createDocument: createDocumentMock,
+  listDocuments: listDocumentsMock,
 }));
 
-import { POST } from "@/app/api/v1/properties/[id]/documents/route";
+import { GET, POST } from "@/app/api/v1/properties/[id]/documents/route";
 
 const CTX: Ctx = { userId: "USR-0001", orgId: "ORG-0001", orgRole: "owner" };
 const PROPERTY = { id: "PROP-0001" };
@@ -67,6 +69,7 @@ beforeEach(() => {
     storageId: DOCUMENT.storageId,
   });
   createDocumentMock.mockResolvedValue(DOCUMENT);
+  listDocumentsMock.mockResolvedValue([DOCUMENT]);
   fetchMock.mockResolvedValue({ ok: true });
 });
 
@@ -177,5 +180,39 @@ describe("POST /api/v1/properties/[id]/documents", () => {
     const body = await response.json();
     expect(body.error.code).toBe("internal_error");
     expect(createDocumentMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("GET /api/v1/properties/[id]/documents", () => {
+  it("returns 404 and never lists documents when the property is missing or outside the caller org", async () => {
+    getPropertyMock.mockResolvedValue(null);
+
+    const response = await GET(new Request("http://localhost/api/v1/properties/PROP-0001/documents"), params());
+
+    expect(response.status).toBe(404);
+    const body = await response.json();
+    expect(body.error.code).toBe("not_found");
+    expect(listDocumentsMock).not.toHaveBeenCalled();
+  });
+
+  it("returns the org-scoped document list as public DTOs with no storage identifiers", async () => {
+    const response = await GET(new Request("http://localhost/api/v1/properties/PROP-0001/documents"), params());
+
+    expect(response.status).toBe(200);
+    expect(listDocumentsMock).toHaveBeenCalledWith(CTX, "PROP-0001");
+    const body = await response.json();
+    expect(body).toEqual([
+      {
+        id: DOCUMENT.id,
+        propertyId: DOCUMENT.propertyId,
+        name: DOCUMENT.name,
+        kind: DOCUMENT.kind,
+        mimeType: DOCUMENT.mimeType,
+        sizeBytes: DOCUMENT.sizeBytes,
+        uploadedAt: DOCUMENT.uploadedAt,
+      },
+    ]);
+    expect(JSON.stringify(body)).not.toContain("storageId");
+    expect(JSON.stringify(body)).not.toContain("thumbStorageId");
   });
 });

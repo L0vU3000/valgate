@@ -64,6 +64,11 @@ actor APIClient {
         return try await send(request, route: route)
     }
 
+    func listDocuments(propertyId: String, sessionToken: String) async throws -> [PropertyDocumentDto] {
+        let route = APIRoute.listDocuments(propertyId: propertyId)
+        return try await send(factory.urlRequest(for: route, sessionToken: sessionToken), route: route)
+    }
+
     private static func safeRouteLabel(for route: APIRoute) -> String {
         switch route {
         case .me:
@@ -80,6 +85,8 @@ actor APIClient {
             "deleteProperty"
         case .uploadDocument:
             "uploadDocument"
+        case .listDocuments:
+            "listDocuments"
         }
     }
 

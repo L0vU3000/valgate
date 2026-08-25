@@ -152,6 +152,22 @@ struct PropertyDetailView: View {
             }
             .listRowBackground(Color.valSurfaceBase)
 
+            // MARK: Documents
+            Section {
+                NavigationLink {
+                    PropertyDocumentsView(
+                        client: viewModel.client,
+                        propertyId: viewModel.propertyId,
+                        sessionToken: viewModel.sessionToken,
+                        onUnauthorized: viewModel.onUnauthorized
+                    )
+                } label: {
+                    Label("Documents", systemImage: "doc.text")
+                }
+                .accessibilityIdentifier("property-detail-documents-link")
+            }
+            .listRowBackground(Color.valSurfaceBase)
+
             // MARK: Delete
             Section {
                 VGButton("Delete Property", icon: "trash", variant: .destructive, size: .standard) {

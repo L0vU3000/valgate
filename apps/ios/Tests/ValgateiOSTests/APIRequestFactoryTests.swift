@@ -64,6 +64,15 @@ final class APIRequestFactoryTests: XCTestCase {
         XCTAssertEqual(request.url?.absoluteString, "https://staging.example.invalid/api/v1/properties/prop_42")
     }
 
+    func test_listDocumentsRequest_hasExpectedPathAndMethod() {
+        let factory = APIRequestFactory(baseURL: baseURL)
+
+        let request = factory.urlRequest(for: .listDocuments(propertyId: "prop_42"), sessionToken: nil)
+
+        XCTAssertEqual(request.url?.absoluteString, "https://staging.example.invalid/api/v1/properties/prop_42/documents")
+        XCTAssertEqual(request.httpMethod, "GET")
+    }
+
     func test_allRequests_acceptJSON() {
         let factory = APIRequestFactory(baseURL: baseURL)
 

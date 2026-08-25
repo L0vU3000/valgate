@@ -5,7 +5,7 @@ import { apiError } from "@/lib/api/v1/http";
 import { toDocumentUploadDto } from "@/lib/api/v1/dto";
 import { getProperty } from "@/lib/services/properties";
 import { presignUpload } from "@/lib/services/storage";
-import { createDocument } from "@/lib/services/documents";
+import { createDocument, listDocuments } from "@/lib/services/documents";
 import { ALLOWED_MIME, MAX_BYTES } from "@/lib/upload-constants";
 import { logger } from "@/lib/logger";
 
@@ -89,6 +89,27 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Fail closed: never echo storage/service errors to the client — the response is always
     // the fixed, generic 500 envelope.
     logger.error("POST /api/v1/properties/[id]/documents failed", { error: String(err) });
+    return apiError(500, "internal_error", "Something went wrong. Please try again.");
+  }
+}
+
+// GET /api/v1/properties/[id]/documents — org-scoped document listing.
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await resolveApiV1Ctx();
+  if (!authResult.ok) return authResult.response;
+
+  const { id } = await params;
+
+  try {
+    const property = await getProperty(authResult.ctx, id);
+    if (!property) {
+      return apiError(404, "not_found", "Property not found.");
+    }
+
+    const documents = await listDocuments(authResult.ctx, id);
+    return NextResponse.json(documents.map(toDocumentUploadDto));
+  } catch (err) {
+    logger.error("GET /api/v1/properties/[id]/documents failed", { error: String(err) });
     return apiError(500, "internal_error", "Something went wrong. Please try again.");
   }
 }

@@ -65,6 +65,20 @@ final class APIClientBoundaryTests: XCTestCase {
         XCTAssertEqual(dto.orgName, "Acme")
     }
 
+    func test_validResponseDecodesThroughListDocumentsIntoDtos() async throws {
+        let json = """
+        [{"id":"doc_1","propertyId":"prop_1","name":"deed.pdf","kind":"deed","mimeType":"application/pdf","sizeBytes":2048,"uploadedAt":1700000000000}]
+        """.data(using: .utf8)!
+        StubProtocol.handler = { _ in .init(statusCode: 200, body: json) }
+
+        let documents = try await makeClient().listDocuments(propertyId: "prop_1", sessionToken: "token")
+
+        XCTAssertEqual(documents.count, 1)
+        XCTAssertEqual(documents.first?.id, "doc_1")
+        XCTAssertEqual(documents.first?.propertyId, "prop_1")
+        XCTAssertEqual(documents.first?.name, "deed.pdf")
+    }
+
     func test_wellFormedErrorEnvelopeBecomesServerErrorWithParsedValues() async {
         let json = """
         {"error":{"code":"not_found","message":"Property not found."}}
