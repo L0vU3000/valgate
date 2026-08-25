@@ -70,6 +70,8 @@ struct APIRequestFactory {
             return "api/v1/properties/\(propertyId)/leases"
         case .listValuations(let propertyId):
             return "api/v1/properties/\(propertyId)/valuations"
+        case .ownership(let propertyId):
+            return "api/v1/properties/\(propertyId)/ownership"
         }
     }
 }

@@ -200,6 +200,22 @@ struct PropertyDetailView: View {
             }
             .listRowBackground(Color.valSurfaceBase)
 
+            // MARK: Ownership
+            Section {
+                NavigationLink {
+                    PropertyOwnershipView(
+                        client: viewModel.client,
+                        propertyId: viewModel.propertyId,
+                        sessionToken: viewModel.sessionToken,
+                        onUnauthorized: viewModel.onUnauthorized
+                    )
+                } label: {
+                    Label("Ownership", systemImage: "building.columns")
+                }
+                .accessibilityIdentifier("property-detail-ownership-link")
+            }
+            .listRowBackground(Color.valSurfaceBase)
+
             // MARK: Delete
             Section {
                 VGButton("Delete Property", icon: "trash", variant: .destructive, size: .standard) {

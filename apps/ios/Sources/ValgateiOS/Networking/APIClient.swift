@@ -79,6 +79,11 @@ actor APIClient {
         return try await send(factory.urlRequest(for: route, sessionToken: sessionToken), route: route)
     }
 
+    func ownership(propertyId: String, sessionToken: String) async throws -> PropertyOwnershipDto? {
+        let route = APIRoute.ownership(propertyId: propertyId)
+        return try await send(factory.urlRequest(for: route, sessionToken: sessionToken), route: route)
+    }
+
     private static func safeRouteLabel(for route: APIRoute) -> String {
         switch route {
         case .me:
@@ -101,6 +106,8 @@ actor APIClient {
             "listLeases"
         case .listValuations:
             "listValuations"
+        case .ownership:
+            "ownership"
         }
     }
 

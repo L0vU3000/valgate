@@ -107,6 +107,29 @@ final class APIClientBoundaryTests: XCTestCase {
         XCTAssertEqual(valuations.first?.month, "2023-11")
     }
 
+    func test_validResponseDecodesThroughOwnershipIntoDto() async throws {
+        let json = """
+        {"id":"OREC-0001","holdingType":"Sole Ownership","loanType":"Fixed","loanAmount":300000,"loanTermYears":30,"interestRate":5.5,"originationDate":1700000000000,"maturityDate":1900000000000,"nextPaymentDue":1760000000000,"lenderName":"Acme Bank","downPayment":60000,"closingCosts":5000,"distributionMethod":"Equal Split","verified":true}
+        """.data(using: .utf8)!
+        StubProtocol.handler = { _ in .init(statusCode: 200, body: json) }
+
+        let ownership = try await makeClient().ownership(propertyId: "prop_1", sessionToken: "token")
+
+        XCTAssertEqual(ownership?.id, "OREC-0001")
+        XCTAssertEqual(ownership?.holdingType, "Sole Ownership")
+        XCTAssertEqual(ownership?.lenderName, "Acme Bank")
+        XCTAssertEqual(ownership?.verified, true)
+    }
+
+    func test_nullResponseDecodesThroughOwnershipIntoNil() async throws {
+        let json = "null".data(using: .utf8)!
+        StubProtocol.handler = { _ in .init(statusCode: 200, body: json) }
+
+        let ownership = try await makeClient().ownership(propertyId: "prop_1", sessionToken: "token")
+
+        XCTAssertNil(ownership)
+    }
+
     func test_wellFormedErrorEnvelopeBecomesServerErrorWithParsedValues() async {
         let json = """
         {"error":{"code":"not_found","message":"Property not found."}}
