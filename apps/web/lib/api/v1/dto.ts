@@ -1,6 +1,7 @@
 import type { Property } from "@/lib/data/types/property";
 import type { Document } from "@/lib/data/types/document";
 import type { Lease } from "@/lib/data/types/lease";
+import type { PropertyValuation } from "@/lib/data/types/property-valuation";
 import type { Ctx } from "@/lib/services/_mapping";
 
 // Intentionally small public DTOs for HTTP API v1. Every field here is deliberate — never
@@ -127,5 +128,26 @@ export function toLeaseSummaryDto(lease: Lease): LeaseSummaryDtoV1 {
     monthlyRent: lease.monthlyRent,
     termMonths: lease.termMonths,
     renewalStatus: lease.renewalStatus,
+  };
+}
+
+// Deliberately public valuation DTO: propertyId is omitted since it's already implied by
+// the /properties/{id}/valuations route path. The domain type only tracks one timestamp
+// (recordedAt); valuationDate mirrors it under the public contract's required field name.
+export type ValuationSummaryDtoV1 = {
+  id: string;
+  price: number;
+  valuationDate: number;
+  month: string;
+  recordedAt: number;
+};
+
+export function toValuationSummaryDto(valuation: PropertyValuation): ValuationSummaryDtoV1 {
+  return {
+    id: valuation.id,
+    price: valuation.price,
+    valuationDate: valuation.recordedAt,
+    month: valuation.month,
+    recordedAt: valuation.recordedAt,
   };
 }

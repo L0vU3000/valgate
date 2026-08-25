@@ -320,6 +320,36 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /properties/{id}/valuations:
+    get:
+      operationId: listPropertyValuations
+      summary: List a property's valuations
+      description: |
+        Returns the public valuation history for a property, scoped to the caller's org.
+        Never includes propertyId (implied by the path) or any internal/hidden fields.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Property ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Valuation list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ValuationSummaryDtoV1"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   schemas:
     MeDto:
@@ -441,6 +471,26 @@ components:
         renewalStatus:
           type: string
           nullable: true
+
+    ValuationSummaryDtoV1:
+      type: object
+      required: [id, price, valuationDate, month, recordedAt]
+      description: Public valuation summary. Never includes propertyId (implied by the path).
+      properties:
+        id:
+          type: string
+        price:
+          type: number
+          minimum: 0
+        valuationDate:
+          type: integer
+          description: Unix timestamp (milliseconds)
+        month:
+          type: string
+          description: "'MMM YYYY' display label (e.g. 'Jan 2026')"
+        recordedAt:
+          type: integer
+          description: Unix timestamp (milliseconds)
 
     ErrorEnvelope:
       type: object
