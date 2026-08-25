@@ -1,5 +1,6 @@
 import type { Property } from "@/lib/data/types/property";
 import type { Document } from "@/lib/data/types/document";
+import type { Lease } from "@/lib/data/types/lease";
 import type { Ctx } from "@/lib/services/_mapping";
 
 // Intentionally small public DTOs for HTTP API v1. Every field here is deliberate — never
@@ -97,5 +98,34 @@ export function toDocumentUploadDto(document: Document): DocumentUploadDtoV1 {
     mimeType: document.mimeType ?? "",
     sizeBytes: document.sizeBytes ?? 0,
     uploadedAt: document.uploadedAt,
+  };
+}
+
+// Deliberately public lease summary DTO: never include tenantId (internal tenant
+// linkage) or any payment/expense metadata — those live on separate entities and
+// are never joined into this endpoint.
+export type LeaseSummaryDtoV1 = {
+  id: string;
+  propertyId: string;
+  unit: string;
+  stage: Lease["stage"];
+  startDate: number;
+  endDate: number;
+  monthlyRent: number;
+  termMonths: number;
+  renewalStatus: string | undefined;
+};
+
+export function toLeaseSummaryDto(lease: Lease): LeaseSummaryDtoV1 {
+  return {
+    id: lease.id,
+    propertyId: lease.propertyId,
+    unit: lease.unit,
+    stage: lease.stage,
+    startDate: lease.startDate,
+    endDate: lease.endDate,
+    monthlyRent: lease.monthlyRent,
+    termMonths: lease.termMonths,
+    renewalStatus: lease.renewalStatus,
   };
 }

@@ -290,6 +290,36 @@ paths:
         "500":
           $ref: "#/components/responses/InternalError"
 
+  /properties/{id}/leases:
+    get:
+      operationId: listPropertyLeases
+      summary: List a property's leases
+      description: |
+        Returns the public lease summary for a property, scoped to the caller's org.
+        Never includes tenant linkage or payment/expense metadata.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Property ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lease summary list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaseSummaryDtoV1"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
 components:
   schemas:
     MeDto:
@@ -381,6 +411,36 @@ components:
         uploadedAt:
           type: integer
           description: Unix timestamp (milliseconds)
+
+    LeaseSummaryDtoV1:
+      type: object
+      required: [id, propertyId, unit, stage, startDate, endDate, monthlyRent, termMonths, renewalStatus]
+      description: Public lease summary. Never includes tenantId or any payment/expense metadata.
+      properties:
+        id:
+          type: string
+        propertyId:
+          type: string
+        unit:
+          type: string
+        stage:
+          type: string
+          enum: [Approaching, Offered, Signed, Declined]
+        startDate:
+          type: integer
+          description: Unix timestamp (milliseconds)
+        endDate:
+          type: integer
+          description: Unix timestamp (milliseconds)
+        monthlyRent:
+          type: number
+          minimum: 0
+        termMonths:
+          type: integer
+          minimum: 1
+        renewalStatus:
+          type: string
+          nullable: true
 
     ErrorEnvelope:
       type: object
