@@ -8,6 +8,13 @@ struct ValgateiOSApp: App {
     init() {
         let configuration = AppConfiguration()
         self.configuration = configuration
+#if DEBUG
+        // A fixture launch never touches Clerk: no credentials, no network,
+        // no persisted session to collide with a real signed-in device.
+        if FixtureLaunchResolver.resolve(arguments: ProcessInfo.processInfo.arguments) != nil {
+            return
+        }
+#endif
         if let publishableKey = configuration.clerkPublishableKey {
             Clerk.configure(publishableKey: publishableKey)
         }
@@ -15,12 +22,25 @@ struct ValgateiOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if configuration.isComplete {
-                RootView(configuration: configuration)
-                    .environment(Clerk.shared)
+#if DEBUG
+            if let fixtureScreen = FixtureLaunchResolver.resolve(arguments: ProcessInfo.processInfo.arguments) {
+                FixtureRootView(screen: fixtureScreen)
             } else {
-                RootView(configuration: configuration)
+                productionRoot
             }
+#else
+            productionRoot
+#endif
+        }
+    }
+
+    @ViewBuilder
+    private var productionRoot: some View {
+        if configuration.isComplete {
+            RootView(configuration: configuration)
+                .environment(Clerk.shared)
+        } else {
+            RootView(configuration: configuration)
         }
     }
 }

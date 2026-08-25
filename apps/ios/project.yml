@@ -29,6 +29,7 @@ targets:
       - path: Sources/ValgateiOS/Models
       - path: Sources/ValgateiOS/Networking
       - path: Sources/ValgateiOS/Views
+      - path: Sources/ValgateiOS/Fixtures
     info:
       path: Sources/ValgateiOS/Info.plist
       properties:
