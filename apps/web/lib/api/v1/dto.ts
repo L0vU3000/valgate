@@ -2,6 +2,7 @@ import type { Property } from "@/lib/data/types/property";
 import type { Document } from "@/lib/data/types/document";
 import type { Lease } from "@/lib/data/types/lease";
 import type { PropertyValuation } from "@/lib/data/types/property-valuation";
+import type { OwnershipRecord } from "@/lib/data/types/ownership-record";
 import type { Ctx } from "@/lib/services/_mapping";
 
 // Intentionally small public DTOs for HTTP API v1. Every field here is deliberate — never
@@ -149,5 +150,46 @@ export function toValuationSummaryDto(valuation: PropertyValuation): ValuationSu
     valuationDate: valuation.recordedAt,
     month: valuation.month,
     recordedAt: valuation.recordedAt,
+  };
+}
+
+// Deliberately public ownership DTO: propertyId is omitted since it's already implied by
+// the /properties/{id}/ownership route path. verifiedAt, evidenceDocIds (raw document ids),
+// and createdAt/updatedAt are internal-only and are never read by the web ownership page.
+// Co-owners, ownership documents, and ownership history are separate entities and are
+// intentionally left out of this minimal slice.
+export type OwnershipDtoV1 = {
+  id: string;
+  holdingType: OwnershipRecord["holdingType"];
+  loanType: string | undefined;
+  loanAmount: number | undefined;
+  loanTermYears: number | undefined;
+  interestRate: number | undefined;
+  originationDate: number | undefined;
+  maturityDate: number | undefined;
+  nextPaymentDue: number | undefined;
+  lenderName: string | undefined;
+  downPayment: number | undefined;
+  closingCosts: number | undefined;
+  distributionMethod: OwnershipRecord["distributionMethod"];
+  verified: boolean | undefined;
+};
+
+export function toOwnershipDto(record: OwnershipRecord): OwnershipDtoV1 {
+  return {
+    id: record.id,
+    holdingType: record.holdingType,
+    loanType: record.loanType,
+    loanAmount: record.loanAmount,
+    loanTermYears: record.loanTermYears,
+    interestRate: record.interestRate,
+    originationDate: record.originationDate,
+    maturityDate: record.maturityDate,
+    nextPaymentDue: record.nextPaymentDue,
+    lenderName: record.lenderName,
+    downPayment: record.downPayment,
+    closingCosts: record.closingCosts,
+    distributionMethod: record.distributionMethod,
+    verified: record.verified,
   };
 }
