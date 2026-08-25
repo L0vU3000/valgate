@@ -168,6 +168,22 @@ struct PropertyDetailView: View {
             }
             .listRowBackground(Color.valSurfaceBase)
 
+            // MARK: Rental
+            Section {
+                NavigationLink {
+                    PropertyRentalView(
+                        client: viewModel.client,
+                        propertyId: viewModel.propertyId,
+                        sessionToken: viewModel.sessionToken,
+                        onUnauthorized: viewModel.onUnauthorized
+                    )
+                } label: {
+                    Label("Rental", systemImage: "doc.plaintext")
+                }
+                .accessibilityIdentifier("property-detail-rental-link")
+            }
+            .listRowBackground(Color.valSurfaceBase)
+
             // MARK: Delete
             Section {
                 VGButton("Delete Property", icon: "trash", variant: .destructive, size: .standard) {
