@@ -14,5 +14,6 @@ enum FixtureScreen: String, CaseIterable, Equatable {
     case ownership
     case createProperty
     case createPropertyEmpty
+    case createPropertySubmitting
 }
 #endif

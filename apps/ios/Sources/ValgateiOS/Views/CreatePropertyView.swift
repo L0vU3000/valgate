@@ -93,17 +93,25 @@ struct CreatePropertyView: View {
     @State private var showDocumentFilePicker = false
     @State private var attachmentErrorMessage: String?
     @FocusState private var focusedField: Field?
+    @State private var hasAutoSubmitted = false
 
     private let onCreated: @MainActor (PropertyDetailDto) -> Void
+
+    /// When `true`, the view kicks off its normal `submit()` path once on
+    /// appear. Defaults to `false` so production usage never auto-submits;
+    /// only the DEBUG `createPropertySubmitting` fixture opts in, to capture
+    /// the "Saving property…" state deterministically.
+    private let autoSubmit: Bool
 
     /// `initialForm` defaults to a blank form so normal production usage is
     /// unaffected; only the DEBUG fixture flow (`FixtureRootView`) passes a
     /// pre-filled form for deterministic screenshot capture.
-    init(client: APIClient, sessionToken: String, onUnauthorized: @escaping @MainActor () -> Void = {}, onCreated: @escaping @MainActor (PropertyDetailDto) -> Void = { _ in }, initialForm: CreatePropertyForm = CreatePropertyForm()) {
+    init(client: APIClient, sessionToken: String, onUnauthorized: @escaping @MainActor () -> Void = {}, onCreated: @escaping @MainActor (PropertyDetailDto) -> Void = { _ in }, initialForm: CreatePropertyForm = CreatePropertyForm(), autoSubmit: Bool = false) {
         _viewModel = StateObject(
             wrappedValue: CreatePropertyViewModel(client: client, sessionToken: sessionToken, onUnauthorized: onUnauthorized)
         )
         self.onCreated = onCreated
+        self.autoSubmit = autoSubmit
         _form = State(initialValue: initialForm)
     }
 
@@ -164,6 +172,14 @@ struct CreatePropertyView: View {
             if case .submitted(let dto) = newState {
                 onCreated(dto)
             }
+        }
+        .task {
+            // Fixture-only: run the real submit path exactly once so the
+            // "Saving property…" state renders for screenshot capture. Guarded
+            // by `autoSubmit` (default false) so production never triggers it.
+            guard autoSubmit, !hasAutoSubmitted else { return }
+            hasAutoSubmitted = true
+            submit()
         }
         .accessibilityIdentifier("createPropertyView")
     }

@@ -48,7 +48,8 @@ final class FixtureLaunchResolverTests: XCTestCase {
             ("valuations", .valuations),
             ("ownership", .ownership),
             ("createProperty", .createProperty),
-            ("createPropertyEmpty", .createPropertyEmpty)
+            ("createPropertyEmpty", .createPropertyEmpty),
+            ("createPropertySubmitting", .createPropertySubmitting)
         ]
 
         for (raw, expected) in expectations {

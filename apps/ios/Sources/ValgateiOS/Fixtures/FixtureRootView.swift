@@ -13,7 +13,11 @@ struct FixtureRootView: View {
 
     init(screen: FixtureScreen) {
         self.screen = screen
-        self.client = APIClient(baseURL: FixtureData.baseURL, session: FixtureAPIStubURLProtocol.makeSession())
+        // Only the `createPropertySubmitting` fixture needs the POST create
+        // response held back long enough to capture the "Saving property…"
+        // state; every other fixture uses the normal, non-delayed session.
+        let session = FixtureAPIStubURLProtocol.makeSession(delayedCreate: screen == .createPropertySubmitting)
+        self.client = APIClient(baseURL: FixtureData.baseURL, session: session)
     }
 
     var body: some View {
@@ -62,6 +66,15 @@ struct FixtureRootView: View {
                     client: client,
                     sessionToken: FixtureData.sessionToken,
                     initialForm: CreatePropertyForm()
+                )
+            }
+        case .createPropertySubmitting:
+            NavigationStack {
+                CreatePropertyView(
+                    client: client,
+                    sessionToken: FixtureData.sessionToken,
+                    initialForm: FixtureData.createPropertyForm,
+                    autoSubmit: true
                 )
             }
         }

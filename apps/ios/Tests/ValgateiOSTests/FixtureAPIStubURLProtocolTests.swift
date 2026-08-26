@@ -32,6 +32,14 @@ final class FixtureAPIStubURLProtocolTests: XCTestCase {
         XCTAssertEqual(dto.name, "គម្រោងមេគង្គ រេស៊ីដិនស៍")
     }
 
+    func test_createProperty_postReturnsCanonicalFixturePropertyDetail() async throws {
+        let request = FixtureData.createPropertyForm.toRequest()
+        let dto = try await makeClient().createProperty(request, sessionToken: FixtureData.sessionToken)
+
+        XCTAssertEqual(dto.id, FixtureData.propertyId)
+        XCTAssertEqual(dto.name, "គម្រោងមេគង្គ រេស៊ីដិនស៍")
+    }
+
     func test_property_unknownIdReturnsNotFound() async {
         do {
             _ = try await makeClient().property(id: "not-a-fixture-id", sessionToken: FixtureData.sessionToken)
