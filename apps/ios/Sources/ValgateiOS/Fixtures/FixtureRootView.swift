@@ -56,6 +56,14 @@ struct FixtureRootView: View {
                     initialForm: FixtureData.createPropertyForm
                 )
             }
+        case .createPropertyEmpty:
+            NavigationStack {
+                CreatePropertyView(
+                    client: client,
+                    sessionToken: FixtureData.sessionToken,
+                    initialForm: CreatePropertyForm()
+                )
+            }
         }
     }
 }

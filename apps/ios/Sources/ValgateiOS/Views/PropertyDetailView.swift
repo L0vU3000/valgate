@@ -171,9 +171,6 @@ struct PropertyDetailView: View {
                 EstateStatusBadge(status: property.status)
                 EstateBadge(property.type, tone: .neutral)
                 Spacer()
-                EstateIconButton(icon: "pencil") {
-                    showEditSheet = true
-                }
             }
 
             Text(property.name)
