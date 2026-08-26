@@ -44,7 +44,7 @@ struct VGButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: ValgateSpacing.space2) {
+            HStack(spacing: ValgateSpacing.controlGap) {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(iconFont)
@@ -58,21 +58,26 @@ struct VGButton: View {
             .foregroundStyle(foregroundColor)
             .background(backgroundColor)
             .overlay(
-                RoundedRectangle(cornerRadius: ValgateRadius.md)
+                RoundedRectangle(cornerRadius: ValgateRounded.md)
                     .stroke(borderColor, lineWidth: borderWidth)
             )
-            .cornerRadius(ValgateRadius.md)
+            .cornerRadius(ValgateRounded.md)
         }
         .buttonStyle(VGButtonStyle())
     }
 
-    // MARK: - Appearance
+    // MARK: - Appearance (explicit primary / secondary / ghost / destructive treatments)
     private var foregroundColor: Color {
         switch variant {
         case .primary, .destructive:
+            // Ink or danger fill — inverse text, per DESIGN.md action tokens.
             return .valInteractivePrimaryText
-        case .secondary, .ghost:
-            return variant == .destructive ? .valStatusDanger : .valInteractivePrimary
+        case .secondary:
+            // Tonal surface fill — ink text.
+            return .valInteractiveSecondaryText
+        case .ghost:
+            // No fill — brand ink text only.
+            return .valInteractivePrimary
         }
     }
 
@@ -91,17 +96,15 @@ struct VGButton: View {
 
     private var borderColor: Color {
         switch variant {
-        case .ghost:
-            return .clear
         case .secondary:
-            return .valBorderSubtle
-        default:
+            return .valBorderStrong
+        case .primary, .ghost, .destructive:
             return .clear
         }
     }
 
     private var borderWidth: CGFloat {
-        variant == .secondary || variant == .ghost ? 0 : 0
+        variant == .secondary ? 1 : 0
     }
 
     // MARK: - Sizing
@@ -139,12 +142,15 @@ struct VGButton: View {
 }
 
 // MARK: - Button Style (removes default iOS tap animation for custom feel)
-private struct VGButtonStyle: ButtonStyle {
+// DESIGN.md Motion: opacity/transform only, interruptible, no bounce, and
+// Reduce Motion safe. Shared (not `private`) so other DesignSystem
+// components — e.g. VGGlassPanel — reuse the same press feedback.
+struct VGButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .opacity(configuration.isPressed ? 0.9 : 1.0)
-            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+            .animation(ValgateMotion.stateChange, value: configuration.isPressed)
     }
 }
 
@@ -174,7 +180,7 @@ struct VGIconButton: View {
                 .foregroundStyle(iconColor)
                 .frame(width: max(ValgateTouchTarget.minimum, size), height: max(ValgateTouchTarget.minimum, size))
                 .background(backgroundColor)
-                .cornerRadius(ValgateRadius.md)
+                .cornerRadius(ValgateRounded.md)
         }
         .buttonStyle(VGButtonStyle())
     }

@@ -40,47 +40,40 @@ struct PropertyMapView: View {
             .mapStyle(mapStyleOption.style)
             .ignoresSafeArea()
 
-            // Top floating search bar
-            VStack(spacing: ValgateSpacing.space3) {
+            // Top overlay: compact portfolio record + search, both restrained
+            // opaque bars that leave the rest of the map field open.
+            VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
+                portfolioRecordBar
+
                 Button(action: onSearch) {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "magnifyingglass")
-                            .font(.system(size: 17, weight: .medium))
-                            .foregroundStyle(Color.valTextSecondary)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(EstateColor.inkMuted)
 
                         Text("Search properties, documents, tenants...")
-                            .font(ValgateTypography.Body.standard)
-                            .foregroundStyle(Color.valTextSecondary)
+                            .font(EstateFont.body(15))
+                            .foregroundStyle(EstateColor.inkMuted)
+                            .lineLimit(1)
 
                         Spacer()
-
-                        HStack(spacing: ValgateSpacing.space1) {
-                            Image(systemName: "command")
-                                .font(.system(size: 10))
-                            Text("K")
-                                .font(ValgateTypography.Content.caption)
-                        }
-                        .foregroundStyle(Color.valTextSecondary)
-                        .padding(.horizontal, ValgateSpacing.space1)
-                        .padding(.vertical, ValgateSpacing.space0_5)
-                        .background(.regularMaterial)
-                        .cornerRadius(ValgateRadius.sm)
                     }
                     .padding(.horizontal, ValgateSpacing.space4)
                     .frame(height: ValgateTouchTarget.comfortable)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(ValgateRadius.lg)
+                    .background(EstateColor.surface)
                     .overlay(
-                        RoundedRectangle(cornerRadius: ValgateRadius.lg)
-                            .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: EstateRadius.md, style: .continuous)
+                            .stroke(EstateColor.line, lineWidth: 1)
                     )
+                    .clipShape(RoundedRectangle(cornerRadius: EstateRadius.md, style: .continuous))
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(EstatePressStyle())
+                .accessibilityLabel("Search properties, documents, tenants")
 
                 Spacer()
             }
             .padding(.horizontal, ValgateSpacing.space4)
-            .padding(.top, ValgateSpacing.safeAreaTop + ValgateSpacing.space4)
+            .padding(.top, ValgateSpacing.space2)
 
             // Lower-right control cluster + New Property action
             VStack {
@@ -123,6 +116,57 @@ struct PropertyMapView: View {
         .onChange(of: properties) { _, newProperties in
             recenter(for: newProperties)
         }
+    }
+
+    // MARK: - Portfolio Record Bar
+    // Compact operational summary — count + status breakdown as plain text,
+    // never color alone. Restrained height so it never blocks map interaction.
+    private var portfolioRecordBar: some View {
+        HStack(alignment: .top, spacing: ValgateSpacing.space3) {
+            VStack(alignment: .leading, spacing: ValgateSpacing.space0_5) {
+                Text("PORTFOLIO")
+                    .font(EstateFont.label)
+                    .tracking(0.8)
+                    .foregroundStyle(EstateColor.inkMuted)
+
+                HStack(alignment: .firstTextBaseline, spacing: ValgateSpacing.space1) {
+                    Text("\(properties.count)")
+                        .font(EstateFont.metric(20))
+                        .foregroundStyle(EstateColor.ink)
+                    Text(properties.count == 1 ? "Property" : "Properties")
+                        .font(EstateFont.body(13))
+                        .foregroundStyle(EstateColor.inkMuted)
+                }
+            }
+
+            Spacer(minLength: ValgateSpacing.space2)
+
+            if let stats = portfolioStats, stats.totalProperties > 0 {
+                Text(statusSummary(stats))
+                    .font(EstateFont.body(12))
+                    .foregroundStyle(EstateColor.inkMuted)
+                    .multilineTextAlignment(.trailing)
+                    .lineLimit(2)
+            }
+        }
+        .padding(.horizontal, ValgateSpacing.space4)
+        .padding(.vertical, ValgateSpacing.space3)
+        .frame(minHeight: ValgateTouchTarget.minimum)
+        .background(EstateColor.surface)
+        .overlay(
+            RoundedRectangle(cornerRadius: EstateRadius.md, style: .continuous)
+                .stroke(EstateColor.line, lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: EstateRadius.md, style: .continuous))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func statusSummary(_ stats: PortfolioStatsDto) -> String {
+        var parts: [String] = []
+        if stats.activeCount > 0 { parts.append("\(stats.activeCount) Active") }
+        if stats.pendingCount > 0 { parts.append("\(stats.pendingCount) Pending") }
+        if stats.vacantCount > 0 { parts.append("\(stats.vacantCount) Vacant") }
+        return parts.joined(separator: " · ")
     }
 
     private func recenter(animated: Bool = true) {
@@ -252,12 +296,12 @@ struct MapControlButton: View {
 
     var body: some View {
         VGIconButton(icon: icon, variant: .ghost, size: ValgateTouchTarget.iconVisual, action: action)
-            .background(.ultraThinMaterial)
-            .cornerRadius(ValgateRadius.md)
+            .background(EstateColor.surface)
             .overlay(
-                RoundedRectangle(cornerRadius: ValgateRadius.md)
-                    .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
+                RoundedRectangle(cornerRadius: EstateRadius.md, style: .continuous)
+                    .stroke(EstateColor.line, lineWidth: 1)
             )
+            .clipShape(RoundedRectangle(cornerRadius: EstateRadius.md, style: .continuous))
     }
 }
 
@@ -279,143 +323,73 @@ struct PropertyDetailSheet: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    // Hero area with brand-tinted card
-                    ZStack(alignment: .bottomLeading) {
-                        VGCard(variant: .elevated, padding: 0) {
-                            LinearGradient(
-                                colors: [.valInteractivePrimary.opacity(0.15), .valInteractivePrimary.opacity(0.05)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                            .frame(height: 180)
-                        }
-
-                        LinearGradient(
-                            colors: [.clear, .black.opacity(0.6)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .frame(height: 180)
-
-                        VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
-                            HStack {
-                                VGStatusBadge(status: property.status)
-                                Spacer()
-                                VGIconButton(icon: "pencil", variant: .ghost, size: 32, action: onEdit)
-                                    .foregroundStyle(Color.valTextInverse)
-                            }
-
-                            Text(property.name)
-                                .font(ValgateTypography.Headline.title2)
-                                .foregroundStyle(Color.valTextInverse)
-
-                            if let city = property.city, let province = property.province {
-                                HStack(spacing: ValgateSpacing.space1) {
-                                    Image(systemName: "mappin")
-                                        .font(.system(size: 11))
-                                    Text("\(city), \(province)")
-                                        .font(ValgateTypography.Content.subheadline)
-                                }
-                                .foregroundStyle(Color.valTextInverse.opacity(0.7))
-                            }
-                        }
-                        .padding(ValgateSpacing.space4)
-                    }
-
-                    // Progress section
-                    VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
-                        HStack {
-                            Text("PROGRESS")
-                                .font(ValgateTypography.Content.label)
-                                .foregroundStyle(Color.valTextSecondary)
-                            Spacer()
-                            Text("0%")
-                                .font(ValgateTypography.Body.standardEmphasis)
-                                .foregroundStyle(Color.valInteractivePrimary)
-                        }
-
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: ValgateRadius.sm)
-                                    .fill(Color.valBorderSubtle.opacity(0.15))
-                                    .frame(height: 6)
-
-                                RoundedRectangle(cornerRadius: ValgateRadius.sm)
-                                    .fill(Color.valInteractivePrimary)
-                                    .frame(width: 0, height: 6)
-                            }
-                        }
-                        .frame(height: 6)
-                    }
-                    .padding(ValgateSpacing.space4)
-                    .background(Color.valSurfaceBase)
-
-                    Divider()
-
-                    // Property details using LabeledContent + SF Symbols
-                    VStack(alignment: .leading, spacing: ValgateSpacing.space4) {
-                        DetailSection(title: "Property") {
-                            LabeledDetailRow(icon: "building.2", label: "Type", value: property.type)
-                            LabeledDetailRow(icon: "tag", label: "Status", value: property.status)
-                        }
-
-                        DetailSection(title: "Location") {
-                            if let city = property.city {
-                                LabeledDetailRow(icon: "mappin", label: "City", value: city)
-                            }
-                            if let province = property.province {
-                                LabeledDetailRow(icon: "map", label: "Province", value: province)
-                            }
-                            LabeledDetailRow(icon: "location", label: "Coordinates", value: String(format: "%.4f, %.4f", property.lat, property.lng))
-                        }
-                    }
-                    .padding(ValgateSpacing.space4)
+                VStack(alignment: .leading, spacing: ValgateSpacing.space6) {
+                    header
+                    propertyLedger
+                    locationLedger
+                }
+                .padding(ValgateSpacing.space4)
+            }
+            .background(EstateColor.canvas)
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    EstateIconButton(icon: "pencil", action: onEdit)
+                        .accessibilityLabel("Edit Property")
                 }
             }
-            .background(Color.valSurfacePage)
-            .navigationTitle("Property Details")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
-}
 
-// MARK: - Supporting Views (Design System)
-
-struct DetailSection<Content: View>: View {
-    let title: String
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
-            Text(title.uppercased())
-                .font(ValgateTypography.Content.label)
-                .foregroundStyle(Color.valTextSecondary)
-            content
-        }
-    }
-}
-
-struct LabeledDetailRow: View {
-    let icon: String
-    let label: String
-    let value: String
-
-    var body: some View {
-        LabeledContent {
-            Text(value)
-                .font(ValgateTypography.Body.standardEmphasis)
-                .foregroundStyle(Color.valTextPrimary)
-        } label: {
+    // MARK: - Identity Header (matches PropertyDetailView's canonical pattern)
+    private var header: some View {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space3) {
             HStack(spacing: ValgateSpacing.space2) {
-                Image(systemName: icon)
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color.valTextSecondary)
-                    .frame(width: 20)
-                Text(label)
-                    .font(ValgateTypography.Body.standard)
-                    .foregroundStyle(Color.valTextSecondary)
+                EstateStatusBadge(status: property.status)
+                EstateBadge(property.type, tone: .neutral)
+                Spacer()
             }
+
+            Text(property.name)
+                .font(EstateFont.display)
+                .foregroundStyle(EstateColor.ink)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if let city = property.city, let province = property.province {
+                Label("\(city), \(province)", systemImage: "mappin.and.ellipse")
+                    .font(EstateFont.body(15))
+                    .foregroundStyle(EstateColor.inkMuted)
+            }
+        }
+        .padding(ValgateSpacing.space4)
+        .background(EstateColor.surface)
+        .overlay(
+            RoundedRectangle(cornerRadius: EstateRadius.lg, style: .continuous)
+                .stroke(EstateColor.line, lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: EstateRadius.lg, style: .continuous))
+    }
+
+    private var propertyLedger: some View {
+        EstateLedgerSection("Property") {
+            EstateLedgerRow(icon: "building.2", label: "Type", value: property.type)
+            EstateDivider()
+            EstateLedgerRow(icon: "tag", label: "Status", value: property.status)
+        }
+    }
+
+    private var locationLedger: some View {
+        EstateLedgerSection("Location") {
+            if let city = property.city {
+                EstateLedgerRow(icon: "mappin", label: "City", value: city)
+                EstateDivider()
+            }
+            if let province = property.province {
+                EstateLedgerRow(icon: "map", label: "Province", value: province)
+                EstateDivider()
+            }
+            EstateLedgerRow(icon: "location", label: "Coordinates", value: String(format: "%.4f, %.4f", property.lat, property.lng))
         }
     }
 }

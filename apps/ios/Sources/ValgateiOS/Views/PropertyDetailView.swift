@@ -65,6 +65,7 @@ struct PropertyDetailView: View {
             switch viewModel.state {
             case .loading, .deleting:
                 ProgressView(viewModel.state == .loading ? "Loading property…" : "Deleting property…")
+                    .estateStateSurface()
                     .accessibilityIdentifier("property-detail-loading")
             case .loaded(let property):
                 propertyContent(property: property)
@@ -76,6 +77,7 @@ struct PropertyDetailView: View {
                     systemImage: "lock.fill",
                     description: Text("Your session is no longer valid. Please sign in again.")
                 )
+                .estateStateSurface()
                 .accessibilityIdentifier("property-detail-unauthorized")
             case .error(let message), .deleteError(let message):
                 ContentUnavailableView(
@@ -83,6 +85,7 @@ struct PropertyDetailView: View {
                     systemImage: "exclamationmark.triangle",
                     description: Text(message)
                 )
+                .estateStateSurface()
                 .accessibilityIdentifier("property-detail-error")
             }
         }
@@ -94,151 +97,46 @@ struct PropertyDetailView: View {
     // MARK: - Loaded Content
     @ViewBuilder
     private func propertyContent(property: PropertyDetailDto) -> some View {
-        List {
-            // MARK: Hero Card
-            VGCard(variant: .elevated, padding: ValgateSpacing.space4) {
-                VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
-                    HStack {
-                        VGStatusBadge(status: property.status)
-                        Spacer()
-                        VGIconButton(icon: "pencil", variant: .ghost) {
-                            showEditSheet = true
-                        }
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: ValgateSpacing.space6) {
+                    identityHeader(property)
+                    moduleJump(proxy: proxy)
+                    factsLedger(property)
+                    ledgerGroup(title: "Location", rows: [
+                        DetailRowItem(icon: "house", label: "Address", value: property.addressLine ?? "—"),
+                        DetailRowItem(icon: "mappin", label: "City", value: property.city ?? "—"),
+                        DetailRowItem(icon: "map", label: "Province", value: property.province ?? "—"),
+                        DetailRowItem(icon: "globe", label: "Country", value: property.country ?? "—")
+                    ])
+                    ledgerGroup(title: "Record", rows: [
+                        DetailRowItem(icon: "clock", label: "Created", value: "\(property.createdAt)"),
+                        DetailRowItem(icon: "number", label: "ID", value: property.id)
+                    ])
+                    modulesIndex()
+
+                    EstateButton("Delete Property", icon: "trash", tone: .danger) {
+                        showDeleteConfirmation = true
                     }
-
-                    Text(property.name)
-                        .font(ValgateTypography.Headline.title1)
-                        .foregroundStyle(Color.valTextPrimary)
-
-                    if let city = property.city, let province = property.province {
-                        Label("\(city), \(province)", systemImage: "mappin")
-                            .font(ValgateTypography.Content.subheadline)
-                            .foregroundStyle(Color.valTextSecondary)
-                    }
+                    .padding(.top, ValgateSpacing.space2)
                 }
-            }
-            .listRowInsets(EdgeInsets(top: ValgateSpacing.space2, leading: ValgateSpacing.space4, bottom: ValgateSpacing.space2, trailing: ValgateSpacing.space4))
-            .listRowSeparator(.hidden)
-
-            // MARK: Property Info
-            Section {
-                detailRow(icon: "building.2", label: "Type", value: property.type)
-                detailRow(icon: "tag", label: "Status", value: property.status)
-            }
-            .listRowBackground(Color.valSurfaceBase)
-
-            // MARK: Location
-            Section("Location") {
-                detailRow(icon: "house", label: "Address", value: property.addressLine ?? "—")
-                detailRow(icon: "mappin", label: "City", value: property.city ?? "—")
-                detailRow(icon: "map", label: "Province", value: property.province ?? "—")
-                detailRow(icon: "globe", label: "Country", value: property.country ?? "—")
-            }
-            .listRowBackground(Color.valSurfaceBase)
-
-            // MARK: Details
-            Section("Details") {
-                detailRow(icon: "ruler", label: "Total Area", value: property.totalArea)
-                detailRow(icon: "bed.double", label: "Bedrooms", value: property.bedrooms ?? "—")
-                detailRow(icon: "drop", label: "Bathrooms", value: property.bathrooms ?? "—")
-                detailRow(icon: "calendar", label: "Year Built", value: property.yearBuilt ?? "—")
-            }
-            .listRowBackground(Color.valSurfaceBase)
-
-            // MARK: Metadata
-            Section("Metadata") {
-                detailRow(icon: "clock", label: "Created", value: "\(property.createdAt)")
-                detailRow(icon: "number", label: "ID", value: property.id)
-            }
-            .listRowBackground(Color.valSurfaceBase)
-
-            // MARK: Documents
-            Section {
-                NavigationLink {
-                    PropertyDocumentsView(
-                        client: viewModel.client,
-                        propertyId: viewModel.propertyId,
-                        sessionToken: viewModel.sessionToken,
-                        onUnauthorized: viewModel.onUnauthorized
-                    )
-                } label: {
-                    Label("Documents", systemImage: "doc.text")
-                }
-                .accessibilityIdentifier("property-detail-documents-link")
-            }
-            .listRowBackground(Color.valSurfaceBase)
-
-            // MARK: Rental
-            Section {
-                NavigationLink {
-                    PropertyRentalView(
-                        client: viewModel.client,
-                        propertyId: viewModel.propertyId,
-                        sessionToken: viewModel.sessionToken,
-                        onUnauthorized: viewModel.onUnauthorized
-                    )
-                } label: {
-                    Label("Rental", systemImage: "doc.plaintext")
-                }
-                .accessibilityIdentifier("property-detail-rental-link")
-            }
-            .listRowBackground(Color.valSurfaceBase)
-
-            // MARK: Valuations
-            Section {
-                NavigationLink {
-                    PropertyValuationView(
-                        client: viewModel.client,
-                        propertyId: viewModel.propertyId,
-                        sessionToken: viewModel.sessionToken,
-                        onUnauthorized: viewModel.onUnauthorized
-                    )
-                } label: {
-                    Label("Valuations", systemImage: "chart.line.uptrend.xyaxis")
-                }
-                .accessibilityIdentifier("property-detail-valuation-link")
-            }
-            .listRowBackground(Color.valSurfaceBase)
-
-            // MARK: Ownership
-            Section {
-                NavigationLink {
-                    PropertyOwnershipView(
-                        client: viewModel.client,
-                        propertyId: viewModel.propertyId,
-                        sessionToken: viewModel.sessionToken,
-                        onUnauthorized: viewModel.onUnauthorized
-                    )
-                } label: {
-                    Label("Ownership", systemImage: "building.columns")
-                }
-                .accessibilityIdentifier("property-detail-ownership-link")
-            }
-            .listRowBackground(Color.valSurfaceBase)
-
-            // MARK: Delete
-            Section {
-                VGButton("Delete Property", icon: "trash", variant: .destructive, size: .standard) {
-                    showDeleteConfirmation = true
-                }
-                .listRowBackground(Color.clear)
+                .padding(ValgateSpacing.space4)
             }
         }
-        .listStyle(.insetGrouped)
-        .navigationTitle(property.name)
-        .navigationBarTitleDisplayMode(.large)
+        .background(EstateColor.canvas)
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: ValgateSpacing.space2) {
-                    VGIconButton(icon: "pencil", variant: .ghost) {
+                    EstateIconButton(icon: "pencil") {
                         showEditSheet = true
                     }
                     .accessibilityIdentifier("property-detail-edit-button")
 
-                    VGIconButton(icon: "trash", variant: .ghost) {
+                    EstateIconButton(icon: "trash", tone: .danger) {
                         showDeleteConfirmation = true
                     }
-                    .foregroundStyle(Color.valStatusDanger)
                     .accessibilityIdentifier("property-detail-delete-button")
                 }
             }
@@ -266,24 +164,247 @@ struct PropertyDetailView: View {
         .accessibilityIdentifier("property-detail-loaded")
     }
 
-    // MARK: - Detail Row
-    private func detailRow(icon: String, label: String, value: String) -> some View {
-        HStack(spacing: ValgateSpacing.space3) {
-            Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundStyle(Color.valTextTertiary)
-                .frame(width: 20)
+    // MARK: - Identity Header
+    private func identityHeader(_ property: PropertyDetailDto) -> some View {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space3) {
+            HStack(spacing: ValgateSpacing.space2) {
+                EstateStatusBadge(status: property.status)
+                EstateBadge(property.type, tone: .neutral)
+                Spacer()
+                EstateIconButton(icon: "pencil") {
+                    showEditSheet = true
+                }
+            }
 
-            Text(label)
-                .font(ValgateTypography.Body.standard)
-                .foregroundStyle(Color.valTextSecondary)
+            Text(property.name)
+                .font(EstateFont.display)
+                .foregroundStyle(EstateColor.ink)
+                .fixedSize(horizontal: false, vertical: true)
 
-            Spacer()
+            if let city = property.city, let province = property.province {
+                Label("\(city), \(province)", systemImage: "mappin.and.ellipse")
+                    .font(EstateFont.body(15))
+                    .foregroundStyle(EstateColor.inkMuted)
+            }
 
-            Text(value)
-                .font(ValgateTypography.Body.standardEmphasis)
-                .foregroundStyle(Color.valTextPrimary)
+            evidenceGrid(verificationSteps(property))
+                .padding(.top, ValgateSpacing.space1)
         }
-        .padding(.vertical, ValgateSpacing.space1)
+        .padding(ValgateSpacing.space4)
+        .background(EstateColor.surface)
+        .overlay(
+            RoundedRectangle(cornerRadius: EstateRadius.lg, style: .continuous)
+                .stroke(EstateColor.line, lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: EstateRadius.lg, style: .continuous))
+    }
+
+    private func verificationSteps(_ property: PropertyDetailDto) -> [EstateVerificationStep] {
+        [
+            EstateVerificationStep("Registered", satisfied: true),
+            EstateVerificationStep("Location On File", satisfied: property.city != nil && property.province != nil),
+            EstateVerificationStep("Address Confirmed", satisfied: property.addressLine != nil),
+            EstateVerificationStep(property.status.capitalized, satisfied: property.status.lowercased() == "active")
+        ]
+    }
+
+    /// Compact 2x2 evidence ledger — plain ruled rows within the identity
+    /// card's own surface, never a bordered tile of its own. A boxed grid
+    /// nested inside the already-boxed identity card would read as a card
+    /// inside a card with nothing left to communicate; hairline rules
+    /// (a top divider from the facts above, cell dividers between steps)
+    /// are enough structure here — no separate outer boundary.
+    private func evidenceGrid(_ steps: [EstateVerificationStep]) -> some View {
+        let rows = stride(from: 0, to: steps.count, by: 2).map {
+            Array(steps[$0..<min($0 + 2, steps.count)])
+        }
+        return VStack(spacing: 0) {
+            EstateDivider()
+            ForEach(rows.indices, id: \.self) { rowIndex in
+                let row = rows[rowIndex]
+                HStack(spacing: 0) {
+                    evidenceCell(row[0])
+                    if row.count > 1 {
+                        Rectangle()
+                            .fill(EstateColor.line)
+                            .frame(width: 1)
+                        evidenceCell(row[1])
+                    } else {
+                        Spacer(minLength: 0)
+                    }
+                }
+                if rowIndex < rows.count - 1 {
+                    EstateDivider()
+                }
+            }
+        }
+    }
+
+    private func evidenceCell(_ step: EstateVerificationStep) -> some View {
+        HStack(alignment: .top, spacing: ValgateSpacing.space2) {
+            Image(systemName: step.satisfied ? "checkmark.seal.fill" : "circle.dashed")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(step.satisfied ? EstateColor.verifiedEvidence : EstateColor.inkMuted)
+                .padding(.top, 1)
+
+            VStack(alignment: .leading, spacing: ValgateSpacing.space0_5) {
+                Text(step.label)
+                    .font(EstateFont.bodyEmphasis(13))
+                    .foregroundStyle(EstateColor.ink)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(step.satisfied ? "Verified" : "Pending")
+                    .font(EstateFont.label)
+                    .tracking(0.6)
+                    .foregroundStyle(step.satisfied ? EstateColor.verifiedEvidence : EstateColor.inkMuted)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, ValgateSpacing.space3)
+        .padding(.vertical, ValgateSpacing.space2)
+        .frame(minHeight: ValgateTouchTarget.minimum)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(step.label): \(step.satisfied ? "Verified" : "Pending")")
+    }
+
+    // MARK: - Module Jump (accessible in-page anchor navigation)
+    private func moduleJump(proxy: ScrollViewProxy) -> some View {
+        // Trailing fade signals the chip row continues off-screen instead of
+        // letting the final chip appear silently cut off with no affordance.
+        ZStack(alignment: .trailing) {
+            EstateModuleJumpBar(items: [
+                EstateModuleJumpItem(id: "module-documents", icon: "doc.text", title: "Documents"),
+                EstateModuleJumpItem(id: "module-rental", icon: "doc.plaintext", title: "Rental"),
+                EstateModuleJumpItem(id: "module-valuation", icon: "chart.line.uptrend.xyaxis", title: "Valuations"),
+                EstateModuleJumpItem(id: "module-ownership", icon: "building.columns", title: "Ownership")
+            ]) { id in
+                withAnimation(EstateMotion.stateChange) {
+                    proxy.scrollTo(id, anchor: .top)
+                }
+            }
+
+            LinearGradient(
+                colors: [EstateColor.canvas.opacity(0), EstateColor.canvas],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(width: ValgateSpacing.space8)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+        }
+    }
+
+    // MARK: - Compact Facts (console-style tabular readout)
+    private func factsLedger(_ property: PropertyDetailDto) -> some View {
+        EstateFactStrip(facts: [
+            .init("AREA", property.totalArea),
+            .init("BEDS", property.bedrooms ?? "—"),
+            .init("BATHS", property.bathrooms ?? "—"),
+            .init("BUILT", property.yearBuilt ?? "—")
+        ])
+    }
+
+    // MARK: - Ledger Group (editorial replacement for List Section)
+    private struct DetailRowItem {
+        let icon: String
+        let label: String
+        let value: String
+    }
+
+    private func ledgerGroup(title: String, rows: [DetailRowItem]) -> some View {
+        EstateLedgerSection(title) {
+            ForEach(rows.indices, id: \.self) { index in
+                EstateLedgerRow(icon: rows[index].icon, label: rows[index].label, value: rows[index].value)
+                if index < rows.count - 1 {
+                    EstateDivider()
+                }
+            }
+        }
+    }
+
+    // MARK: - Modules Index (numbered ledger navigation)
+    private func modulesIndex() -> some View {
+        EstateLedgerSection("Modules") {
+            moduleRow(index: 1, icon: "doc.text", title: "Documents", identifier: "property-detail-documents-link") {
+                PropertyDocumentsView(
+                    client: viewModel.client,
+                    propertyId: viewModel.propertyId,
+                    sessionToken: viewModel.sessionToken,
+                    onUnauthorized: viewModel.onUnauthorized
+                )
+            }
+            .id("module-documents")
+            EstateDivider()
+            moduleRow(index: 2, icon: "doc.plaintext", title: "Rental", identifier: "property-detail-rental-link") {
+                PropertyRentalView(
+                    client: viewModel.client,
+                    propertyId: viewModel.propertyId,
+                    sessionToken: viewModel.sessionToken,
+                    onUnauthorized: viewModel.onUnauthorized
+                )
+            }
+            .id("module-rental")
+            EstateDivider()
+            moduleRow(index: 3, icon: "chart.line.uptrend.xyaxis", title: "Valuations", identifier: "property-detail-valuation-link") {
+                PropertyValuationView(
+                    client: viewModel.client,
+                    propertyId: viewModel.propertyId,
+                    sessionToken: viewModel.sessionToken,
+                    onUnauthorized: viewModel.onUnauthorized
+                )
+            }
+            .id("module-valuation")
+            EstateDivider()
+            moduleRow(index: 4, icon: "building.columns", title: "Ownership", identifier: "property-detail-ownership-link") {
+                PropertyOwnershipView(
+                    client: viewModel.client,
+                    propertyId: viewModel.propertyId,
+                    sessionToken: viewModel.sessionToken,
+                    onUnauthorized: viewModel.onUnauthorized
+                )
+            }
+            .id("module-ownership")
+        }
+    }
+
+    private func moduleRow<Destination: View>(
+        index: Int,
+        icon: String,
+        title: String,
+        identifier: String,
+        @ViewBuilder destination: () -> Destination
+    ) -> some View {
+        NavigationLink {
+            destination()
+        } label: {
+            HStack(spacing: ValgateSpacing.space3) {
+                Text(String(format: "%02d", index))
+                    .font(EstateFont.metric(14, weight: .medium))
+                    .foregroundStyle(EstateColor.inkMuted)
+                    .frame(width: 28, alignment: .leading)
+
+                Image(systemName: icon)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(EstateColor.accent)
+                    .frame(width: 22)
+
+                Text(title)
+                    .font(EstateFont.bodyEmphasis(16))
+                    .foregroundStyle(EstateColor.ink)
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(EstateColor.inkMuted)
+            }
+            .padding(.horizontal, ValgateSpacing.space4)
+            .frame(minHeight: ValgateTouchTarget.minimum)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(identifier)
     }
 }

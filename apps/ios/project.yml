@@ -30,11 +30,18 @@ targets:
       - path: Sources/ValgateiOS/Networking
       - path: Sources/ValgateiOS/Views
       - path: Sources/ValgateiOS/Fixtures
+      - path: Sources/ValgateiOS/Resources/Fonts
+        buildPhase: resources
     info:
       path: Sources/ValgateiOS/Info.plist
       properties:
         CFBundleDisplayName: Valgate
         UILaunchScreen: {}
+        UIAppFonts:
+          - Geist-Regular.ttf
+          - Geist-Medium.ttf
+          - Geist-SemiBold.ttf
+          - Geist-Bold.ttf
         API_BASE_URL: $(VALGATE_API_BASE_URL)
         CLERK_PUBLISHABLE_KEY: $(CLERK_PUBLISHABLE_KEY)
         VERCEL_PROTECTION_BYPASS: $(VERCEL_PROTECTION_BYPASS)

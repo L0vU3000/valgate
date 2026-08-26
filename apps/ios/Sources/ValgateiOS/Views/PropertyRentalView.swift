@@ -52,19 +52,18 @@ struct PropertyRentalView: View {
             switch viewModel.state {
             case .loading:
                 ProgressView("Loading rental…")
+                    .estateStateSurface()
                     .accessibilityIdentifier("property-rental-loading")
             case .loaded(let leases):
-                List(leases) { lease in
-                    leaseRow(lease)
-                }
-                .listStyle(.plain)
-                .accessibilityIdentifier("property-rental-loaded")
+                rentalContent(leases)
+                    .accessibilityIdentifier("property-rental-loaded")
             case .empty:
                 ContentUnavailableView(
                     "No Leases",
                     systemImage: "doc.plaintext",
                     description: Text("This property has no leases yet.")
                 )
+                .estateStateSurface()
                 .accessibilityIdentifier("property-rental-empty")
             case .error(let message):
                 ContentUnavailableView(
@@ -72,6 +71,7 @@ struct PropertyRentalView: View {
                     systemImage: "exclamationmark.triangle",
                     description: Text(message)
                 )
+                .estateStateSurface()
                 .accessibilityIdentifier("property-rental-error")
             }
         }
@@ -82,23 +82,74 @@ struct PropertyRentalView: View {
         }
     }
 
-    private func leaseRow(_ lease: LeaseSummaryDtoV1) -> some View {
-        HStack(spacing: ValgateSpacing.space3) {
-            Image(systemName: "doc.plaintext")
-                .font(.system(size: 16))
-                .foregroundStyle(Color.valInteractivePrimary)
-
-            VStack(alignment: .leading, spacing: ValgateSpacing.space0_5) {
-                Text(lease.unit)
-                    .font(ValgateTypography.Body.standardEmphasis)
-                    .foregroundStyle(Color.valTextPrimary)
-                Text(lease.stage)
-                    .font(ValgateTypography.Content.caption)
-                    .foregroundStyle(Color.valTextSecondary)
+    // MARK: - Loaded Content
+    private func rentalContent(_ leases: [LeaseSummaryDtoV1]) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: ValgateSpacing.space6) {
+                rentRollLedger(leases)
+                EstateLedgerSection("Leases") {
+                    ForEach(leases.indices, id: \.self) { index in
+                        leaseRow(leases[index])
+                        if index < leases.count - 1 {
+                            EstateDivider()
+                        }
+                    }
+                }
             }
-
-            Spacer()
+            .padding(ValgateSpacing.space4)
         }
-        .padding(.vertical, ValgateSpacing.space1)
+        .background(EstateColor.canvas)
+    }
+
+    // MARK: - Rent Roll Monitor
+    private func rentRollLedger(_ leases: [LeaseSummaryDtoV1]) -> some View {
+        let total = leases.reduce(0) { $0 + $1.monthlyRent }
+        return EstateMetricPanel(
+            value: currencyString(total),
+            label: leases.count == 1 ? "Monthly Rent · 1 Lease" : "Monthly Rent · \(leases.count) Leases"
+        ) {
+            Image(systemName: "doc.plaintext.fill")
+                .font(.system(size: 26, weight: .regular))
+                .foregroundStyle(EstateColor.accent.opacity(0.4))
+        }
+    }
+
+    private func leaseRow(_ lease: LeaseSummaryDtoV1) -> some View {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space1_5) {
+            HStack(spacing: ValgateSpacing.space2) {
+                Text(lease.unit)
+                    .font(EstateFont.bodyEmphasis(15))
+                    .foregroundStyle(EstateColor.ink)
+                Spacer()
+                EstateStatusBadge(status: lease.stage)
+            }
+            HStack(spacing: ValgateSpacing.space2) {
+                Text("\(dateString(lease.startDate)) – \(dateString(lease.endDate))")
+                    .font(EstateFont.body(13))
+                    .foregroundStyle(EstateColor.inkMuted)
+                Spacer()
+                Text("\(currencyString(lease.monthlyRent))/mo")
+                    .font(EstateFont.metric(15))
+                    .foregroundStyle(EstateColor.ink)
+            }
+        }
+        .padding(.horizontal, ValgateSpacing.space4)
+        .padding(.vertical, ValgateSpacing.space2)
+        .frame(minHeight: ValgateTouchTarget.minimum)
+    }
+
+    private func currencyString(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = "USD"
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: amount)) ?? "$\(Int(amount))"
+    }
+
+    private func dateString(_ millis: Int) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(millis) / 1000)
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
 }

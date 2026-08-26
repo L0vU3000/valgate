@@ -12,5 +12,6 @@ enum FixtureScreen: String, CaseIterable, Equatable {
     case rental
     case valuations
     case ownership
+    case createProperty
 }
 #endif

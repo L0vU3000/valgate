@@ -35,7 +35,7 @@ struct VGBadge: View {
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
             .background(backgroundColor)
-            .cornerRadius(ValgateRadius.pill)
+            .cornerRadius(ValgateRounded.pill)
     }
 
     private var font: Font {
@@ -55,28 +55,23 @@ struct VGBadge: View {
     private var verticalPadding: CGFloat {
         switch size {
         case .small: return ValgateSpacing.space0_5
-        case .standard: return ValgateSpacing.space1
+        case .standard: return ValgateSpacing.microGap
         }
     }
 
+    // Solid fill + inverse text, per DESIGN.md `verification-badge` /
+    // `warning-status` — high-contrast semantic status, not a soft tint.
     private var foregroundColor: Color {
+        variant == .neutral ? .valTextPrimary : .valTextInverse
+    }
+
+    private var backgroundColor: Color {
         switch variant {
         case .primary: return .valInteractivePrimary
         case .success: return .valStatusSuccess
         case .warning: return .valStatusWarning
         case .danger: return .valStatusDanger
         case .info: return .valStatusInfo
-        case .neutral: return .valTextSecondary
-        }
-    }
-
-    private var backgroundColor: Color {
-        switch variant {
-        case .primary: return .valBrandSubtle
-        case .success: return .valStatusSuccessBg
-        case .warning: return .valStatusWarningBg
-        case .danger: return .valStatusDangerBg
-        case .info: return .valStatusInfoBg
         case .neutral: return .valSurfaceSunken
         }
     }

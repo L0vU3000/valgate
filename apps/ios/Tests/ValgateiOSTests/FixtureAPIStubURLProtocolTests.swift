@@ -14,14 +14,14 @@ final class FixtureAPIStubURLProtocolTests: XCTestCase {
         let dto = try await makeClient().me(sessionToken: FixtureData.sessionToken)
 
         XCTAssertEqual(dto.role, .owner)
-        XCTAssertEqual(dto.orgName, "Fixture Properties Inc.")
+        XCTAssertEqual(dto.orgName, "ក្រុមហ៊ុន វ៉ាល់ហ្គេត កម្ពុជា")
     }
 
-    func test_properties_decodesSinglePropertyMatchingFixturePropertyId() async throws {
+    func test_properties_decodesDemoPortfolioIncludingCanonicalFixtureProperty() async throws {
         let page = try await makeClient().properties(limit: 100, cursor: nil, sessionToken: FixtureData.sessionToken)
 
-        XCTAssertEqual(page.items.count, 1)
-        XCTAssertEqual(page.items.first?.id, FixtureData.propertyId)
+        XCTAssertEqual(page.items.count, 5)
+        XCTAssertTrue(page.items.contains { $0.id == FixtureData.propertyId })
         XCTAssertNil(page.nextCursor)
     }
 
@@ -29,7 +29,7 @@ final class FixtureAPIStubURLProtocolTests: XCTestCase {
         let dto = try await makeClient().property(id: FixtureData.propertyId, sessionToken: FixtureData.sessionToken)
 
         XCTAssertEqual(dto.id, FixtureData.propertyId)
-        XCTAssertEqual(dto.name, "Fixture Harbor Lofts")
+        XCTAssertEqual(dto.name, "គម្រោងមេគង្គ រេស៊ីដិនស៍")
     }
 
     func test_property_unknownIdReturnsNotFound() async {
@@ -54,7 +54,7 @@ final class FixtureAPIStubURLProtocolTests: XCTestCase {
         let leases = try await makeClient().listLeases(propertyId: FixtureData.propertyId, sessionToken: FixtureData.sessionToken)
 
         XCTAssertEqual(leases.count, 1)
-        XCTAssertEqual(leases.first?.unit, "Unit 4B")
+        XCTAssertEqual(leases.first?.unit, "បន្ទប់ A-04")
     }
 
     func test_listValuations_decodesOneFixtureValuation() async throws {

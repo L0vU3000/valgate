@@ -30,5 +30,12 @@
 	<string>$(MAPBOX_PUBLIC_TOKEN)</string>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Geist-Regular.ttf</string>
+		<string>Geist-Medium.ttf</string>
+		<string>Geist-SemiBold.ttf</string>
+		<string>Geist-Bold.ttf</string>
+	</array>
 </dict>
 </plist>

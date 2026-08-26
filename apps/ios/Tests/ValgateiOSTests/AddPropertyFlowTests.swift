@@ -40,6 +40,18 @@ final class AddPropertyFlowTests: XCTestCase {
         XCTAssertEqual(request.title, .none)
     }
 
+    func test_createPropertyForm_coordinateUpdate() {
+        var form = CreatePropertyForm()
+        let newLat = 12.8781
+        let newLng = 103.9751
+        form.lat = newLat
+        form.lng = newLng
+
+        let request = form.toRequest()
+        XCTAssertEqual(request.lat, newLat)
+        XCTAssertEqual(request.lng, newLng)
+    }
+
     func test_homeNavigationResolver_resolveCreated() {
         let createdDto = PropertyDetailDto(
             id: "prop_123",
@@ -58,7 +70,6 @@ final class AddPropertyFlowTests: XCTestCase {
         )
 
         let destination = HomeNavigationResolver.resolve(created: createdDto)
-
         if case .propertyDetail(let id) = destination {
             XCTAssertEqual(id, "prop_123")
         } else {

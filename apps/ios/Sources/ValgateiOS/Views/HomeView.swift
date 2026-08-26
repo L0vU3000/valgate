@@ -117,19 +117,19 @@ struct HomeView: View {
                         "Session Expired",
                         systemImage: "lock",
                         description: Text("Please sign in again.")
-                            .font(ValgateTypography.Content.subheadline)
-                            .foregroundStyle(Color.valTextSecondary)
+                            .font(EstateFont.body(14))
+                            .foregroundStyle(EstateColor.inkMuted)
                     )
-                    .background(Color.valSurfacePage)
+                    .estateStateSurface()
                 case .error(let message):
                     ContentUnavailableView(
                         "Error",
                         systemImage: "exclamationmark.triangle",
                         description: Text(message)
-                            .font(ValgateTypography.Content.subheadline)
-                            .foregroundStyle(Color.valTextSecondary)
+                            .font(EstateFont.body(14))
+                            .foregroundStyle(EstateColor.inkMuted)
                     )
-                    .background(Color.valSurfacePage)
+                    .estateStateSurface()
                 }
             }
             .navigationDestination(item: $navigationDestination) { destination in
@@ -158,6 +158,8 @@ struct HomeView: View {
                         }
                     )
                 }
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
             }
             .task {
                 await viewModel.load()
@@ -171,46 +173,12 @@ struct HomeView: View {
 
 struct MapLoadingView: View {
     var body: some View {
-        ZStack {
-            Color.valSurfaceBase
-                .overlay(
-                    Image(systemName: "map.fill")
-                        .font(.system(size: 60))
-                        .foregroundStyle(Color.valTextSecondary.opacity(0.3))
-                )
-
-            VStack(spacing: ValgateSpacing.space4) {
-                ProgressView()
-                    .scaleEffect(1.2)
-                    .tint(Color.valInteractivePrimary)
-
-                HStack(spacing: ValgateSpacing.space2) {
-                    Image(systemName: "map")
-                        .font(ValgateTypography.Content.subheadlineEmphasis)
-                        .foregroundStyle(Color.valInteractivePrimary)
-                    Text("Loading map…")
-                        .font(ValgateTypography.Content.subheadlineEmphasis)
-                        .foregroundStyle(Color.valTextSecondary)
-                }
-
-                // Loading bar
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: ValgateRadius.sm)
-                            .fill(Color.valBorderSubtle.opacity(0.15))
-                            .frame(height: 4)
-
-                        RoundedRectangle(cornerRadius: ValgateRadius.sm)
-                            .fill(Color.valInteractivePrimary)
-                            .frame(width: geo.size.width * 0.6, height: 4)
-                            .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: true)
-                    }
-                }
-                .frame(width: 180, height: 4)
-            }
-            .padding(ValgateSpacing.space6)
-            .background(.ultraThinMaterial)
-            .cornerRadius(ValgateRadius.xl)
-        }
+        ProgressView("Loading map…")
+            .tint(EstateColor.accent)
+            .font(EstateFont.bodyEmphasis(14))
+            .foregroundStyle(EstateColor.inkMuted)
+            .estateStateSurface()
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Loading map")
     }
 }

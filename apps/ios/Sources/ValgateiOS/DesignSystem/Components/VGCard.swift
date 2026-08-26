@@ -18,8 +18,8 @@ struct VGCard<Content: View>: View {
 
     init(
         variant: VGCardVariant = .default,
-        padding: CGFloat = ValgateSpacing.space4,
-        cornerRadius: CGFloat = ValgateRadius.lg,
+        padding: CGFloat = ValgateSpacing.componentInset,
+        cornerRadius: CGFloat = ValgateRounded.lg,
         @ViewBuilder content: () -> Content
     ) {
         self.variant = variant
@@ -117,14 +117,26 @@ struct VGSectionCard<Content: View>: View {
         VStack(alignment: .leading, spacing: ValgateSpacing.space3) {
             if let title = title {
                 Text(title.uppercased())
-                    .font(ValgateTypography.Content.label)
+                    .font(ValgateTypeRole.label)
                     .foregroundStyle(Color.valTextSecondary)
-                    .padding(.horizontal, ValgateSpacing.space4)
+                    .padding(.horizontal, ValgateSpacing.componentInset)
             }
             VGCard(variant: variant) {
                 content
             }
         }
+    }
+}
+
+// MARK: - Hairline Divider (ledger-style row separator)
+// Canonical structural rule for ruled rows/lists — DESIGN.md prefers ledger
+// dividers over nested rounded cards or default platform list rows. Use
+// between rows inside a VGSectionCard instead of the platform `Divider()`.
+struct VGDivider: View {
+    var body: some View {
+        Rectangle()
+            .fill(Color.valBorderDefault)
+            .frame(height: 1)
     }
 }
 

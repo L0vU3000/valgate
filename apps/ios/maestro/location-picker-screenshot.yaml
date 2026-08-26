@@ -1,0 +1,14 @@
+appId: com.valgate.ios.readonlyfoundation
+---
+- launchApp:
+    clearState: false
+- assertVisible: "New Property"
+- tapOn: "New Property"
+- assertVisible:
+    id: "createPropertyView"
+- tapOn:
+    id: "create-property-pick-location"
+- assertVisible:
+    id: "create-property-location-picker"
+- assertVisible: "Confirm"
+- assertVisible: "Cancel"

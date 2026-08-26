@@ -36,7 +36,63 @@ enum ValgateSpacing {
     static var safeAreaHorizontal: CGFloat { UIApplication.shared.firstSceneKeyWindow?.safeAreaInsets.left ?? 0 }
 }
 
-// MARK: - Corner Radius Scale
+// MARK: - DESIGN.md Spacing Aliases
+// DESIGN.md names its scale xs/sm/md/lg/xl; expose those names directly so
+// call sites can match the spec vocabulary without a second numeric scale.
+extension ValgateSpacing {
+    /// 4pt — DESIGN.md `spacing.xs`
+    static let xs = space1
+    /// 8pt — DESIGN.md `spacing.sm`
+    static let sm = space2
+    /// 16pt — DESIGN.md `spacing.md`
+    static let md = space4
+    /// 24pt — DESIGN.md `spacing.lg`
+    static let lg = space6
+    /// 32pt — DESIGN.md `spacing.xl`
+    static let xl = space8
+}
+
+// MARK: - Semantic Spacing Roles (density hierarchy atop the numeric scale)
+// Names the *role* a gap or inset plays — not just its numeric size — so call
+// sites read as intent ("row gap") instead of a bare scale index ("space3").
+// Every role aliases an existing ValgateSpacing constant; none introduces a
+// new raw value. Screen/page rhythm is deliberately more open (sectionGap);
+// ledger rows stay compact (rowGap/controlGap) while remaining >= 44pt via
+// ValgateTouchTarget. Do not use these to replace per-screen layout judgment
+// — they cover the recurring structural gaps shared across components.
+extension ValgateSpacing {
+    /// 16pt — screen-edge margin. DESIGN.md "Use 16px as the base mobile gutter."
+    static let pageGutter = space4
+    /// 24pt — primary gap between distinct page sections/modules. The open,
+    /// airy pause DESIGN.md calls for between decisions ("Layout").
+    static let sectionGap = space6
+    /// 16pt — gap between closely related sub-sections within one module,
+    /// tighter than `sectionGap` but still a deliberate pause.
+    static let sectionGapCompact = space4
+    /// 16pt — internal inset for a ledger/card/panel container (fact strips,
+    /// metric panels, ledger rows). Matches `pageGutter` so nested content
+    /// lines up with the screen edge.
+    static let componentInset = space4
+    /// 12pt — inline gap between elements inside one row (icon → label →
+    /// value), tighter than a control gap but looser than a micro gap.
+    static let rowGap = space3
+    /// 8pt — gap between adjacent inline controls (icon + text in a button,
+    /// chips in a jump bar, verification-ladder steps).
+    static let controlGap = space2
+    /// 4pt — tightest legible separation; icon-to-text hairline gaps.
+    static let microGap = space1
+    /// 4pt — a value bound tightly to its own label directly beneath it
+    /// (e.g. a metric's caption).
+    static let labelGapTight = space1
+    /// 8pt — a section/group label sitting above the content block it
+    /// introduces (e.g. a ledger section header above its rows).
+    static let labelGapLoose = space2
+    /// 16pt — inset for a pinned/sticky action bar. Reuses `pageGutter`
+    /// rather than introducing a new value for the sticky-footer case.
+    static let stickyActionInset = space4
+}
+
+// MARK: - Corner Radius Scale (legacy, source-compatible)
 enum ValgateRadius {
     /// 4pt — small buttons, badges
     static let sm: CGFloat = 4
@@ -50,6 +106,29 @@ enum ValgateRadius {
     static let xxl: CGFloat = 24
     /// Full pill — buttons, badges
     static let pill: CGFloat = 9999
+}
+
+// MARK: - Corner Radius Scale (canonical, DESIGN.md `rounded`)
+// The approved radii. Core VG/Estate components build on these; ValgateRadius
+// above predates DESIGN.md and stays only for source compatibility.
+enum ValgateRounded {
+    /// 8pt — DESIGN.md `rounded.sm`. Small controls, badges.
+    static let sm: CGFloat = 8
+    /// 14pt — DESIGN.md `rounded.md`. Buttons, standard containers.
+    static let md: CGFloat = 14
+    /// 20pt — DESIGN.md `rounded.lg`. Large containers, hero surfaces.
+    static let lg: CGFloat = 20
+    /// Full pill — verification/status badges, filter chips.
+    static let pill: CGFloat = 9999
+}
+
+// MARK: - Motion (canonical, DESIGN.md "Motion")
+// State feedback only: opacity/transform, interruptible, no bounce, and
+// Reduce Motion safe. Core VG/Estate press styles share this token.
+enum ValgateMotion {
+    static var stateChange: Animation? {
+        UIAccessibility.isReduceMotionEnabled ? nil : .easeOut(duration: 0.18)
+    }
 }
 
 // MARK: - iOS Touch Targets

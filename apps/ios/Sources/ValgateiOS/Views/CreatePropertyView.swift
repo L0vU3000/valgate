@@ -96,273 +96,36 @@ struct CreatePropertyView: View {
 
     private let onCreated: @MainActor (PropertyDetailDto) -> Void
 
-    init(client: APIClient, sessionToken: String, onUnauthorized: @escaping @MainActor () -> Void = {}, onCreated: @escaping @MainActor (PropertyDetailDto) -> Void = { _ in }) {
+    /// `initialForm` defaults to a blank form so normal production usage is
+    /// unaffected; only the DEBUG fixture flow (`FixtureRootView`) passes a
+    /// pre-filled form for deterministic screenshot capture.
+    init(client: APIClient, sessionToken: String, onUnauthorized: @escaping @MainActor () -> Void = {}, onCreated: @escaping @MainActor (PropertyDetailDto) -> Void = { _ in }, initialForm: CreatePropertyForm = CreatePropertyForm()) {
         _viewModel = StateObject(
             wrappedValue: CreatePropertyViewModel(client: client, sessionToken: sessionToken, onUnauthorized: onUnauthorized)
         )
         self.onCreated = onCreated
+        _form = State(initialValue: initialForm)
     }
 
     var body: some View {
-        Form {
-            // Basic Info Section
-            Section {
-                LabeledContent {
-                    TextField("Property Name", text: $form.name)
-                        .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(Color.valTextPrimary)
-                        .multilineTextAlignment(.trailing)
-                        .accessibilityIdentifier("create-property-name")
-                        .focused($focusedField, equals: .name)
-                } label: {
-                    HStack(spacing: ValgateSpacing.space2) {
-                        Image(systemName: "building.2")
-                            .foregroundStyle(Color.valTextSecondary)
-                            .font(.system(size: 14))
-                        Text("Name")
-                            .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(Color.valTextPrimary)
-                    }
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: ValgateSpacing.space6) {
+                    contextHeader
+                    identityLedger
+                    classificationLedger
+                    locationLedger
+                    attachmentsLedger
                 }
-
-                Picker(selection: $form.type) {
-                    ForEach(PropertyType.allCases, id: \.self) { type in
-                        Text(type.displayName).tag(type)
-                    }
-                } label: {
-                    HStack(spacing: ValgateSpacing.space2) {
-                        Image(systemName: "square.grid.2x2")
-                            .foregroundStyle(Color.valTextSecondary)
-                            .font(.system(size: 14))
-                        Text("Type")
-                            .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(Color.valTextPrimary)
-                    }
-                }
-                .accessibilityIdentifier("create-property-type")
-
-                Picker(selection: $form.status) {
-                    ForEach(PropertyStatus.allCases, id: \.self) { status in
-                        Text(status.rawValue).tag(status)
-                    }
-                } label: {
-                    HStack(spacing: ValgateSpacing.space2) {
-                        Image(systemName: "checkmark.shield")
-                            .foregroundStyle(Color.valTextSecondary)
-                            .font(.system(size: 14))
-                        Text("Status")
-                            .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(Color.valTextPrimary)
-                    }
-                }
-                .accessibilityIdentifier("create-property-status")
-            } header: {
-                Text("Basic Info")
-                    .font(ValgateTypography.Content.label)
-                    .foregroundStyle(Color.valTextSecondary)
-                    .textCase(.uppercase)
+                .padding(ValgateSpacing.space4)
             }
+            .background(EstateColor.canvas)
 
-            // Location Section
-            Section {
-                LabeledContent {
-                    TextField("City", text: $form.city)
-                        .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(Color.valTextPrimary)
-                        .multilineTextAlignment(.trailing)
-                        .accessibilityIdentifier("create-property-city")
-                        .focused($focusedField, equals: .city)
-                } label: {
-                    HStack(spacing: ValgateSpacing.space2) {
-                        Image(systemName: "mappin.and.ellipse")
-                            .foregroundStyle(Color.valTextSecondary)
-                            .font(.system(size: 14))
-                        Text("City")
-                            .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(Color.valTextPrimary)
-                    }
-                }
-
-                LabeledContent {
-                    TextField("Province", text: $form.province)
-                        .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(Color.valTextPrimary)
-                        .multilineTextAlignment(.trailing)
-                        .accessibilityIdentifier("create-property-province")
-                        .focused($focusedField, equals: .province)
-                } label: {
-                    HStack(spacing: ValgateSpacing.space2) {
-                        Image(systemName: "map")
-                            .foregroundStyle(Color.valTextSecondary)
-                            .font(.system(size: 14))
-                        Text("Province")
-                            .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(Color.valTextPrimary)
-                    }
-                }
-
-                Button(action: { showLocationPicker = true }) {
-                    HStack {
-                        HStack(spacing: ValgateSpacing.space2) {
-                            Image(systemName: "mappin.and.ellipse")
-                                .foregroundStyle(Color.valTextSecondary)
-                                .font(.system(size: 14))
-                            Text("Pick location")
-                                .font(ValgateTypography.Body.standardEmphasis)
-                                .foregroundStyle(Color.valTextPrimary)
-                        }
-                        Spacer()
-                        Text(String(format: "%.4f, %.4f", form.lat, form.lng))
-                            .font(ValgateTypography.Body.standard)
-                            .foregroundStyle(Color.valTextSecondary)
-                    }
-                }
-                .accessibilityIdentifier("create-property-pick-location")
-
-                Button(action: { locationService.requestOneTapLocation() }) {
-                    HStack {
-                        HStack(spacing: ValgateSpacing.space2) {
-                            Image(systemName: "location.fill")
-                                .foregroundStyle(Color.valTextSecondary)
-                                .font(.system(size: 14))
-                            Text("Use My Location")
-                                .font(ValgateTypography.Body.standardEmphasis)
-                                .foregroundStyle(Color.valTextPrimary)
-                        }
-                        Spacer()
-                        if locationService.state == .requesting {
-                            ProgressView()
-                        }
-                    }
-                }
-                .disabled(locationService.state == .requesting)
-                .accessibilityIdentifier("create-property-use-my-location")
-
-                if case .authorizationDenied = locationService.state {
-                    Text("Location access denied. Enable it in Settings to use this.")
-                        .font(ValgateTypography.Content.caption)
-                        .foregroundStyle(Color.valStatusDanger)
-                } else if case .failure(let message) = locationService.state {
-                    Text(message)
-                        .font(ValgateTypography.Content.caption)
-                        .foregroundStyle(Color.valStatusDanger)
-                } else if case .unavailable = locationService.state {
-                    Text("Location services are unavailable on this device.")
-                        .font(ValgateTypography.Content.caption)
-                        .foregroundStyle(Color.valStatusDanger)
-                }
-            } header: {
-                Text("Location")
-                    .font(ValgateTypography.Content.label)
-                    .foregroundStyle(Color.valTextSecondary)
-                    .textCase(.uppercase)
-            }
-
-            // Details Section
-            Section {
-                LabeledContent {
-                    TextField("Total Area", text: $form.totalArea)
-                        .font(ValgateTypography.Body.standard)
-                        .foregroundStyle(Color.valTextPrimary)
-                        .multilineTextAlignment(.trailing)
-                        .accessibilityIdentifier("create-property-area")
-                        .focused($focusedField, equals: .totalArea)
-                } label: {
-                    HStack(spacing: ValgateSpacing.space2) {
-                        Image(systemName: "ruler")
-                            .foregroundStyle(Color.valTextSecondary)
-                            .font(.system(size: 14))
-                        Text("Total Area")
-                            .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(Color.valTextPrimary)
-                    }
-                }
-
-                Picker(selection: $form.title) {
-                    ForEach(PropertyTitle.allCases, id: \.self) { title in
-                        Text(title.rawValue).tag(title)
-                    }
-                } label: {
-                    HStack(spacing: ValgateSpacing.space2) {
-                        Image(systemName: "doc.text")
-                            .foregroundStyle(Color.valTextSecondary)
-                            .font(.system(size: 14))
-                        Text("Title")
-                            .font(ValgateTypography.Body.standardEmphasis)
-                            .foregroundStyle(Color.valTextPrimary)
-                    }
-                }
-                .accessibilityIdentifier("create-property-title")
-            } header: {
-                Text("Details")
-                    .font(ValgateTypography.Content.label)
-                    .foregroundStyle(Color.valTextSecondary)
-                    .textCase(.uppercase)
-            }
-
-            // Attachments Section
-            Section {
-                ForEach(attachmentRows) { row in
-                    AttachmentRowView(
-                        row: row,
-                        onRetry: { Task { await viewModel.retryUpload(id: row.id) } },
-                        onRemove: { pendingDocuments.removeAll { $0.id == row.id } }
-                    )
-                }
-
-                if let attachmentErrorMessage {
-                    Text(attachmentErrorMessage)
-                        .font(ValgateTypography.Content.caption)
-                        .foregroundStyle(Color.valStatusDanger)
-                }
-
-                HStack(spacing: ValgateSpacing.space4) {
-                    PhotosPicker(selection: $photoPickerItem, matching: .images) {
-                        Label("Photo", systemImage: "photo")
-                    }
-                    .accessibilityIdentifier("create-property-add-photo")
-
-                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                        Button {
-                            showCameraPicker = true
-                        } label: {
-                            Label("Camera", systemImage: "camera")
-                        }
-                        .accessibilityIdentifier("create-property-add-camera")
-                    }
-
-                    Button {
-                        showDocumentFilePicker = true
-                    } label: {
-                        Label("File", systemImage: "doc")
-                    }
-                    .accessibilityIdentifier("create-property-add-file")
-                }
-                .buttonStyle(.borderless)
-                .font(ValgateTypography.Body.standard)
-                .foregroundStyle(Color.valInteractivePrimary)
-            } header: {
-                Text("Attachments")
-                    .font(ValgateTypography.Content.label)
-                    .foregroundStyle(Color.valTextSecondary)
-                    .textCase(.uppercase)
-            }
-
-            // Submit button in a card for visual prominence
-            Section {
-                VGButton("Save Property", icon: "checkmark", variant: .primary, size: .large) {
-                    submit()
-                }
-                .disabled(!form.isValid || viewModel.state == .submitting)
-                .opacity(form.isValid ? 1.0 : 0.6)
-                .padding(.vertical, ValgateSpacing.space2)
-            }
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets())
+            submitBar
         }
+        .background(EstateColor.canvas)
         .navigationTitle("Add Property")
         .navigationBarTitleDisplayMode(.large)
-        .background(Color.valSurfacePage)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 VGToolbarButton(icon: "checkmark") {
@@ -421,10 +184,355 @@ struct CreatePropertyView: View {
         }
     }
 
+    // MARK: - Step / Context Header
+
+    private var contextHeader: some View {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
+            Text("Evidence Capture")
+                .font(EstateFont.label)
+                .tracking(0.9)
+                .foregroundStyle(EstateColor.inkMuted)
+            Text("New Property Record")
+                .font(EstateFont.display)
+                .foregroundStyle(EstateColor.ink)
+                .fixedSize(horizontal: false, vertical: true)
+            Text("Enter identity, classification, and location details to open the record.")
+                .font(EstateFont.body(15))
+                .foregroundStyle(EstateColor.inkMuted)
+        }
+    }
+
+    // MARK: - Identity Ledger
+
+    private var identityLedger: some View {
+        EstateLedgerSection("Identity") {
+            PropertyLedgerFieldRow(icon: "building.2", label: "Name", required: true) {
+                TextField("Property Name", text: $form.name)
+                    .font(EstateFont.body(15))
+                    .foregroundStyle(EstateColor.ink)
+                    .multilineTextAlignment(.trailing)
+                    .accessibilityIdentifier("create-property-name")
+                    .focused($focusedField, equals: .name)
+            }
+        }
+    }
+
+    // MARK: - Classification Ledger
+
+    private var classificationLedger: some View {
+        EstateLedgerSection("Classification") {
+            PropertyLedgerPickerRow(
+                icon: "square.grid.2x2",
+                label: "Type",
+                selection: $form.type,
+                options: PropertyType.allCases,
+                text: { $0.displayName },
+                identifier: "create-property-type"
+            )
+            EstateDivider()
+            PropertyLedgerPickerRow(
+                icon: "checkmark.shield",
+                label: "Status",
+                selection: $form.status,
+                options: PropertyStatus.allCases,
+                text: { $0.rawValue },
+                identifier: "create-property-status"
+            )
+            EstateDivider()
+            PropertyLedgerFieldRow(icon: "ruler", label: "Total Area") {
+                TextField("Total Area", text: $form.totalArea)
+                    .font(EstateFont.body(15))
+                    .foregroundStyle(EstateColor.ink)
+                    .multilineTextAlignment(.trailing)
+                    .accessibilityIdentifier("create-property-area")
+                    .focused($focusedField, equals: .totalArea)
+            }
+            EstateDivider()
+            PropertyLedgerPickerRow(
+                icon: "doc.text",
+                label: "Title",
+                selection: $form.title,
+                options: PropertyTitle.allCases,
+                text: { $0.rawValue },
+                identifier: "create-property-title"
+            )
+        }
+    }
+
+    // MARK: - Location Ledger
+
+    private var locationLedger: some View {
+        EstateLedgerSection("Location") {
+            PropertyLedgerFieldRow(icon: "mappin.and.ellipse", label: "City") {
+                TextField("City", text: $form.city)
+                    .font(EstateFont.body(15))
+                    .foregroundStyle(EstateColor.ink)
+                    .multilineTextAlignment(.trailing)
+                    .accessibilityIdentifier("create-property-city")
+                    .focused($focusedField, equals: .city)
+            }
+            EstateDivider()
+            PropertyLedgerFieldRow(icon: "map", label: "Province") {
+                TextField("Province", text: $form.province)
+                    .font(EstateFont.body(15))
+                    .foregroundStyle(EstateColor.ink)
+                    .multilineTextAlignment(.trailing)
+                    .accessibilityIdentifier("create-property-province")
+                    .focused($focusedField, equals: .province)
+            }
+            EstateDivider()
+            PropertyLedgerActionRow(icon: "mappin.and.ellipse", label: "Pick Location") {
+                HStack(spacing: ValgateSpacing.space2) {
+                    Text(String(format: "%.4f, %.4f", form.lat, form.lng))
+                        .font(EstateFont.metric(14))
+                        .foregroundStyle(EstateColor.inkMuted)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(EstateColor.inkMuted)
+                }
+            } action: {
+                showLocationPicker = true
+            }
+            .accessibilityIdentifier("create-property-pick-location")
+            EstateDivider()
+            PropertyLedgerActionRow(icon: "location.fill", label: "Use My Location") {
+                if locationService.state == .requesting {
+                    ProgressView()
+                }
+            } action: {
+                locationService.requestOneTapLocation()
+            }
+            .disabled(locationService.state == .requesting)
+            .accessibilityIdentifier("create-property-use-my-location")
+
+            if case .authorizationDenied = locationService.state {
+                locationHint("Location access denied. Enable it in Settings to use this.")
+            } else if case .failure(let message) = locationService.state {
+                locationHint(message)
+            } else if case .unavailable = locationService.state {
+                locationHint("Location services are unavailable on this device.")
+            }
+        }
+    }
+
+    private func locationHint(_ message: String) -> some View {
+        Text(message)
+            .font(EstateFont.body(13))
+            .foregroundStyle(EstateColor.danger)
+            .padding(.horizontal, ValgateSpacing.space4)
+            .padding(.vertical, ValgateSpacing.space2)
+    }
+
+    // MARK: - Attachments Ledger
+
+    private var attachmentsLedger: some View {
+        EstateLedgerSection("Attachments") {
+            ForEach(attachmentRows) { row in
+                AttachmentRowView(
+                    row: row,
+                    onRetry: { Task { await viewModel.retryUpload(id: row.id) } },
+                    onRemove: { pendingDocuments.removeAll { $0.id == row.id } }
+                )
+                .padding(.horizontal, ValgateSpacing.space4)
+                .frame(minHeight: ValgateTouchTarget.minimum)
+                EstateDivider()
+            }
+
+            if let attachmentErrorMessage {
+                Text(attachmentErrorMessage)
+                    .font(EstateFont.body(13))
+                    .foregroundStyle(EstateColor.danger)
+                    .padding(.horizontal, ValgateSpacing.space4)
+                    .padding(.vertical, ValgateSpacing.space2)
+                EstateDivider()
+            }
+
+            attachmentActions
+        }
+    }
+
+    private var attachmentActions: some View {
+        HStack(spacing: ValgateSpacing.space4) {
+            PhotosPicker(selection: $photoPickerItem, matching: .images) {
+                Label("Photo", systemImage: "photo")
+            }
+            .accessibilityIdentifier("create-property-add-photo")
+
+            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                Button {
+                    showCameraPicker = true
+                } label: {
+                    Label("Camera", systemImage: "camera")
+                }
+                .accessibilityIdentifier("create-property-add-camera")
+            }
+
+            Button {
+                showDocumentFilePicker = true
+            } label: {
+                Label("File", systemImage: "doc")
+            }
+            .accessibilityIdentifier("create-property-add-file")
+
+            Spacer(minLength: 0)
+        }
+        .buttonStyle(.borderless)
+        .font(EstateFont.bodyEmphasis(15))
+        .foregroundStyle(EstateColor.ink)
+        .padding(.horizontal, ValgateSpacing.space4)
+        .frame(minHeight: ValgateTouchTarget.minimum)
+    }
+
+    // MARK: - Submit Bar
+
+    private var submitBar: some View {
+        VStack(spacing: ValgateSpacing.space2) {
+            if viewModel.state == .submitting {
+                HStack(spacing: ValgateSpacing.space2) {
+                    ProgressView()
+                    Text("Saving property…")
+                        .font(EstateFont.body(13))
+                        .foregroundStyle(EstateColor.inkMuted)
+                }
+            } else if !form.isValid {
+                // The only save action is disabled here — per DESIGN.md's
+                // disabled-state rule, the reason must be discoverable, not
+                // just a dimmer button with no explanation.
+                Text("Enter a property name to save.")
+                    .font(EstateFont.body(13))
+                    .foregroundStyle(EstateColor.inkMuted)
+                    .accessibilityIdentifier("create-property-save-hint")
+            }
+            EstateButton("Save Property", icon: "checkmark", tone: .primary) {
+                submit()
+            }
+            .disabled(!form.isValid || viewModel.state == .submitting)
+            .opacity(form.isValid ? 1.0 : 0.6)
+        }
+        .padding(.horizontal, ValgateSpacing.space4)
+        .padding(.top, ValgateSpacing.space3)
+        .padding(.bottom, ValgateSpacing.space6)
+        .background(EstateColor.canvas)
+    }
+
     // MARK: - Field Focus
 
     private enum Field: Hashable {
         case name, city, province, lat, lng, totalArea
+    }
+}
+
+// MARK: - Material Estate Row Primitives (Create Property only)
+// Editable variants of the read-only EstateLedgerRow — a labeled row whose
+// trailing content is an interactive field/picker/button instead of static
+// text. Kept local to this file since no other screen needs editable rows.
+
+private struct PropertyLedgerFieldRow<Field: View>: View {
+    let icon: String
+    let label: String
+    var required: Bool = false
+    let field: () -> Field
+
+    init(icon: String, label: String, required: Bool = false, @ViewBuilder field: @escaping () -> Field) {
+        self.icon = icon
+        self.label = label
+        self.required = required
+        self.field = field
+    }
+
+    var body: some View {
+        HStack(spacing: ValgateSpacing.space3) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundStyle(EstateColor.inkMuted)
+                .frame(width: 20)
+            HStack(spacing: ValgateSpacing.microGap) {
+                Text(label)
+                    .font(EstateFont.body(15))
+                    .foregroundStyle(EstateColor.ink)
+                if required {
+                    Text("Required")
+                        .font(EstateFont.label)
+                        .tracking(0.4)
+                        .foregroundStyle(EstateColor.inkMuted)
+                }
+            }
+            .accessibilityElement(children: .combine)
+            Spacer(minLength: ValgateSpacing.space2)
+            field()
+        }
+        .padding(.horizontal, ValgateSpacing.space4)
+        .frame(minHeight: ValgateTouchTarget.minimum)
+    }
+}
+
+private struct PropertyLedgerPickerRow<T: Hashable>: View {
+    let icon: String
+    let label: String
+    @Binding var selection: T
+    let options: [T]
+    let text: (T) -> String
+    let identifier: String
+
+    var body: some View {
+        HStack(spacing: ValgateSpacing.space3) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundStyle(EstateColor.inkMuted)
+                .frame(width: 20)
+            Text(label)
+                .font(EstateFont.body(15))
+                .foregroundStyle(EstateColor.ink)
+            Spacer(minLength: ValgateSpacing.space2)
+            Picker(selection: $selection) {
+                ForEach(options, id: \.self) { option in
+                    Text(text(option)).tag(option)
+                }
+            } label: {
+                EmptyView()
+            }
+            .pickerStyle(.menu)
+            .tint(EstateColor.inkMuted)
+            .accessibilityIdentifier(identifier)
+        }
+        .padding(.horizontal, ValgateSpacing.space4)
+        .frame(minHeight: ValgateTouchTarget.minimum)
+    }
+}
+
+private struct PropertyLedgerActionRow<Trailing: View>: View {
+    @Environment(\.isEnabled) private var isEnabled
+    let icon: String
+    let label: String
+    let trailing: () -> Trailing
+    let action: () -> Void
+
+    init(icon: String, label: String, @ViewBuilder trailing: @escaping () -> Trailing, action: @escaping () -> Void) {
+        self.icon = icon
+        self.label = label
+        self.trailing = trailing
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: ValgateSpacing.space3) {
+                Image(systemName: icon)
+                    .font(.system(size: 14))
+                    .foregroundStyle(EstateColor.inkMuted)
+                    .frame(width: 20)
+                Text(label)
+                    .font(EstateFont.body(15))
+                    .foregroundStyle(EstateColor.ink)
+                Spacer(minLength: ValgateSpacing.space2)
+                trailing()
+            }
+            .padding(.horizontal, ValgateSpacing.space4)
+            .frame(minHeight: ValgateTouchTarget.minimum)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(EstatePressStyle())
+        .opacity(isEnabled ? 1.0 : 0.5)
     }
 }
 

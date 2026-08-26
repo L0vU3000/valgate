@@ -52,19 +52,18 @@ struct PropertyValuationView: View {
             switch viewModel.state {
             case .loading:
                 ProgressView("Loading valuation…")
+                    .estateStateSurface()
                     .accessibilityIdentifier("property-valuation-loading")
             case .loaded(let valuations):
-                List(sortedByRecordedAtDescending(valuations)) { valuation in
-                    valuationRow(valuation)
-                }
-                .listStyle(.plain)
-                .accessibilityIdentifier("property-valuation-loaded")
+                valuationContent(valuations)
+                    .accessibilityIdentifier("property-valuation-loaded")
             case .empty:
                 ContentUnavailableView(
                     "No Valuations",
                     systemImage: "chart.line.uptrend.xyaxis",
                     description: Text("This property has no valuation history yet.")
                 )
+                .estateStateSurface()
                 .accessibilityIdentifier("property-valuation-empty")
             case .error(let message):
                 ContentUnavailableView(
@@ -72,6 +71,7 @@ struct PropertyValuationView: View {
                     systemImage: "exclamationmark.triangle",
                     description: Text(message)
                 )
+                .estateStateSurface()
                 .accessibilityIdentifier("property-valuation-error")
             }
         }
@@ -86,24 +86,92 @@ struct PropertyValuationView: View {
         valuations.sorted { $0.recordedAt > $1.recordedAt }
     }
 
-    private func valuationRow(_ valuation: PropertyValuationDto) -> some View {
-        HStack(spacing: ValgateSpacing.space3) {
-            Image(systemName: "chart.line.uptrend.xyaxis")
-                .font(.system(size: 16))
-                .foregroundStyle(Color.valInteractivePrimary)
+    // MARK: - Loaded Content
+    private func valuationContent(_ valuations: [PropertyValuationDto]) -> some View {
+        let sorted = sortedByRecordedAtDescending(valuations)
+        return ScrollView {
+            VStack(alignment: .leading, spacing: ValgateSpacing.space6) {
+                if let latest = sorted.first {
+                    currentValuationLedger(latest: latest, previous: sorted.dropFirst().first)
+                }
+                EstateLedgerSection("History") {
+                    ForEach(sorted.indices, id: \.self) { index in
+                        valuationRow(
+                            current: sorted[index],
+                            previous: index + 1 < sorted.count ? sorted[index + 1] : nil
+                        )
+                        if index < sorted.count - 1 {
+                            EstateDivider()
+                        }
+                    }
+                }
+            }
+            .padding(ValgateSpacing.space4)
+        }
+        .background(EstateColor.canvas)
+    }
 
+    // MARK: - Current Valuation Monitor
+    private func currentValuationLedger(latest: PropertyValuationDto, previous: PropertyValuationDto?) -> some View {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
+            Text("CURRENT VALUATION")
+                .font(EstateFont.label)
+                .tracking(0.9)
+                .foregroundStyle(EstateColor.inkMuted)
+            HStack(alignment: .firstTextBaseline, spacing: ValgateSpacing.space3) {
+                Text(currencyString(latest.price))
+                    .font(EstateFont.display)
+                    .foregroundStyle(EstateColor.ink)
+                if let previous {
+                    deltaBadge(from: previous.price, to: latest.price)
+                }
+            }
+            Text(latest.month)
+                .font(EstateFont.body(14))
+                .foregroundStyle(EstateColor.inkMuted)
+        }
+        .padding(ValgateSpacing.space4)
+        .background(EstateColor.surfaceStrong)
+        .clipShape(RoundedRectangle(cornerRadius: EstateRadius.md, style: .continuous))
+    }
+
+    private func deltaBadge(from previousPrice: Double, to price: Double) -> some View {
+        let change = price - previousPrice
+        let percent = previousPrice != 0 ? (change / previousPrice) * 100 : 0
+        let isPositive = change >= 0
+        return HStack(spacing: ValgateSpacing.space0_5) {
+            Image(systemName: isPositive ? "arrow.up.right" : "arrow.down.right")
+            Text(String(format: "%.1f%%", abs(percent)))
+        }
+        .font(EstateFont.metric(11, weight: .semibold))
+        .foregroundStyle(isPositive ? EstateColor.verified : EstateColor.danger)
+        .padding(.horizontal, ValgateSpacing.space2)
+        .padding(.vertical, ValgateSpacing.space0_5)
+        .background(isPositive ? ValgatePalette.successBg : ValgatePalette.dangerBg)
+        .clipShape(Capsule())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(isPositive ? "Up" : "Down") \(String(format: "%.1f", abs(percent))) percent")
+    }
+
+    private func valuationRow(current: PropertyValuationDto, previous: PropertyValuationDto?) -> some View {
+        HStack(spacing: ValgateSpacing.space3) {
             VStack(alignment: .leading, spacing: ValgateSpacing.space0_5) {
-                Text(currencyString(valuation.price))
-                    .font(ValgateTypography.Body.standardEmphasis)
-                    .foregroundStyle(Color.valTextPrimary)
-                Text(valuation.month)
-                    .font(ValgateTypography.Content.caption)
-                    .foregroundStyle(Color.valTextSecondary)
+                Text(current.month)
+                    .font(EstateFont.bodyEmphasis(15))
+                    .foregroundStyle(EstateColor.ink)
+                Text(currencyString(current.price))
+                    .font(EstateFont.metric(14, weight: .regular))
+                    .foregroundStyle(EstateColor.inkMuted)
             }
 
             Spacer()
+
+            if let previous {
+                deltaBadge(from: previous.price, to: current.price)
+            }
         }
-        .padding(.vertical, ValgateSpacing.space1)
+        .padding(.horizontal, ValgateSpacing.space4)
+        .frame(minHeight: ValgateTouchTarget.minimum)
     }
 
     private func currencyString(_ price: Double) -> String {

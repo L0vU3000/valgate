@@ -52,6 +52,7 @@ struct PropertyOwnershipView: View {
             switch viewModel.state {
             case .loading:
                 ProgressView("Loading ownership…")
+                    .estateStateSurface()
                     .accessibilityIdentifier("property-ownership-loading")
             case .loaded(let ownership):
                 ownershipContent(ownership)
@@ -62,6 +63,7 @@ struct PropertyOwnershipView: View {
                     systemImage: "building.columns",
                     description: Text("This property has no ownership record yet.")
                 )
+                .estateStateSurface()
                 .accessibilityIdentifier("property-ownership-empty")
             case .error(let message):
                 ContentUnavailableView(
@@ -69,6 +71,7 @@ struct PropertyOwnershipView: View {
                     systemImage: "exclamationmark.triangle",
                     description: Text(message)
                 )
+                .estateStateSurface()
                 .accessibilityIdentifier("property-ownership-error")
             }
         }
@@ -81,53 +84,72 @@ struct PropertyOwnershipView: View {
 
     @ViewBuilder
     private func ownershipContent(_ ownership: PropertyOwnershipDto) -> some View {
-        List {
-            Section {
-                detailRow(icon: "building.columns", label: "Holding Type", value: ownership.holdingType)
-                detailRow(icon: "checkmark.seal", label: "Verified", value: ownership.verified == true ? "Yes" : "No")
-                detailRow(icon: "chart.pie", label: "Distribution Method", value: ownership.distributionMethod ?? "—")
+        ScrollView {
+            VStack(alignment: .leading, spacing: ValgateSpacing.space6) {
+                holdingLedger(ownership)
+                ledgerGroup(title: "Loan", rows: [
+                    DetailRowItem(icon: "banknote", label: "Lender", value: ownership.lenderName ?? "—"),
+                    DetailRowItem(icon: "doc.text", label: "Loan Type", value: ownership.loanType ?? "—"),
+                    DetailRowItem(icon: "dollarsign.circle", label: "Loan Amount", value: currencyString(ownership.loanAmount)),
+                    DetailRowItem(icon: "percent", label: "Interest Rate", value: percentString(ownership.interestRate)),
+                    DetailRowItem(icon: "calendar", label: "Loan Term", value: yearsString(ownership.loanTermYears)),
+                    DetailRowItem(icon: "calendar.badge.clock", label: "Origination Date", value: dateString(ownership.originationDate)),
+                    DetailRowItem(icon: "calendar.badge.exclamationmark", label: "Maturity Date", value: dateString(ownership.maturityDate)),
+                    DetailRowItem(icon: "clock", label: "Next Payment Due", value: dateString(ownership.nextPaymentDue))
+                ])
+                ledgerGroup(title: "Acquisition", rows: [
+                    DetailRowItem(icon: "banknote", label: "Down Payment", value: currencyString(ownership.downPayment)),
+                    DetailRowItem(icon: "creditcard", label: "Closing Costs", value: currencyString(ownership.closingCosts))
+                ])
             }
-            .listRowBackground(Color.valSurfaceBase)
-
-            Section("Loan") {
-                detailRow(icon: "banknote", label: "Lender", value: ownership.lenderName ?? "—")
-                detailRow(icon: "doc.text", label: "Loan Type", value: ownership.loanType ?? "—")
-                detailRow(icon: "dollarsign.circle", label: "Loan Amount", value: currencyString(ownership.loanAmount))
-                detailRow(icon: "percent", label: "Interest Rate", value: percentString(ownership.interestRate))
-                detailRow(icon: "calendar", label: "Loan Term", value: yearsString(ownership.loanTermYears))
-                detailRow(icon: "calendar.badge.clock", label: "Origination Date", value: dateString(ownership.originationDate))
-                detailRow(icon: "calendar.badge.exclamationmark", label: "Maturity Date", value: dateString(ownership.maturityDate))
-                detailRow(icon: "clock", label: "Next Payment Due", value: dateString(ownership.nextPaymentDue))
-            }
-            .listRowBackground(Color.valSurfaceBase)
-
-            Section("Acquisition") {
-                detailRow(icon: "banknote", label: "Down Payment", value: currencyString(ownership.downPayment))
-                detailRow(icon: "creditcard", label: "Closing Costs", value: currencyString(ownership.closingCosts))
-            }
-            .listRowBackground(Color.valSurfaceBase)
+            .padding(ValgateSpacing.space4)
         }
-        .listStyle(.insetGrouped)
+        .background(EstateColor.canvas)
     }
 
-    private func detailRow(icon: String, label: String, value: String) -> some View {
-        HStack(spacing: ValgateSpacing.space3) {
-            Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundStyle(Color.valTextTertiary)
-                .frame(width: 20)
-
-            Text(label)
-                .font(ValgateTypography.Body.standard)
-                .foregroundStyle(Color.valTextSecondary)
-
-            Spacer()
-
-            Text(value)
-                .font(ValgateTypography.Body.standardEmphasis)
-                .foregroundStyle(Color.valTextPrimary)
+    // MARK: - Holding Monitor
+    private func holdingLedger(_ ownership: PropertyOwnershipDto) -> some View {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space3) {
+            HStack(spacing: ValgateSpacing.space2) {
+                EstateBadge(ownership.holdingType, tone: .accent)
+                if ownership.verified == true {
+                    EstateBadge("Verified", tone: .verifiedEvidence)
+                } else {
+                    EstateBadge("Unverified", tone: .neutral)
+                }
+                Spacer()
+            }
+            if let method = ownership.distributionMethod {
+                Label(method, systemImage: "chart.pie")
+                    .font(EstateFont.body(15))
+                    .foregroundStyle(EstateColor.inkMuted)
+            }
         }
-        .padding(.vertical, ValgateSpacing.space1)
+        .padding(ValgateSpacing.space4)
+        .background(EstateColor.surface)
+        .overlay(
+            RoundedRectangle(cornerRadius: EstateRadius.lg, style: .continuous)
+                .stroke(EstateColor.line, lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: EstateRadius.lg, style: .continuous))
+    }
+
+    // MARK: - Ledger Group (editorial replacement for List Section)
+    private struct DetailRowItem {
+        let icon: String
+        let label: String
+        let value: String
+    }
+
+    private func ledgerGroup(title: String, rows: [DetailRowItem]) -> some View {
+        EstateLedgerSection(title) {
+            ForEach(rows.indices, id: \.self) { index in
+                EstateLedgerRow(icon: rows[index].icon, label: rows[index].label, value: rows[index].value)
+                if index < rows.count - 1 {
+                    EstateDivider()
+                }
+            }
+        }
     }
 
     private func currencyString(_ amount: Double?) -> String {

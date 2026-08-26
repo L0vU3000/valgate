@@ -21,7 +21,7 @@ struct VGGlassPanel<Content: View>: View {
 
     init(
         variant: GlassVariant = .light,
-        cornerRadius: CGFloat = ValgateRadius.lg,
+        cornerRadius: CGFloat = ValgateRounded.lg,
         @ViewBuilder content: () -> Content
     ) {
         self.variant = variant
@@ -65,12 +65,13 @@ struct VGGlassPanel<Content: View>: View {
         }
     }
 
-    /// Subtle brand-colored radial gradient for the glass feel
+    /// Subtle brand-blue radial gradient for the glass feel — DESIGN.md's
+    /// canonical accent, matching the web app's `ai-glass-shell` tint.
     private var brandTint: some View {
         GeometryReader { geo in
             RadialGradient(
                 gradient: Gradient(colors: [
-                    Color.accentColor.opacity(tintOpacity),
+                    ValgatePalette.accent.opacity(tintOpacity),
                     Color.clear
                 ]),
                 center: .topLeading,
@@ -131,15 +132,6 @@ struct VGGlassFloatingButton: View {
         }
         .buttonStyle(VGButtonStyle())
         .accessibilityLabel("Open AI Hub")
-    }
-}
-
-// Reuse button style from VGButton
-private struct VGButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.93 : 1.0)
-            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 

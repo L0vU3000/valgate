@@ -81,6 +81,8 @@ struct PropertiesView: View {
                             }
                         )
                     }
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
                 }
                 .navigationDestination(item: $viewModel.navigateToPropertyId) { propertyId in
                     PropertyDetailView(client: client, propertyId: propertyId, sessionToken: sessionToken, onUnauthorized: onUnauthorized)
@@ -97,36 +99,31 @@ struct PropertiesView: View {
             switch viewModel.state {
             case .loading:
                 ProgressView("Loading properties…")
+                    .estateStateSurface()
                     .accessibilityIdentifier("propertiesLoadingView")
             case .loaded(let me, let properties):
-                List(properties) { property in
-                    NavigationLink {
-                        PropertyDetailView(client: client, propertyId: property.id, sessionToken: sessionToken, onUnauthorized: onUnauthorized)
-                    } label: {
-                        propertyCell(property)
-                    }
-                }
-                .listStyle(.plain)
-                .navigationTitle(me.orgName)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        VGToolbarButton(icon: "plus") {
-                            showCreateSheet = true
+                registerContent(properties)
+                    .navigationTitle(me.orgName)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            EstateIconButton(icon: "plus") {
+                                showCreateSheet = true
+                            }
+                            .accessibilityIdentifier("properties-add-button")
                         }
-                        .accessibilityIdentifier("properties-add-button")
                     }
-                }
-                .accessibilityIdentifier("propertiesListView")
+                    .accessibilityIdentifier("propertiesListView")
             case .empty(let me):
                 ContentUnavailableView(
                     "No Properties",
                     systemImage: "building.2",
                     description: Text("Your organization has no properties yet.")
                 )
+                .estateStateSurface()
                 .navigationTitle(me.orgName)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        VGToolbarButton(icon: "plus") {
+                        EstateIconButton(icon: "plus") {
                             showCreateSheet = true
                         }
                         .accessibilityIdentifier("properties-add-button")
@@ -139,6 +136,7 @@ struct PropertiesView: View {
                     systemImage: "lock.fill",
                     description: Text("Your session is no longer valid. Please sign in again.")
                 )
+                .estateStateSurface()
                 .accessibilityIdentifier("propertiesUnauthorizedView")
             case .error(let message):
                 ContentUnavailableView(
@@ -146,6 +144,7 @@ struct PropertiesView: View {
                     systemImage: "exclamationmark.triangle",
                     description: Text(message)
                 )
+                .estateStateSurface()
                 .accessibilityIdentifier("propertiesErrorView")
             }
         }
@@ -154,52 +153,100 @@ struct PropertiesView: View {
         }
     }
 
-    // MARK: - Property List Cell
-    private func propertyCell(_ property: PropertyListItemDto) -> some View {
-        HStack(spacing: ValgateSpacing.space3) {
-            // Property thumbnail / icon
-            ZStack {
-                Circle()
-                    .fill(Color.valBrandSubtle)
-                    .frame(width: 40, height: 40)
-                Image(systemName: "house.fill")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(Color.valInteractivePrimary)
-            }
-
-            VStack(alignment: .leading, spacing: ValgateSpacing.space0_5) {
-                Text(property.name)
-                    .font(ValgateTypography.Headline.brand)
-                    .foregroundStyle(Color.valTextPrimary)
-                HStack(spacing: ValgateSpacing.space1) {
-                    Text(property.city ?? "—")
-                        .font(ValgateTypography.Content.subheadline)
-                        .foregroundStyle(Color.valTextSecondary)
-                    if true { let status = property.status;
-                        Text("·")
-                            .font(ValgateTypography.Content.subheadline)
-                            .foregroundStyle(Color.valTextTertiary)
-                        Text(status.capitalized)
-                            .font(ValgateTypography.Content.caption)
-                            .foregroundStyle(statusColor(status))
+    // MARK: - Portfolio Register (editorial replacement for the default List)
+    private func registerContent(_ properties: [PropertyListItemDto]) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: ValgateSpacing.space6) {
+                portfolioLedger(properties)
+                EstateLedgerSection("Portfolio") {
+                    ForEach(properties.indices, id: \.self) { index in
+                        propertyRow(properties[index], index: index + 1)
+                        if index < properties.count - 1 {
+                            EstateDivider()
+                        }
                     }
                 }
             }
-
-            Spacer()
-
-            // Type badge
-            VGBadge(property.type.capitalized, variant: .neutral, size: .small)
+            .padding(ValgateSpacing.space4)
         }
-        .padding(.vertical, ValgateSpacing.space1)
+        .background(EstateColor.canvas)
     }
 
-    private func statusColor(_ status: String) -> Color {
-        switch status.lowercased() {
-        case "active", "rented", "occupied": return .valStatusSuccess
-        case "pending", "vacant": return .valStatusWarning
-        case "sold", "archived": return .valTextTertiary
-        default: return .valTextSecondary
+    // MARK: - Portfolio Monitor
+    private func portfolioLedger(_ properties: [PropertyListItemDto]) -> some View {
+        EstateMetricPanel(
+            value: "\(properties.count)",
+            label: properties.count == 1 ? "Property In Portfolio" : "Properties In Portfolio"
+        ) {
+            Image(systemName: "building.2.fill")
+                .font(.system(size: 26, weight: .regular))
+                .foregroundStyle(EstateColor.accent.opacity(0.4))
         }
+    }
+
+    // MARK: - Property Record Row
+    private func propertyRow(_ property: PropertyListItemDto, index: Int) -> some View {
+        NavigationLink {
+            PropertyDetailView(client: client, propertyId: property.id, sessionToken: sessionToken, onUnauthorized: onUnauthorized)
+        } label: {
+            HStack(alignment: .top, spacing: ValgateSpacing.space3) {
+                Text(String(format: "%02d", index))
+                    .font(EstateFont.metric(13, weight: .medium))
+                    .foregroundStyle(EstateColor.inkMuted)
+                    .frame(width: 22, alignment: .leading)
+                    .padding(.top, 2)
+
+                VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
+                    Text(property.name)
+                        .font(EstateFont.bodyEmphasis(15))
+                        .foregroundStyle(EstateColor.ink)
+                        .lineLimit(1)
+
+                    Text(locationText(property))
+                        .font(EstateFont.body(13))
+                        .foregroundStyle(EstateColor.inkMuted)
+                        .lineLimit(1)
+
+                    Text(dateString(property.createdAt))
+                        .font(EstateFont.metric(11, weight: .regular))
+                        .foregroundStyle(EstateColor.inkMuted)
+                        .lineLimit(1)
+                        .fixedSize()
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(alignment: .trailing, spacing: ValgateSpacing.space1) {
+                    EstateStatusBadge(status: property.status)
+                    EstateBadge(property.type, tone: .neutral)
+                }
+                .fixedSize()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(EstateColor.inkMuted)
+                    .padding(.top, 3)
+            }
+            .padding(.horizontal, ValgateSpacing.space4)
+            .padding(.vertical, ValgateSpacing.space2)
+            .frame(minHeight: ValgateTouchTarget.minimum)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func locationText(_ property: PropertyListItemDto) -> String {
+        switch (property.city, property.province) {
+        case let (city?, province?): return "\(city), \(province)"
+        case let (city?, nil): return city
+        case let (nil, province?): return province
+        default: return "—"
+        }
+    }
+
+    private func dateString(_ millis: Int) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(millis) / 1000)
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
 }

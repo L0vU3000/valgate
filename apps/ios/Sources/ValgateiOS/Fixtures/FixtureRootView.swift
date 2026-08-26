@@ -48,6 +48,14 @@ struct FixtureRootView: View {
             NavigationStack {
                 PropertyOwnershipView(client: client, propertyId: FixtureData.propertyId, sessionToken: FixtureData.sessionToken)
             }
+        case .createProperty:
+            NavigationStack {
+                CreatePropertyView(
+                    client: client,
+                    sessionToken: FixtureData.sessionToken,
+                    initialForm: FixtureData.createPropertyForm
+                )
+            }
         }
     }
 }
