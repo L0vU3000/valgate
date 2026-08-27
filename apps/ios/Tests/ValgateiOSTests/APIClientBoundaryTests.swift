@@ -191,4 +191,58 @@ final class APIClientBoundaryTests: XCTestCase {
             XCTFail("unexpected error: \(error)")
         }
     }
+
+    // MARK: - Default production session deadlines
+
+    /// The app must impose its own finite request deadline so a stalled
+    /// `GET /api/v1/properties` cannot hang the UI indefinitely on the default
+    /// (non-injected) session. `URLSessionConfiguration.default` ships a 60s
+    /// request timeout, so this fails until an app-defined bound is applied.
+    func test_defaultSession_usesBoundedRequestTimeoutOf20OrLess() {
+        let session = APIClient.makeDefaultSession()
+
+        XCTAssertLessThanOrEqual(
+            session.configuration.timeoutIntervalForRequest,
+            20,
+            "Default production session must bound the request deadline to 20s or less."
+        )
+        XCTAssertGreaterThan(
+            session.configuration.timeoutIntervalForRequest,
+            0,
+            "Request deadline must be a positive, finite interval."
+        )
+    }
+
+    /// The whole resource must also have an app-defined finite ceiling. The
+    /// stock default is 7 days (604800s); this asserts a genuine app bound.
+    func test_defaultSession_usesFiniteResourceTimeout() {
+        let session = APIClient.makeDefaultSession()
+        let resourceTimeout = session.configuration.timeoutIntervalForResource
+
+        XCTAssertGreaterThan(resourceTimeout, 0)
+        XCTAssertLessThan(
+            resourceTimeout,
+            .greatestFiniteMagnitude,
+            "Default production session must impose a finite resource deadline."
+        )
+        XCTAssertLessThanOrEqual(
+            resourceTimeout,
+            120,
+            "Resource deadline must be an app-defined bound, not the stock multi-day default."
+        )
+    }
+
+    /// Injected sessions are the test/host's responsibility: APIClient must not
+    /// mutate their configuration when adopting them.
+    func test_injectedSession_keepsItsOwnConfigurationUnchanged() {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.timeoutIntervalForRequest = 999
+        configuration.timeoutIntervalForResource = 4242
+        let injected = URLSession(configuration: configuration)
+
+        _ = APIClient(baseURL: URL(string: "https://example.invalid")!, session: injected)
+
+        XCTAssertEqual(injected.configuration.timeoutIntervalForRequest, 999)
+        XCTAssertEqual(injected.configuration.timeoutIntervalForResource, 4242)
+    }
 }

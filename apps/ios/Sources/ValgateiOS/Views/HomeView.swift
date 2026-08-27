@@ -32,10 +32,10 @@ final class HomeViewModel: ObservableObject {
                 state = .unauthorized
                 onUnauthorized()
             } else {
-                state = .error("Something went wrong. Please check your connection and try again.")
+                state = .error("We couldn’t load your portfolio. Check your connection and try again.")
             }
         } catch {
-            state = .error("Something went wrong. Please check your connection and try again.")
+            state = .error("We couldn’t load your portfolio. Check your connection and try again.")
         }
     }
 
@@ -75,7 +75,7 @@ struct HomeView: View {
             Group {
                 switch viewModel.state {
                 case .loading:
-                    MapLoadingView()
+                    PortfolioLoadingView()
                 case .loaded(let properties):
                     PropertyMapView(
                         properties: properties,
@@ -171,14 +171,14 @@ struct HomeView: View {
     }
 }
 
-struct MapLoadingView: View {
+struct PortfolioLoadingView: View {
     var body: some View {
-        ProgressView("Loading map…")
+        ProgressView("Loading portfolio…")
             .tint(EstateColor.accent)
             .font(EstateFont.bodyEmphasis(14))
             .foregroundStyle(EstateColor.inkMuted)
             .estateStateSurface()
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("Loading map")
+            .accessibilityLabel("Loading portfolio")
     }
 }

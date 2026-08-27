@@ -17,7 +17,24 @@ actor APIClient {
     private let session: URLSession
     private let factory: APIRequestFactory
 
-    init(baseURL: URL, session: URLSession = .shared) {
+    /// App-defined request deadline for the default production session so a
+    /// stalled request cannot hang the UI indefinitely.
+    static let defaultRequestTimeout: TimeInterval = 20
+    /// App-defined finite ceiling for the whole resource transfer.
+    static let defaultResourceTimeout: TimeInterval = 60
+
+    /// Builds the default production session with explicit, bounded deadlines.
+    /// Exposed internally so the boundary tests can assert the deadlines
+    /// without reaching into the actor's private state. Injected sessions do
+    /// not flow through here and keep their own configuration untouched.
+    static func makeDefaultSession() -> URLSession {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = defaultRequestTimeout
+        configuration.timeoutIntervalForResource = defaultResourceTimeout
+        return URLSession(configuration: configuration)
+    }
+
+    init(baseURL: URL, session: URLSession = APIClient.makeDefaultSession()) {
         self.factory = APIRequestFactory(baseURL: baseURL)
         self.session = session
     }
