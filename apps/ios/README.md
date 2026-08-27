@@ -35,6 +35,21 @@ production or App Store release work — those remain gated behind a
 production `/api/v1/*` deployment and further repo-owner approval; see
 [`docs/MAC-STARTUP-CHECKLIST.md`](docs/MAC-STARTUP-CHECKLIST.md).
 
+## Local build config (do this first in a new worktree)
+
+Before any Mac build/run in a fresh worktree, restore or link the approved
+machine-local `Config/Secrets.xcconfig`, then run the read-only doctor:
+
+```sh
+scripts/doctor-local-config.sh
+```
+
+It verifies the file is present, git-ignored, owner-only, and carries real
+(non-placeholder) `VALGATE_API_BASE_URL`, `CLERK_PUBLISHABLE_KEY` (`pk_*`), and
+`MAPBOX_PUBLIC_TOKEN` (`pk.*`) values. A Mapbox public `pk.*` token is now
+required for live map rendering. The doctor reports redacted statuses only —
+never commit, print, or share the values in `Config/Secrets.xcconfig`.
+
 ## Relationship to the web backend
 
 The existing Valgate web repository owns the backend, including the future

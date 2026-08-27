@@ -42,6 +42,19 @@ foundation above:
 
 ## Checklist
 
+### Before every Mac build/run in a new worktree
+
+- [ ] **Do this first:** restore or link the approved machine-local
+      `Config/Secrets.xcconfig`, then run the read-only doctor:
+
+      scripts/doctor-local-config.sh
+
+  It verifies the file is present, git-ignored, owner-only, and carries real
+  (non-placeholder) `VALGATE_API_BASE_URL`, `CLERK_PUBLISHABLE_KEY` (`pk_*`),
+  and `MAPBOX_PUBLIC_TOKEN` (`pk.*`) values, reporting redacted statuses only.
+  A Mapbox public `pk.*` token is now required for live map rendering. Never
+  commit, print, or share the values in `Config/Secrets.xcconfig`.
+
 ### Xcode
 
 - [x] **Decided:** minimum supported iOS version — iOS 17.0.
