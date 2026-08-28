@@ -179,6 +179,23 @@ final class APIClientBoundaryTests: XCTestCase {
         }
     }
 
+    /// Mirrors the live GET /api/v1/properties success body when list items omit
+    /// `lat`/`lng` — older API payloads must still decode so HomeView can load.
+    func test_propertiesResponseMissingLatLng_decodesWithNilCoordinates() async throws {
+        let json = """
+        {"items":[{"id":"PROP-0001","name":"42 Ocean Ave","type":"residential","status":"Rented","city":"Manila","province":"Metro Manila","createdAt":1700000000000}],"nextCursor":"opaque-cursor-abc"}
+        """.data(using: .utf8)!
+        StubProtocol.handler = { _ in .init(statusCode: 200, body: json) }
+
+        let page = try await makeClient().properties(limit: 100, cursor: nil, sessionToken: "token")
+
+        XCTAssertEqual(page.items.count, 1)
+        XCTAssertEqual(page.items[0].id, "PROP-0001")
+        XCTAssertNil(page.items[0].lat)
+        XCTAssertNil(page.items[0].lng)
+        XCTAssertEqual(page.nextCursor, "opaque-cursor-abc")
+    }
+
     func test_transportFailureBecomesTransportError() async {
         StubProtocol.handler = { _ in throw StubTransportError() }
 

@@ -21,14 +21,18 @@ struct PropertyMapView: View {
     @State private var selectedProperty: PropertyListItemDto?
     @State private var mapStyleOption: MapStyleOption = .light
 
+    private var mappableProperties: [PropertyListItemDto] {
+        properties.filter { $0.lat != nil && $0.lng != nil }
+    }
+
     var body: some View {
         ZStack {
             // Full-screen map
             Map(viewport: $viewport) {
-                ForEvery(properties) { property in
+                ForEvery(mappableProperties) { property in
                     MapViewAnnotation(coordinate: CLLocationCoordinate2D(
-                        latitude: property.lat,
-                        longitude: property.lng
+                        latitude: property.lat!,
+                        longitude: property.lng!
                     )) {
                         PropertyPin(property: property, isSelected: selectedProperty?.id == property.id) {
                             selectedProperty = property
@@ -185,13 +189,18 @@ struct PropertyMapView: View {
     }
 
     private func viewportForProperties(_ properties: [PropertyListItemDto]) -> Viewport {
-        guard !properties.isEmpty else {
+        let mappable = properties.compactMap { property -> (lat: Double, lng: Double)? in
+            guard let lat = property.lat, let lng = property.lng else { return nil }
+            return (lat, lng)
+        }
+        guard !mappable.isEmpty else {
             return .camera(center: vgDefaultMapCenter, zoom: vgDefaultMapZoom)
         }
-        if properties.count == 1, let only = properties.first {
+        if mappable.count == 1 {
+            let only = mappable[0]
             return .camera(center: CLLocationCoordinate2D(latitude: only.lat, longitude: only.lng), zoom: 14)
         }
-        let coordinates = properties.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lng) }
+        let coordinates = mappable.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lng) }
         return .overview(
             geometry: MultiPoint(coordinates),
             geometryPadding: EdgeInsets(top: 120, leading: 60, bottom: 220, trailing: 60)
@@ -389,7 +398,9 @@ struct PropertyDetailSheet: View {
                 EstateLedgerRow(icon: "map", label: "Province", value: province)
                 EstateDivider()
             }
-            EstateLedgerRow(icon: "location", label: "Coordinates", value: String(format: "%.4f, %.4f", property.lat, property.lng))
+            if let lat = property.lat, let lng = property.lng {
+                EstateLedgerRow(icon: "location", label: "Coordinates", value: String(format: "%.4f, %.4f", lat, lng))
+            }
         }
     }
 }

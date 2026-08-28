@@ -15,7 +15,20 @@ final class PropertyListItemDtoDecodingTests: XCTestCase {
         XCTAssertEqual(dto.status, "active")
         XCTAssertEqual(dto.city, "Cape Town")
         XCTAssertEqual(dto.province, "Western Cape")
+        XCTAssertEqual(dto.lat, -33.9249)
+        XCTAssertEqual(dto.lng, 18.4241)
         XCTAssertEqual(dto.createdAt, 1700000000000)
+    }
+
+    func test_decodesMissingLatLngAsNil() throws {
+        let json = """
+        {"id":"prop_1","name":"Lakeview House","type":"residential","status":"active","city":"Cape Town","province":"Western Cape","createdAt":1700000000000}
+        """.data(using: .utf8)!
+
+        let dto = try JSONDecoder().decode(PropertyListItemDto.self, from: json)
+
+        XCTAssertNil(dto.lat)
+        XCTAssertNil(dto.lng)
     }
 
     func test_ignoresUnknownAdditionalFields() throws {

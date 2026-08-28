@@ -51,6 +51,26 @@ final class HomeNavigationTests: XCTestCase {
         return APIClient(baseURL: URL(string: "https://example.invalid")!, session: session)
     }
 
+    /// Portfolio load must succeed when the API omits optional coordinates on list items.
+    @MainActor
+    func test_propertiesMissingLatLng_loadsPortfolioInsteadOfError() async {
+        let json = """
+        {"items":[{"id":"PROP-0001","name":"42 Ocean Ave","type":"residential","status":"Rented","city":"Manila","province":"Metro Manila","createdAt":1700000000000}],"nextCursor":null}
+        """.data(using: .utf8)!
+        StubProtocol.handler = { _ in .init(statusCode: 200, body: json) }
+
+        let viewModel = HomeViewModel(client: makeClient(), sessionToken: "token")
+        await viewModel.load()
+
+        guard case let .loaded(properties) = viewModel.state else {
+            return XCTFail("Expected .loaded, got \(viewModel.state)")
+        }
+        XCTAssertEqual(properties.count, 1)
+        XCTAssertEqual(properties[0].id, "PROP-0001")
+        XCTAssertNil(properties[0].lat)
+        XCTAssertNil(properties[0].lng)
+    }
+
     /// A non-unauthorized load failure must present portfolio-named recovery
     /// copy, never a generic "something went wrong" or a server message.
     @MainActor
