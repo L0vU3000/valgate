@@ -18,9 +18,18 @@ export type ApiV1AuthResult = { ok: true; ctx: Ctx } | { ok: false; response: Ne
 export async function resolveApiV1Ctx(): Promise<ApiV1AuthResult> {
   // Staging preview: short-circuit Clerk entirely when running with demo credentials.
   // Skip during tests so mock-based Clerk assertions still run.
-  if (process.env.NODE_ENV !== "test" && (process.env.STAGING_DEMO_MODE === "true" || process.env.DEMO_MODE === "true")) {
-    const demoCtx: Ctx = { userId: "USR-0001", orgId: "ORG-0001", orgRole: "owner" };
-    return { ok: true, ctx: demoCtx };
+  if (process.env.STAGING_DEMO_MODE === "true" || process.env.DEMO_MODE === "true") {
+    // The short-circuit hands out a fixed ORG-0001 owner Ctx with no authentication — in
+    // production that is a full auth bypass, so refuse the request rather than short-circuit
+    // (and rather than silently fall through to Clerk on a misconfigured deployment).
+    if (process.env.NODE_ENV === "production") {
+      logger.error("api-v1-auth: demo-mode-configured-in-production");
+      return { ok: false, response: apiError(500, "internal_error", "Server misconfiguration.") };
+    }
+    if (process.env.NODE_ENV !== "test") {
+      const demoCtx: Ctx = { userId: "USR-0001", orgId: "ORG-0001", orgRole: "owner" };
+      return { ok: true, ctx: demoCtx };
+    }
   }
   // an `Authorization: Bearer ...` header or the session cookie — not cookie-only.
   const clerkAuth = await auth({ acceptsToken: "session_token" });

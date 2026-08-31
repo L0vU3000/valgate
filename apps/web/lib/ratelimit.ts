@@ -33,6 +33,12 @@ export function makeLimiter(prefix: string, limit: number, window: `${number} m`
       analytics: true,
     });
   }
+  // The in-memory fallback is a per-instance Map — no shared state across serverless invocations,
+  // i.e. effectively no rate limiting. Silently degrading to it in production is a security
+  // downgrade, so fail CLOSED at construction instead.
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in production");
+  }
   return inMemoryLimiter(limit, windowMs);
 }
 

@@ -15,6 +15,14 @@ export const roleAtLeast = (r: Ctx["orgRole"], min: keyof typeof RANK): boolean 
 // hatch (DEMO_ALLOW_WRITES=true) re-enables writes against your own dev DB. Lives here (not ctx.ts)
 // so the service layer never pulls Clerk's server SDK into its dependency graph (C2).
 export function assertCanMutate(): void {
+  // A demo/staging flag in production means an unauthenticated ORG-0001 owner ctx may be in play,
+  // so writes refuse there outright — DEMO_ALLOW_WRITES is a local-dev hatch and does not apply.
+  if (
+    process.env.NODE_ENV === "production" &&
+    (env.DEMO_MODE || process.env.STAGING_DEMO_MODE === "true")
+  ) {
+    throw new Error("Demo configuration refused in production");
+  }
   if (env.DEMO_MODE && !env.DEMO_ALLOW_WRITES) throw new Error("Demo is read-only");
 }
 

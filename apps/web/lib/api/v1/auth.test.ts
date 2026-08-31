@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // ---------------------------------------------------------------------------
 // resolveApiV1Ctx is the single auth seam for every HTTP API v1 route:
@@ -113,4 +113,48 @@ describe("resolveApiV1Ctx", () => {
     // provisionIfMissing:true -> this read-only surface can JIT-provision a user if the logic allows.
     expect(ctxFromMcpAuthMock).toHaveBeenCalledWith(CLERK_USER_ID, { provisionIfMissing: true });
   });
+});
+
+// The demo short-circuit hands out a fixed ORG-0001 owner Ctx with no authentication at all.
+// In production that is a full auth bypass, so a demo/staging flag there must fail CLOSED
+// (refuse the request) rather than short-circuit — and rather than silently fall through.
+describe("resolveApiV1Ctx demo short-circuit hardening", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it.each(["STAGING_DEMO_MODE", "DEMO_MODE"])(
+    "fails closed in production when %s=true, never returning the demo owner ctx",
+    async (flag) => {
+      vi.stubEnv("NODE_ENV", "production");
+      vi.stubEnv(flag, "true");
+      // Even with a valid Clerk user + limiter available, the misconfig must not resolve a Ctx.
+      authMock.mockResolvedValue({ userId: CLERK_USER_ID });
+      ctxFromMcpAuthMock.mockResolvedValue(CTX);
+      allowedMock.mockResolvedValue(true);
+
+      const result = await resolveApiV1Ctx();
+
+      expect(result.ok).toBe(false);
+      if (result.ok) throw new Error("expected failure");
+      expect(result.response.status).toBe(500);
+      const body = await result.response.json();
+      expect(body).toEqual({ error: { code: "internal_error", message: expect.any(String) } });
+      expect(authMock).not.toHaveBeenCalled();
+      expect(ctxFromMcpAuthMock).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(["STAGING_DEMO_MODE", "DEMO_MODE"])(
+    "still short-circuits to the demo ctx outside production when %s=true (staging preview)",
+    async (flag) => {
+      vi.stubEnv("NODE_ENV", "development");
+      vi.stubEnv(flag, "true");
+
+      const result = await resolveApiV1Ctx();
+
+      expect(result).toEqual({ ok: true, ctx: { userId: "USR-0001", orgId: "ORG-0001", orgRole: "owner" } });
+      expect(authMock).not.toHaveBeenCalled();
+    },
+  );
 });
