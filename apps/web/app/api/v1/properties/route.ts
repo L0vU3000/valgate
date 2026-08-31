@@ -25,7 +25,7 @@ function parseLimit(raw: string | null): number | null {
 
 // GET /api/v1/properties — opaque-cursor page of the caller's org's properties.
 export async function GET(request: Request) {
-  const authResult = await resolveApiV1Ctx();
+  const authResult = await resolveApiV1Ctx(request);
   if (!authResult.ok) return authResult.response;
 
   const { searchParams } = new URL(request.url);
@@ -54,7 +54,7 @@ export async function GET(request: Request) {
 
 // POST /api/v1/properties — create a new property for the caller's org.
 export async function POST(request: Request) {
-  const authResult = await resolveApiV1Ctx();
+  const authResult = await resolveApiV1Ctx(request);
   if (!authResult.ok) return authResult.response;
 
   let body: unknown;

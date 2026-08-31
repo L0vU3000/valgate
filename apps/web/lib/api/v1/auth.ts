@@ -2,20 +2,28 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 import type { NextResponse } from "next/server";
 import { ctxFromMcpAuth } from "@/mcp-server/ctxFor";
-import { apiReadLimiter, allowed } from "@/lib/ratelimit";
+import { apiReadLimiter, apiMutationLimiter, allowed } from "@/lib/ratelimit";
 import type { Ctx } from "@/lib/services/_mapping";
 import { apiError } from "./http";
 import { logger } from "@/lib/logger";
 
-// The single auth seam for every HTTP API v1 route (additive, read-only surface).
+// The single auth seam for every HTTP API v1 route.
 //
 // Flow: a Clerk bearer session token -> ctxFromMcpAuth (the SAME org-lookup used by /mcp,
-// reused rather than duplicated) -> a dedicated read-API rate limiter. Every failure mode
+// reused rather than duplicated) -> a rate limiter chosen by request method. Every failure mode
 // returns the stable { error: { code, message } } envelope and NEVER echoes a caught
 // error's message back to the client (see the ctxFromMcpAuth catch below).
 export type ApiV1AuthResult = { ok: true; ctx: Ctx } | { ok: false; response: NextResponse };
 
-export async function resolveApiV1Ctx(): Promise<ApiV1AuthResult> {
+// Which quota a request draws from. Derived from the HTTP method rather than passed as a flag
+// per route, so a new mutation route can't silently land on the loose read budget by forgetting
+// to opt in. Requiring the request makes omission a compile-time error.
+function limiterFor(request: Request) {
+  const method = request.method.toUpperCase();
+  return method === "GET" || method === "HEAD" ? apiReadLimiter : apiMutationLimiter;
+}
+
+export async function resolveApiV1Ctx(request: Request): Promise<ApiV1AuthResult> {
   // Staging preview: short-circuit Clerk entirely when running with demo credentials.
   // Skip during tests so mock-based Clerk assertions still run.
   if (process.env.STAGING_DEMO_MODE === "true" || process.env.DEMO_MODE === "true") {
@@ -50,7 +58,7 @@ export async function resolveApiV1Ctx(): Promise<ApiV1AuthResult> {
     return { ok: false, response: apiError(401, "unauthorized", "Authentication required.") };
   }
 
-  if (!(await allowed(apiReadLimiter, ctx.userId))) {
+  if (!(await allowed(limiterFor(request), ctx.userId))) {
     return {
       ok: false,
       response: apiError(429, "rate_limited", "Too many requests. Try again shortly."),

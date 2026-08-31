@@ -10,8 +10,8 @@ import { logger } from "@/lib/logger";
 export const dynamic = "force-dynamic";
 
 // GET /api/v1/me — the caller's own profile (email, displayName, role, orgName only).
-export async function GET() {
-  const authResult = await resolveApiV1Ctx();
+export async function GET(request: Request) {
+  const authResult = await resolveApiV1Ctx(request);
   if (!authResult.ok) return authResult.response;
 
   try {

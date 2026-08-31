@@ -62,16 +62,29 @@ function isOAuthClientAllowed(clientId: string | undefined): boolean {
   return isClientAllowed(clientId, allowlist);
 }
 
-// Phase 5 (M3) — per-user rate limit decision, set inside the verify callback (after auth
-// succeeds) and checked by the thin wrapper around authHandler below. Only authenticated traffic
-// counts against the quota; unauthenticated requests 401 before reaching the limiter.
-//
-// Keyed on the request OBJECT (not a module-level boolean) because a single serverless instance
-// serves many requests concurrently — a shared `let` would race: one request could reset or read
-// another's flag, letting an over-limit call through or 429-ing a legitimate one AFTER its handler
-// (and any write) already ran. mcp-handler passes the SAME Request reference into the verify
-// callback and into the wrapped handler, so this WeakMap entry is per-request and auto-collected.
-const rateLimited = new WeakMap<object, boolean>();
+// Cache pre-dispatch authentication by request so withMcpAuth can keep owning the established
+// invalid-token response without verifying an allowed request twice.
+const authenticatedRequests = new WeakMap<object, Awaited<ReturnType<typeof verifyClerkToken>>>();
+
+async function authenticate(request: Request, token: string | undefined) {
+  const cached = authenticatedRequests.get(request);
+  if (cached) return cached;
+
+  const clerkAuth = await auth({ acceptsToken: "oauth_token" });
+  const authInfo = await verifyClerkToken(clerkAuth, token);
+  if (!authInfo || !isOAuthClientAllowed(authInfo.clientId)) {
+    if (authInfo) {
+      console.error(
+        "[valgate-mcp] rejecting token from non-allowlisted OAuth client:",
+        authInfo.clientId,
+      );
+    }
+    return undefined;
+  }
+
+  authenticatedRequests.set(request, authInfo);
+  return authInfo;
+}
 
 // Build the MCP server for each request, wiring the shared tool/resources to the AUTHENTICATED
 // caller. The Clerk user id rides in extra.authInfo.extra.userId (set by verifyClerkToken below).
@@ -101,29 +114,7 @@ const handler = createMcpHandler((server) => {
 const authHandler = withMcpAuth(
   handler,
   async (req, token) => {
-    const clerkAuth = await auth({ acceptsToken: "oauth_token" });
-    const authInfo = await verifyClerkToken(clerkAuth, token);
-    // Invalid / missing token → verifyClerkToken returns undefined → 401.
-    if (!authInfo) {
-      return undefined;
-    }
-    // Valid token, but from an OAuth client we don't trust for this resource → reject (401).
-    if (!isOAuthClientAllowed(authInfo.clientId)) {
-      console.error(
-        "[valgate-mcp] rejecting token from non-allowlisted OAuth client:",
-        authInfo.clientId,
-      );
-      return undefined;
-    }
-    // Phase 5 (M3) — per-user rate limit. Checked AFTER auth + client allowlist so only
-    // legitimate traffic counts against the quota. Fail-closed: a limiter error blocks.
-    // Flag this specific request (keyed on its object) so the wrapper can 429 it below.
-    const userId = authInfo.extra?.userId as string | undefined;
-    if (userId && !(await allowed(mcpLimiter, userId))) {
-      console.warn("[valgate-mcp] rate limit exceeded for user:", userId);
-      rateLimited.set(req, true);
-    }
-    return authInfo;
+    return authenticate(req, token);
   },
   {
     required: true,
@@ -131,17 +122,20 @@ const authHandler = withMcpAuth(
   },
 );
 
-// Phase 5 (M3) — thin wrapper: if the verify callback flagged THIS request as rate-limited,
-// return 429 instead of its response. Retry-After is fixed at 60s (matches the 1-minute window).
-//
-// ponytail: the flag is set in verify, which mcp-handler runs BEFORE the tool handler — so an
-// over-limit request's tool still executes and we discard its result here. Acceptable because the
-// limiter (60/min/user) only trips on abusive volume and every write is audited. Upgrade path if
-// that matters: gate the limit ahead of the handler (needs auth moved out of withMcpAuth's verify
-// hook, which today is the only pre-handler seam and can't emit a 429).
+// Authenticate and decide the per-user limit before handing the request to mcp-handler. This is
+// the dispatch boundary: rejected traffic must not run a tool and merely have its result replaced.
 async function withRateLimit(request: Request): Promise<Response> {
-  const response = await authHandler(request);
-  if (rateLimited.get(request)) {
+  const authorization = request.headers.get("Authorization") ?? "";
+  const [scheme, token] = authorization.split(" ");
+  const bearer = scheme.toLowerCase() === "bearer" ? token : undefined;
+  const authInfo = await authenticate(request, bearer);
+
+  // Let withMcpAuth produce its established 401 response and WWW-Authenticate metadata.
+  if (!authInfo) return authHandler(request);
+
+  const userId = authInfo.extra?.userId as string | undefined;
+  if (userId && !(await allowed(mcpLimiter, userId))) {
+    console.warn("[valgate-mcp] rate limit exceeded for user:", userId);
     return new Response(
       JSON.stringify({ error: "rate_limit_exceeded", retry_after_seconds: 60 }),
       {
@@ -153,7 +147,7 @@ async function withRateLimit(request: Request): Promise<Response> {
       },
     );
   }
-  return response;
+  return authHandler(request);
 }
 
 export { withRateLimit as GET, withRateLimit as POST };

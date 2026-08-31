@@ -7,10 +7,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 // stable { error: { code, message } } shape and never leaks a caught error's message.
 // ---------------------------------------------------------------------------
 
-const { authMock, ctxFromMcpAuthMock, allowedMock, loggerMock } = vi.hoisted(() => ({
+const { authMock, ctxFromMcpAuthMock, allowedMock, readLimiter, mutationLimiter, loggerMock } = vi.hoisted(() => ({
   authMock: vi.fn(),
   ctxFromMcpAuthMock: vi.fn(),
   allowedMock: vi.fn(),
+  readLimiter: { __limiter: "read" },
+  mutationLimiter: { __limiter: "mutation" },
   loggerMock: {
     info: vi.fn(),
     warn: vi.fn(),
@@ -29,7 +31,8 @@ vi.mock("@/mcp-server/ctxFor", () => ({
 }));
 
 vi.mock("@/lib/ratelimit", () => ({
-  apiReadLimiter: { limit: vi.fn() },
+  apiReadLimiter: readLimiter,
+  apiMutationLimiter: mutationLimiter,
   allowed: allowedMock,
 }));
 
@@ -41,6 +44,7 @@ import { resolveApiV1Ctx } from "./auth";
 
 const CLERK_USER_ID = "user_abc123";
 const CTX = { userId: "USR-0001", orgId: "ORG-0001", orgRole: "owner" as const };
+const GET_REQUEST = new Request("http://localhost/api/v1/properties", { method: "GET" });
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -50,7 +54,7 @@ describe("resolveApiV1Ctx", () => {
   it("returns a generic 401 when there is no authenticated Clerk user", async () => {
     authMock.mockResolvedValue({ userId: null });
 
-    const result = await resolveApiV1Ctx();
+    const result = await resolveApiV1Ctx(GET_REQUEST);
 
     expect(result.ok).toBe(false);
     if (result.ok) throw new Error("expected failure");
@@ -65,7 +69,7 @@ describe("resolveApiV1Ctx", () => {
   it("uses acceptsToken: session_token so a Bearer session token (not just a cookie) is accepted", async () => {
     authMock.mockResolvedValue({ userId: null });
 
-    await resolveApiV1Ctx();
+    await resolveApiV1Ctx(GET_REQUEST);
 
     expect(authMock).toHaveBeenCalledWith({ acceptsToken: "session_token" });
   });
@@ -74,7 +78,7 @@ describe("resolveApiV1Ctx", () => {
     authMock.mockResolvedValue({ userId: CLERK_USER_ID });
     ctxFromMcpAuthMock.mockRejectedValue(new Error("super secret internal detail"));
 
-    const result = await resolveApiV1Ctx();
+    const result = await resolveApiV1Ctx(GET_REQUEST);
 
     expect(result.ok).toBe(false);
     if (result.ok) throw new Error("expected failure");
@@ -91,7 +95,7 @@ describe("resolveApiV1Ctx", () => {
     ctxFromMcpAuthMock.mockResolvedValue(CTX);
     allowedMock.mockResolvedValue(false);
 
-    const result = await resolveApiV1Ctx();
+    const result = await resolveApiV1Ctx(GET_REQUEST);
 
     expect(result.ok).toBe(false);
     if (result.ok) throw new Error("expected failure");
@@ -99,7 +103,8 @@ describe("resolveApiV1Ctx", () => {
     const body = await result.response.json();
     expect(body).toEqual({ error: { code: "rate_limited", message: expect.any(String) } });
     // Keyed on the resolved internal userId, not the raw Clerk id.
-    expect(allowedMock).toHaveBeenCalledWith(expect.anything(), CTX.userId);
+    expect(allowedMock).toHaveBeenCalledWith(readLimiter, CTX.userId);
+    expect(allowedMock).not.toHaveBeenCalledWith(mutationLimiter, expect.anything());
   });
 
   it("resolves ok:true with the Ctx when auth, org resolution, and rate limit all succeed", async () => {
@@ -107,7 +112,7 @@ describe("resolveApiV1Ctx", () => {
     ctxFromMcpAuthMock.mockResolvedValue(CTX);
     allowedMock.mockResolvedValue(true);
 
-    const result = await resolveApiV1Ctx();
+    const result = await resolveApiV1Ctx(GET_REQUEST);
 
     expect(result).toEqual({ ok: true, ctx: CTX });
     // provisionIfMissing:true -> this read-only surface can JIT-provision a user if the logic allows.

@@ -36,6 +36,10 @@ import { GET } from "@/app/api/v1/me/route";
 
 const CTX: Ctx = { userId: "USR-0001", orgId: "ORG-0001", orgRole: "admin" };
 
+function req(): Request {
+  return new Request("http://localhost/api/v1/me", { method: "GET" });
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
@@ -47,9 +51,11 @@ describe("GET /api/v1/me", () => {
       response: apiError(401, "unauthorized", "Authentication required."),
     });
 
-    const res = await GET();
+    const request = req();
+    const res = await GET(request);
 
     expect(res.status).toBe(401);
+    expect(resolveApiV1CtxMock).toHaveBeenCalledWith(request);
     const body = await res.json();
     expect(body).toEqual({ error: { code: "unauthorized", message: expect.any(String) } });
     expect(getMeProfileMock).not.toHaveBeenCalled();
@@ -61,7 +67,7 @@ describe("GET /api/v1/me", () => {
       response: apiError(429, "rate_limited", "Too many requests. Try again shortly."),
     });
 
-    const res = await GET();
+    const res = await GET(req());
 
     expect(res.status).toBe(429);
     const body = await res.json();
@@ -72,7 +78,7 @@ describe("GET /api/v1/me", () => {
     resolveApiV1CtxMock.mockResolvedValue({ ok: true, ctx: CTX });
     getMeProfileMock.mockResolvedValue(null);
 
-    const res = await GET();
+    const res = await GET(req());
 
     expect(res.status).toBe(401);
     const body = await res.json();
@@ -89,7 +95,7 @@ describe("GET /api/v1/me", () => {
       orgName: "Acme Holdings",
     });
 
-    const res = await GET();
+    const res = await GET(req());
 
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -109,7 +115,7 @@ describe("GET /api/v1/me", () => {
     resolveApiV1CtxMock.mockResolvedValue({ ok: true, ctx: CTX });
     getMeProfileMock.mockRejectedValue(new Error("SECRET-DB-ERROR-MARKER"));
 
-    const res = await GET();
+    const res = await GET(req());
 
     expect(res.status).toBe(500);
     const body = await res.json();

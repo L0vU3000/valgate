@@ -5,6 +5,7 @@ import { openai } from "@ai-sdk/openai";
 import { requireCtx } from "@/lib/auth/ctx";
 import { getDocument, setDocumentAiStatus, saveDocumentSummary } from "@/lib/services/documents";
 import { resolveDocumentUrl } from "@/lib/services/storage";
+import { allowed, aiSummaryLimiter } from "@/lib/ratelimit";
 import { log } from "@/lib/log";
 
 export const runtime = "nodejs"; // S3 + Neon need the Node runtime (not Edge)
@@ -27,12 +28,24 @@ const SummarySchema = z.object({
 // Authorization: requireCtx() identifies the caller's org; getDocument() is org-scoped, so a
 // document belonging to another org returns null and we answer 404 (no IDOR, no info leak).
 //
+// Rate limit: 5 summaries / minute / user, checked AFTER auth and BEFORE any storage read, model
+// call, or ai_status write. Ordering matters twice over — an over-limit caller neither reaches the
+// model nor leaves the row stuck in "generating". Fail-closed (see lib/ratelimit).
+//
 // What can go wrong (all handled): requireCtx throws if unauthenticated (surfaces as a 500 from the
 // framework); the file fetch or the model call can fail or time out — the try/catch logs the real
 // error server-side, flips ai_status to "failed", and returns a generic message to the client.
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params; // Next.js 15: params is a Promise — always await it
   const ctx = await requireCtx();
+
+  if (!(await allowed(aiSummaryLimiter, ctx.userId))) {
+    log.warn("ratelimit.block", { edge: "ai-summary", userId: ctx.userId, id });
+    return Response.json(
+      { ok: false, error: "AI summary rate limit reached. Try again shortly." },
+      { status: 429, headers: { "Retry-After": "60" } },
+    );
+  }
 
   // Ownership check: org-scoped lookup. Another org's id (or a missing id) returns null.
   const doc = await getDocument(ctx, id);

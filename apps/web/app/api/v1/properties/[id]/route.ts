@@ -11,8 +11,8 @@ import { logger } from "@/lib/logger";
 export const dynamic = "force-dynamic";
 
 // GET /api/v1/properties/[id] — a single property's detail DTO, org-scoped.
-export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const authResult = await resolveApiV1Ctx();
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await resolveApiV1Ctx(request);
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
@@ -36,7 +36,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
 // PATCH /api/v1/properties/[id] — update a property, org-scoped.
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const authResult = await resolveApiV1Ctx();
+  const authResult = await resolveApiV1Ctx(request);
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;
@@ -66,8 +66,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 // DELETE /api/v1/properties/[id] — delete a property, org-scoped.
-export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const authResult = await resolveApiV1Ctx();
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const authResult = await resolveApiV1Ctx(request);
   if (!authResult.ok) return authResult.response;
 
   const { id } = await params;

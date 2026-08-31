@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { requireCtx } from "@/lib/auth/ctx";
 import { scanDocument } from "@/lib/services/document-scan";
 import { ALLOWED_MIME, MAX_BYTES } from "@/lib/upload-constants";
+import { allowed, aiScanLimiter } from "@/lib/ratelimit";
 import { log } from "@/lib/log";
 
 export const runtime = "nodejs"; // AI SDK + file bytes need the Node runtime (not Edge)
@@ -16,10 +17,21 @@ export const maxDuration = 60;   // give the model time to read the whole docume
 // Authorization: requireCtx() requires an authenticated caller. Only the caller's own uploaded file is
 // sent to the model; nothing is written here, so there is no resource to own-check.
 //
+// Rate limit: 5 scans / minute / user, checked AFTER auth (so only authenticated traffic counts) and
+// BEFORE the file is read or scanDocument() runs — a model call is the expensive thing being guarded,
+// so an over-limit caller must never reach it. Fail-closed: a limiter error blocks (see lib/ratelimit).
+//
 // Errors: the model call can fail or time out — the try/catch logs the real error server-side and
 // returns a generic message so the client can fall back to manual entry.
 export async function POST(req: NextRequest) {
-  await requireCtx();
+  const ctx = await requireCtx();
+  if (!(await allowed(aiScanLimiter, ctx.userId))) {
+    log.warn("ratelimit.block", { edge: "ai-scan", userId: ctx.userId });
+    return Response.json(
+      { ok: false, error: "AI scan rate limit reached. Try again shortly." },
+      { status: 429, headers: { "Retry-After": "60" } },
+    );
+  }
   try {
     const formData = await req.formData();
     const file = formData.get("file");

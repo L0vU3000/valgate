@@ -45,16 +45,29 @@ export function makeLimiter(prefix: string, limit: number, window: `${number} m`
 // Sensitive mutations: 5 / minute / user. Used on the verification submit + revoke edges.
 export const verifyLimiter = makeLimiter("rl:verify", 5, "1 m", 60_000);
 
+// AI-powered scanning and summarization: 5 / minute / user.
+export const aiScanLimiter = makeLimiter("rl:ai-scan", 5, "1 m", 60_000);
+export const aiSummaryLimiter = makeLimiter("rl:ai-summary", 5, "1 m", 60_000);
+
 // Phase 5 (M3) — MCP endpoint: 60 / minute / user. AI agents loop; this is the outer guard
 // on the programmatic surface. Keyed on Clerk userId in the route handler (after auth succeeds,
 // so only authenticated traffic counts against the quota).
 export const mcpLimiter = makeLimiter("rl:mcp", 60, "1 m", 60_000);
 
-// HTTP API v1 (read-only): 120 / minute / user. Looser than mcpLimiter since every route on
-// this surface is a plain read (no write amplification risk), but still bounded so a buggy or
-// abusive client can't hammer the DB unthrottled. Keyed on the resolved internal userId (see
-// lib/api/v1/auth.ts), after auth succeeds — unauthenticated requests never reach the limiter.
-export const apiReadLimiter = makeLimiter("rl:api-v1-read", 120, "1 m", 60_000);
+// HTTP API v1 reads: 120 / minute / user. Looser than mcpLimiter since a read carries no write
+// amplification risk, but still bounded so a buggy or abusive client can't hammer the DB
+// unthrottled. Keyed on the resolved internal userId (see lib/api/v1/auth.ts), after auth
+// succeeds — unauthenticated requests never reach the limiter.
+export const API_V1_READ_LIMIT = 120;
+export const apiReadLimiter = makeLimiter("rl:api-v1-read", API_V1_READ_LIMIT, "1 m", 60_000);
+
+// HTTP API v1 mutations: 20 / minute / user, on a SEPARATE quota from reads. A write costs far
+// more than a read (row writes, audit trail, downstream fan-out) and is irreversible, so it gets
+// its own, much tighter budget — a client can still page through data at the read rate while
+// being unable to burn 120 writes/min. Separate prefix means read traffic never consumes the
+// mutation allowance and vice versa.
+export const API_V1_MUTATION_LIMIT = 20;
+export const apiMutationLimiter = makeLimiter("rl:api-v1-mutation", API_V1_MUTATION_LIMIT, "1 m", 60_000);
 
 // Fail-CLOSED for sensitive edges: a Redis/network error blocks rather than fails open.
 export async function allowed(limiter: Limiter, id: string): Promise<boolean> {
