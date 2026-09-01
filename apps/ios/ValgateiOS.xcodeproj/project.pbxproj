@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		03F8774160C3F7125466E442 /* VGButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31445AB10DB5B45A95D5F8B9 /* VGButton.swift */; };
+		5F2AD6CFEB944718A791D58C /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D08B7AB1E64DB19D4ED26B /* HapticFeedback.swift */; };
+		4BA57E38A59240CDAE23D2CE /* RootTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 410F99D5260C4822BD28B089 /* RootTab.swift */; };
+		91BDB87CB8ED42B0B13283A3 /* RootTabRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC2F88087B1429782551315 /* RootTabRouter.swift */; };
+		7317DED977AF42F18E8739B9 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2879AAB098344D78A7868AF6 /* RootTabView.swift */; };
+		635A4589CAEC4F33B6D0DA33 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B905114D5945F4BD9BA201 /* ProfileView.swift */; };
+		C56A71BB50244D078EF0D56B /* RootTabRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAFDFD1CA4BA4908C41DD /* RootTabRouterTests.swift */; };
 		04BE8161E647B69B898C869B /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAD2569A94E5DFFF583FB2 /* Colors.swift */; };
 		094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD4E376CC32D292E607951D /* MeDto.swift */; };
 		16F75C8C6352D1C74CBCFB2F /* EditPropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40432FFA6FC85128F0BD817 /* EditPropertyView.swift */; };
@@ -79,6 +85,12 @@
 
 /* Begin PBXFileReference section */
 		094F4955487B8341011BDEE8 /* RootViewStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewStateResolver.swift; sourceTree = "<group>"; };
+		01D08B7AB1E64DB19D4ED26B /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
+		410F99D5260C4822BD28B089 /* RootTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTab.swift; sourceTree = "<group>"; };
+		9FC2F88087B1429782551315 /* RootTabRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabRouter.swift; sourceTree = "<group>"; };
+		2879AAB098344D78A7868AF6 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		E1B905114D5945F4BD9BA201 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		EBAFAFDFD1CA4BA4908C41DD /* RootTabRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabRouterTests.swift; sourceTree = "<group>"; };
 		0E302CEBABE5B42CA2C9E065 /* PropertyMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyMapView.swift; sourceTree = "<group>"; };
 		135D266F9441DC049F2CDD45 /* ValgateiOSTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ValgateiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		15B9F9C575C0949D6774DBAC /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
@@ -175,11 +187,15 @@
 				732F9A268A79F1FC285872C1 /* PortfolioDashboardView.swift */,
 				48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */,
 				95881E49D31608658D848396 /* PropertiesView.swift */,
+				E1B905114D5945F4BD9BA201 /* ProfileView.swift */,
 				2F86B8AB112A169CAB0F4910 /* PropertyDetailStateResolver.swift */,
 				D965F9027788E14B54414414 /* PropertyDetailView.swift */,
 				0E302CEBABE5B42CA2C9E065 /* PropertyMapView.swift */,
 				E154FADC143DDD700CCEC9CA /* RootView.swift */,
 				094F4955487B8341011BDEE8 /* RootViewStateResolver.swift */,
+				410F99D5260C4822BD28B089 /* RootTab.swift */,
+				9FC2F88087B1429782551315 /* RootTabRouter.swift */,
+				2879AAB098344D78A7868AF6 /* RootTabView.swift */,
 				683ED27534EC93D2217E7075 /* SignedOutView.swift */,
 			);
 			path = Views;
@@ -213,6 +229,7 @@
 				48C8122C28C5C62F9DBAD8C3 /* App */,
 				ADA2F5EE9B797356BEEFFAC9 /* Configuration */,
 				89E01FAAF3D23E4EE6011F8F /* DesignSystem */,
+				259883DC4452417BBD0757C1 /* Haptics */,
 				234C3BDB57E463051CE8A9BB /* Models */,
 				C137A16839862073A0ABC2D1 /* Networking */,
 				0C65356C0F9C7F9580956202 /* Views */,
@@ -266,6 +283,14 @@
 			path = DesignSystem;
 			sourceTree = "<group>";
 		};
+		259883DC4452417BBD0757C1 /* Haptics */ = {
+			isa = PBXGroup;
+			children = (
+				01D08B7AB1E64DB19D4ED26B /* HapticFeedback.swift */,
+			);
+			path = Haptics;
+			sourceTree = "<group>";
+		};
 		ADA2F5EE9B797356BEEFFAC9 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
@@ -315,6 +340,7 @@
 				AB80C0C33CF08F8EE03F4D98 /* PropertyDetailStateResolverTests.swift */,
 				FAC5B5E9BAD935FAE173788A /* PropertyDetailUnauthorizedRoutingTests.swift */,
 				BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */,
+				EBAFAFDFD1CA4BA4908C41DD /* RootTabRouterTests.swift */,
 				1BA375A4CD1F77D2F3DBA4C5 /* RootViewStateResolverTests.swift */,
 				38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */,
 			);
@@ -422,6 +448,7 @@
 				9B6D477F3965772E051A43DB /* PropertyDetailStateResolverTests.swift in Sources */,
 				6A22C5B59E05862753976638 /* PropertyDetailUnauthorizedRoutingTests.swift in Sources */,
 				FA53128627B9327563E3EBA3 /* PropertyListItemDtoDecodingTests.swift in Sources */,
+				C56A71BB50244D078EF0D56B /* RootTabRouterTests.swift in Sources */,
 				8AF3B433EA712F154BC99A3F /* RootViewStateResolverTests.swift in Sources */,
 				EB7828BA9E818C2D99843E33 /* SessionRefresherTests.swift in Sources */,
 			);
@@ -445,16 +472,21 @@
 				16F75C8C6352D1C74CBCFB2F /* EditPropertyView.swift in Sources */,
 				C82A414FFF0F027189FCD952 /* HomeNavigation.swift in Sources */,
 				8C799C7F62BF9D3791CF5088 /* HomeView.swift in Sources */,
+				5F2AD6CFEB944718A791D58C /* HapticFeedback.swift in Sources */,
 				CDF4652767A0E1A3DE7F6C87 /* LocationPickerView.swift in Sources */,
 				094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */,
 				E0BA42A02CB73195008E45AE /* PortfolioDashboardView.swift in Sources */,
 				1F3679E3417AC3A408AB1F80 /* PropertiesLoadStateResolver.swift in Sources */,
 				C78CF7EADA92D96CCEB01128 /* PropertiesView.swift in Sources */,
+				635A4589CAEC4F33B6D0DA33 /* ProfileView.swift in Sources */,
 				3D2999DD8C4AB36D9C0EE521 /* PropertyDetailStateResolver.swift in Sources */,
 				229782DC978C8D747E5932A1 /* PropertyDetailView.swift in Sources */,
 				323E057F2FB875FC5D4B64D5 /* PropertyDto.swift in Sources */,
 				C769FD1BBDD44B803E933C99 /* PropertyMapView.swift in Sources */,
 				C47C43BE50B8DC7963714C78 /* RootView.swift in Sources */,
+				4BA57E38A59240CDAE23D2CE /* RootTab.swift in Sources */,
+				91BDB87CB8ED42B0B13283A3 /* RootTabRouter.swift in Sources */,
+				7317DED977AF42F18E8739B9 /* RootTabView.swift in Sources */,
 				2C0DBE50420E40AC10FB15DD /* RootViewStateResolver.swift in Sources */,
 				BDB4849AE1A63DC848C93EFC /* SessionRefresher.swift in Sources */,
 				60EF62EF2B0DC515B49D6442 /* SessionTokenProvider.swift in Sources */,

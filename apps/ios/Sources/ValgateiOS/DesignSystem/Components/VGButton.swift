@@ -140,11 +140,13 @@ struct VGButton: View {
 
 // MARK: - Button Style (removes default iOS tap animation for custom feel)
 private struct VGButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .scaleEffect(reduceMotion || !configuration.isPressed ? 1.0 : 0.96)
             .opacity(configuration.isPressed ? 0.9 : 1.0)
-            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
