@@ -91,7 +91,7 @@ struct PropertyMapView: View {
                 Spacer()
             }
             .padding(.horizontal, ValgateSpacing.space4)
-            .padding(.top, ValgateSpacing.safeAreaTop + ValgateSpacing.space4)
+            .padding(.top, ValgateSpacing.space4)
 
             // Bottom controls
             VStack {
@@ -119,7 +119,7 @@ struct PropertyMapView: View {
                     }
                 }
                 .padding(.horizontal, ValgateSpacing.space4)
-                .padding(.bottom, ValgateSpacing.safeAreaBottom + ValgateSpacing.space6)
+                .padding(.bottom, ValgateSpacing.space6)
             }
         }
         .sheet(item: $selectedProperty) { property in
