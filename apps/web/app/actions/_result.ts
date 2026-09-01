@@ -9,7 +9,7 @@ export const NOT_IMPLEMENTED_UNTIL_B6 = {
   error: "not implemented until B6",
 };
 
-/** FE contract tag strings. Next 15's revalidateTag takes a single arg (Next 16 added the cache-profile 2nd arg). */
+/** Revalidate FE contract tags using Next's stale-while-revalidate cache profile. */
 export function revalidateFeTag(tag: string): void {
-  revalidateTag(tag);
+  revalidateTag(tag, "max");
 }
