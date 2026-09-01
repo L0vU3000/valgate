@@ -4,8 +4,10 @@ import { POST as summarizeHandler } from "@/app/api/documents/[id]/summarize/rou
 import { requireCtx } from "@/lib/auth/ctx";
 import { getDocument, setDocumentAiStatus, saveDocumentSummary } from "@/lib/services/documents";
 import { resolveDocumentUrl } from "@/lib/services/storage";
-import { generateObject } from "ai";
+import { generateObject, type GenerateObjectResult } from "ai";
 import { allowed, aiSummaryLimiter } from "@/lib/ratelimit";
+import type { Document } from "@/lib/data/types/document";
+import type { Ctx } from "@/lib/services/_mapping";
 
 vi.mock("@/lib/auth/ctx", () => ({
   requireCtx: vi.fn(),
@@ -39,18 +41,44 @@ vi.mock("@/lib/ratelimit", async (importOriginal) => {
 });
 
 describe("POST /api/documents/[id]/summarize rate limiting", () => {
-  const ctx = { userId: "user-123", orgId: "org-1", orgRole: "owner" };
+  const ctx = { userId: "user-123", orgId: "org-1", orgRole: "owner" } satisfies Ctx;
   const params = Promise.resolve({ id: "doc-1" });
   const req = new Request("http://localhost/api/documents/doc-1/summarize", { method: "POST" });
 
   const summary = { summary: "A lease.", keyFields: [], pageCount: 2 };
+  const document = {
+    id: "doc-1",
+    propertyId: "property-1",
+    name: "Lease.pdf",
+    kind: "document",
+    storageId: "s3-key",
+    mimeType: "application/pdf",
+    uploadedAt: 1,
+  } satisfies Document;
+  const generated = {
+    object: summary,
+    reasoning: undefined,
+    finishReason: "stop",
+    usage: {
+      inputTokens: 0,
+      inputTokenDetails: { noCacheTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 },
+      outputTokens: 0,
+      outputTokenDetails: { textTokens: 0, reasoningTokens: 0 },
+      totalTokens: 0,
+    },
+    warnings: undefined,
+    request: {},
+    response: { id: "response-1", timestamp: new Date(0), modelId: "mock-model" },
+    providerMetadata: undefined,
+    toJsonResponse: (init?: ResponseInit) => Response.json(summary, init),
+  } satisfies GenerateObjectResult<typeof summary>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(requireCtx).mockResolvedValue(ctx);
-    vi.mocked(getDocument).mockResolvedValue({ id: "doc-1", storageId: "s3-key", mimeType: "application/pdf" });
+    vi.mocked(getDocument).mockResolvedValue(document);
     vi.mocked(resolveDocumentUrl).mockResolvedValue("https://storage.test/doc-1");
-    vi.mocked(generateObject).mockResolvedValue({ object: summary });
+    vi.mocked(generateObject).mockResolvedValue(generated);
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({ arrayBuffer: async () => new ArrayBuffer(8) }),

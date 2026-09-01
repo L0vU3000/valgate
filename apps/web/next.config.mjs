@@ -1,10 +1,9 @@
-import type { NextConfig } from "next";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   experimental: {
     serverActions: {
       // Our compressed photos target 2 MB; raise the action body limit to cover that
@@ -24,9 +23,6 @@ const nextConfig: NextConfig = {
     "*.trycloudflare.com",
     "*.loca.lt",
   ],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   serverExternalPackages: ["mapbox-gl"],
   outputFileTracingIncludes: {
     "/**/*": ["./public/data/**/*"],

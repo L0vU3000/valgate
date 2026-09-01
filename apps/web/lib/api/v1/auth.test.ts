@@ -138,7 +138,7 @@ describe("resolveApiV1Ctx demo short-circuit hardening", () => {
       ctxFromMcpAuthMock.mockResolvedValue(CTX);
       allowedMock.mockResolvedValue(true);
 
-      const result = await resolveApiV1Ctx();
+      const result = await resolveApiV1Ctx(GET_REQUEST);
 
       expect(result.ok).toBe(false);
       if (result.ok) throw new Error("expected failure");
@@ -156,7 +156,7 @@ describe("resolveApiV1Ctx demo short-circuit hardening", () => {
       vi.stubEnv("NODE_ENV", "development");
       vi.stubEnv(flag, "true");
 
-      const result = await resolveApiV1Ctx();
+      const result = await resolveApiV1Ctx(GET_REQUEST);
 
       expect(result).toEqual({ ok: true, ctx: { userId: "USR-0001", orgId: "ORG-0001", orgRole: "owner" } });
       expect(authMock).not.toHaveBeenCalled();
