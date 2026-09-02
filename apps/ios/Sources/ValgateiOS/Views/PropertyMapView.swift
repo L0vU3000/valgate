@@ -4,6 +4,7 @@ import MapKit
 struct PropertyMapView: View {
     let properties: [PropertyListItemDto]
     let portfolioStats: PortfolioStatsDto?
+    @Binding var selectedProperty: PropertyListItemDto?
     let onSelect: (PropertyListItemDto) -> Void
     let onAddProperty: () -> Void
     let onSearch: () -> Void
@@ -17,10 +18,8 @@ struct PropertyMapView: View {
             span: MKCoordinateSpan(latitudeDelta: 2.0, longitudeDelta: 2.0)
         )
     )
-    @State private var selectedProperty: PropertyListItemDto?
     @State private var showPropertyList = false
     @State private var isSatellite = false
-    @State private var searchText = ""
 
     var body: some View {
         ZStack {
@@ -76,11 +75,14 @@ struct PropertyMapView: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .keyboardShortcut("k", modifiers: .command)
+                .accessibilityIdentifier("home-search-button")
 
                 // Quick action chips
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: ValgateSpacing.space2) {
                         QuickActionChip(icon: "plus", label: "New Property", action: onAddProperty)
+                            .accessibilityIdentifier("home-add-property")
                         QuickActionChip(icon: "chart.bar.fill", label: "Portfolio", action: onPortfolio)
                         QuickActionChip(icon: "doc.text", label: "Documents", action: onDocuments)
                         QuickActionChip(icon: "person.2", label: "Rental", action: onRental)
@@ -134,11 +136,7 @@ struct PropertyMapView: View {
                 properties: properties,
                 onSelect: { property in
                     showPropertyList = false
-                    selectedProperty = property
-                    position = .region(MKCoordinateRegion(
-                        center: CLLocationCoordinate2D(latitude: property.lat, longitude: property.lng),
-                        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-                    ))
+                    focusProperty(property)
                 },
                 onAddProperty: onAddProperty
             )
@@ -155,6 +153,20 @@ struct PropertyMapView: View {
                 position = .region(regionForProperties(newProperties))
             }
         }
+        .onChange(of: selectedProperty) { oldProperty, newProperty in
+            guard let newProperty else { return }
+            if oldProperty?.id != newProperty.id {
+                focusProperty(newProperty)
+            }
+        }
+    }
+
+    func focusProperty(_ property: PropertyListItemDto) {
+        selectedProperty = property
+        position = .region(MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: property.lat, longitude: property.lng),
+            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+        ))
     }
 
     private func fitToProperties() {
@@ -527,6 +539,284 @@ struct PropertyListSheet: View {
         case "sold": return .valStatusInfo
         case "archived": return .valTextSecondary
         default: return .valStatusInfo
+        }
+    }
+}
+
+// MARK: - Property Search Filter
+
+enum PropertySearchFilter {
+    static func matching(_ properties: [PropertyListItemDto], query: String) -> [PropertyListItemDto] {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedQuery.isEmpty {
+            return properties
+        }
+
+        let needle = trimmedQuery.lowercased()
+        return properties.filter { property in
+            if property.name.lowercased().contains(needle) {
+                return true
+            }
+            if property.type.lowercased().contains(needle) {
+                return true
+            }
+            if property.status.lowercased().contains(needle) {
+                return true
+            }
+            if let city = property.city, city.lowercased().contains(needle) {
+                return true
+            }
+            if let province = property.province, province.lowercased().contains(needle) {
+                return true
+            }
+            return false
+        }
+    }
+}
+
+// MARK: - Property Search Overlay (command palette)
+
+struct PropertySearchOverlay: View {
+    let properties: [PropertyListItemDto]
+    let onSelect: (PropertyListItemDto) -> Void
+    let onDismiss: () -> Void
+
+    @State private var query = ""
+    @FocusState private var isSearchFieldFocused: Bool
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+    private var filteredProperties: [PropertyListItemDto] {
+        PropertySearchFilter.matching(properties, query: query)
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                scrim
+                    .ignoresSafeArea()
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onDismiss()
+                    }
+
+                paletteCard
+                    .frame(
+                        maxWidth: min(560, geometry.size.width - (ValgateSpacing.space4 * 2)),
+                        maxHeight: geometry.size.height * 0.72
+                    )
+                    .padding(.horizontal, ValgateSpacing.space4)
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+        }
+        .accessibilityIdentifier("propertySearchOverlay")
+        .onAppear {
+            isSearchFieldFocused = true
+        }
+    }
+
+    @ViewBuilder
+    private var scrim: some View {
+        if reduceTransparency {
+            Color.valTextPrimary
+        } else {
+            ZStack {
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                Color.valTextPrimary.opacity(0.45)
+            }
+        }
+    }
+
+    private var paletteCard: some View {
+        VStack(spacing: 0) {
+            headerRow
+                .padding(.horizontal, ValgateSpacing.space4)
+                .padding(.top, ValgateSpacing.space4)
+                .padding(.bottom, ValgateSpacing.space3)
+
+            searchField
+                .padding(.horizontal, ValgateSpacing.space4)
+                .padding(.bottom, ValgateSpacing.space3)
+
+            Rectangle()
+                .fill(Color.valTextInverse.opacity(0.12))
+                .frame(height: 1)
+
+            resultsList
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(Color.valTextPrimary)
+        .clipShape(RoundedRectangle(cornerRadius: ValgateRadius.xxl, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: ValgateRadius.xxl, style: .continuous)
+                .stroke(Color.valTextInverse.opacity(0.12), lineWidth: 1)
+        )
+        .shadow(color: Color.valTextPrimary.opacity(0.35), radius: 24, x: 0, y: 12)
+    }
+
+    private var headerRow: some View {
+        HStack(spacing: ValgateSpacing.space3) {
+            Text("Search")
+                .font(ValgateTypography.Headline.title3)
+                .foregroundStyle(Color.valTextInverse)
+
+            Spacer()
+
+            HStack(spacing: ValgateSpacing.space1) {
+                Image(systemName: "command")
+                    .font(.system(size: 10, weight: .semibold))
+                Text("K")
+                    .font(ValgateTypography.Content.caption)
+            }
+            .foregroundStyle(Color.valTextInverse.opacity(0.7))
+            .padding(.horizontal, ValgateSpacing.space2)
+            .padding(.vertical, ValgateSpacing.space1)
+            .background(Color.valTextInverse.opacity(0.12))
+            .cornerRadius(ValgateRadius.sm)
+
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Color.valTextInverse)
+                    .frame(width: ValgateTouchTarget.minimum, height: ValgateTouchTarget.minimum)
+                    .background(Color.valTextInverse.opacity(0.12))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Close search")
+        }
+    }
+
+    private var searchField: some View {
+        HStack(spacing: ValgateSpacing.space2) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 17, weight: .medium))
+                .foregroundStyle(Color.valInteractivePrimary)
+
+            TextField(
+                "",
+                text: $query,
+                prompt: Text("Search properties…")
+                    .foregroundStyle(Color.valTextInverse.opacity(0.45))
+            )
+            .font(ValgateTypography.Body.standard)
+            .foregroundStyle(Color.valTextInverse)
+            .focused($isSearchFieldFocused)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .submitLabel(.search)
+            .tint(Color.valInteractivePrimary)
+            .accessibilityIdentifier("property-search-field")
+        }
+        .padding(.horizontal, ValgateSpacing.space3)
+        .frame(height: ValgateTouchTarget.comfortable)
+        .background(Color.valTextInverse.opacity(0.12))
+        .cornerRadius(ValgateRadius.md)
+    }
+
+    private var resultsList: some View {
+        Group {
+            if filteredProperties.isEmpty {
+                emptyResults
+            } else {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(filteredProperties) { property in
+                            Button {
+                                onSelect(property)
+                            } label: {
+                                searchResultRow(property)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                .scrollDismissesKeyboard(.interactively)
+            }
+        }
+    }
+
+    private var emptyResults: some View {
+        VStack(spacing: ValgateSpacing.space2) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 22, weight: .medium))
+                .foregroundStyle(Color.valTextInverse.opacity(0.45))
+
+            Text("No properties match")
+                .font(ValgateTypography.Body.standardEmphasis)
+                .foregroundStyle(Color.valTextInverse)
+
+            Text("Try a name, type, status, city, or province.")
+                .font(ValgateTypography.Content.subheadline)
+                .foregroundStyle(Color.valTextInverse.opacity(0.7))
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(ValgateSpacing.space6)
+    }
+
+    private func searchResultRow(_ property: PropertyListItemDto) -> some View {
+        HStack(spacing: ValgateSpacing.space3) {
+            Circle()
+                .fill(statusColor(property.status))
+                .frame(width: 10, height: 10)
+
+            VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
+                Text(property.name)
+                    .font(ValgateTypography.Headline.title3)
+                    .foregroundStyle(Color.valTextInverse)
+                    .lineLimit(1)
+
+                HStack(spacing: ValgateSpacing.space2) {
+                    Text(property.type)
+                        .font(ValgateTypography.Content.subheadline)
+                        .foregroundStyle(Color.valTextInverse.opacity(0.7))
+
+                    if let city = property.city, !city.isEmpty {
+                        Text("·")
+                            .foregroundStyle(Color.valTextInverse.opacity(0.45))
+                        Text(city)
+                            .font(ValgateTypography.Content.subheadline)
+                            .foregroundStyle(Color.valTextInverse.opacity(0.7))
+                    }
+
+                    if let province = property.province, !province.isEmpty {
+                        Text("·")
+                            .foregroundStyle(Color.valTextInverse.opacity(0.45))
+                        Text(province)
+                            .font(ValgateTypography.Content.subheadline)
+                            .foregroundStyle(Color.valTextInverse.opacity(0.7))
+                    }
+                }
+            }
+
+            Spacer(minLength: ValgateSpacing.space2)
+
+            Text(property.status)
+                .font(ValgateTypography.Content.caption)
+                .foregroundStyle(Color.valInteractivePrimary)
+                .padding(.horizontal, ValgateSpacing.space2)
+                .padding(.vertical, ValgateSpacing.space1)
+                .background(Color.valInteractivePrimary.opacity(0.18))
+                .cornerRadius(ValgateRadius.pill)
+        }
+        .padding(.horizontal, ValgateSpacing.space4)
+        .padding(.vertical, ValgateSpacing.space3)
+        .contentShape(Rectangle())
+    }
+
+    private func statusColor(_ status: String) -> Color {
+        switch status.lowercased() {
+        case "active", "rented":
+            return .valStatusSuccess
+        case "pending", "vacant":
+            return .valStatusWarning
+        case "sold":
+            return .valStatusInfo
+        case "archived":
+            return .valTextSecondary
+        default:
+            return .valInteractivePrimary
         }
     }
 }

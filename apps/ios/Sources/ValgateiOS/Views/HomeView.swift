@@ -22,8 +22,14 @@ final class HomeViewModel: ObservableObject {
         self.onUnauthorized = onUnauthorized
     }
 
-    func load() async {
-        state = .loading
+    /// Reloads the home property list.
+    /// When `showLoading` is false, the current map stays on screen (no white flash)
+    /// while the list refreshes in the background — used after creating a property.
+    func load(showLoading: Bool = true) async {
+        if showLoading {
+            state = .loading
+        }
+
         do {
             let page = try await client.properties(limit: 100, cursor: nil, sessionToken: sessionToken)
             state = page.items.isEmpty ? .empty : .loaded(page.items)
@@ -68,7 +74,17 @@ struct HomeView: View {
 
     @State private var navigationDestination: HomeNavigationDestination?
     @State private var showCreateProperty = false
+    @State private var isSearching = false
+    @State private var selectedProperty: PropertyListItemDto?
+    @State private var successMessage: String?
 
+    /// Properties currently shown on the map. Empty while loading, empty, error, or unauthorized.
+    private var currentProperties: [PropertyListItemDto] {
+        if case .loaded(let items) = viewModel.state {
+            return items
+        }
+        return []
+    }
 
     var body: some View {
         NavigationStack {
@@ -77,41 +93,9 @@ struct HomeView: View {
                 case .loading:
                     MapLoadingView()
                 case .loaded(let properties):
-                    PropertyMapView(
-                        properties: properties,
-                        portfolioStats: viewModel.portfolioStats,
-                        onSelect: { property in
-                            navigationDestination = HomeNavigationResolver.resolve(property: property)
-                        },
-                        onAddProperty: {
-                            showCreateProperty = true
-                        },
-                        onSearch: {
-                            // TODO: Show search/command palette
-                        },
-                        onPortfolio: {
-                            // TODO: Navigate to portfolio
-                        },
-                        onDocuments: {
-                            // TODO: Navigate to documents
-                        },
-                        onRental: {
-                            // TODO: Navigate to rental
-                        }
-                    )
+                    homeMap(properties: properties)
                 case .empty:
-                    PropertyMapView(
-                        properties: [],
-                        portfolioStats: viewModel.portfolioStats,
-                        onSelect: { _ in },
-                        onAddProperty: {
-                            showCreateProperty = true
-                        },
-                        onSearch: {},
-                        onPortfolio: {},
-                        onDocuments: {},
-                        onRental: {}
-                    )
+                    homeMap(properties: [])
                 case .unauthorized:
                     ContentUnavailableView(
                         "Session Expired",
@@ -132,6 +116,35 @@ struct HomeView: View {
                     .background(Color.valSurfacePage)
                 }
             }
+            .overlay {
+                if isSearching {
+                    PropertySearchOverlay(
+                        properties: currentProperties,
+                        onSelect: { property in
+                            isSearching = false
+                            selectedProperty = property
+                        },
+                        onDismiss: {
+                            isSearching = false
+                        }
+                    )
+                }
+            }
+            .overlay(alignment: .top) {
+                if let successMessage {
+                    SuccessToast(message: successMessage)
+                        .padding(.top, ValgateSpacing.space4)
+                        .allowsHitTesting(false)
+                        .task(id: successMessage) {
+                            try? await Task.sleep(for: .seconds(2.4))
+                            if self.successMessage == successMessage {
+                                self.successMessage = nil
+                            }
+                        }
+                }
+            }
+            .animation(.easeInOut(duration: 0.25), value: successMessage)
+            .animation(.easeOut(duration: 0.2), value: isSearching)
             .navigationDestination(item: $navigationDestination) { destination in
                 switch destination {
                 case .propertyDetail(let id):
@@ -144,20 +157,22 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showCreateProperty) {
-                NavigationStack {
-                    CreatePropertyView(
-                        client: client,
-                        sessionToken: sessionToken,
-                        onUnauthorized: onUnauthorized,
-                        onCreated: { created in
-                            showCreateProperty = false
-                            Task {
-                                await viewModel.load()
-                                navigationDestination = HomeNavigationResolver.resolve(created: created)
-                            }
+                SimplePropertyCreateView(
+                    client: client,
+                    sessionToken: sessionToken,
+                    onUnauthorized: onUnauthorized,
+                    onCreated: { created in
+                        showCreateProperty = false
+                        successMessage = "\(created.name) added"
+                        HapticFeedback.shared.play(.success)
+                        Task {
+                            await viewModel.load(showLoading: false)
                         }
-                    )
-                }
+                    }
+                )
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(40)
             }
             .task {
                 await viewModel.load()
@@ -166,6 +181,63 @@ struct HomeView: View {
                 await viewModel.load()
             }
         }
+    }
+
+    /// Shared map used for both the loaded list and the empty (no pins) state.
+    /// Search always opens the palette; add always opens create. Staying on the map
+    /// after create lets the new pin appear without a navigation push.
+    private func homeMap(properties: [PropertyListItemDto]) -> some View {
+        PropertyMapView(
+            properties: properties,
+            portfolioStats: viewModel.portfolioStats,
+            selectedProperty: $selectedProperty,
+            onSelect: { property in
+                navigationDestination = HomeNavigationResolver.resolve(property: property)
+            },
+            onAddProperty: {
+                showCreateProperty = true
+            },
+            onSearch: {
+                isSearching = true
+            },
+            onPortfolio: {
+                // TODO: Navigate to portfolio
+            },
+            onDocuments: {
+                // TODO: Navigate to documents
+            },
+            onRental: {
+                // TODO: Navigate to rental
+            }
+        )
+    }
+}
+
+/// Custom success banner. Not an Alert — a pill toast over the map.
+struct SuccessToast: View {
+    let message: String
+
+    var body: some View {
+        HStack(spacing: ValgateSpacing.space2) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(ValgateTypography.Body.standardEmphasis)
+                .foregroundStyle(Color.valStatusSuccess)
+
+            Text(message)
+                .font(ValgateTypography.Content.subheadlineEmphasis)
+                .foregroundStyle(Color.valTextPrimary)
+                .lineLimit(1)
+        }
+        .padding(.horizontal, ValgateSpacing.space4)
+        .padding(.vertical, ValgateSpacing.space3)
+        .background(.ultraThinMaterial)
+        .cornerRadius(ValgateRadius.pill)
+        .overlay(
+            RoundedRectangle(cornerRadius: ValgateRadius.pill)
+                .stroke(Color.valStatusSuccessBorder, lineWidth: 1)
+        )
+        .accessibilityAddTraits(.isStaticText)
+        .accessibilityLabel(message)
     }
 }
 
