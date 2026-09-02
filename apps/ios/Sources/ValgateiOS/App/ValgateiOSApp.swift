@@ -15,12 +15,15 @@ struct ValgateiOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if configuration.isComplete {
-                RootView(configuration: configuration)
-                    .environment(Clerk.shared)
-            } else {
-                RootView(configuration: configuration)
+            Group {
+                if configuration.isComplete {
+                    RootView(configuration: configuration)
+                        .environment(Clerk.shared)
+                } else {
+                    RootView(configuration: configuration)
+                }
             }
+            .tint(Color.valBrandBlue)
         }
     }
 }

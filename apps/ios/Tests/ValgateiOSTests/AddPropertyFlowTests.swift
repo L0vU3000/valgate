@@ -1,5 +1,5 @@
 import XCTest
-import MapKit
+import CoreLocation
 @testable import ValgateiOS
 
 final class AddPropertyFlowTests: XCTestCase {
@@ -111,6 +111,15 @@ final class AddPropertyFlowTests: XCTestCase {
     func test_propertySearchFilter_unmatchedIsEmpty() {
         let results = PropertySearchFilter.matching(searchFixtures, query: "zzzz")
         XCTAssertTrue(results.isEmpty)
+    }
+
+    func test_portfolioStatsDto_countsTotalActiveAndVacant() {
+        let stats = PortfolioStatsDto.from(searchFixtures)
+
+        XCTAssertEqual(stats.totalProperties, 2)
+        XCTAssertEqual(stats.activeCount, 1)
+        XCTAssertEqual(stats.vacantCount, 1)
+        XCTAssertEqual(stats.pendingCount, 0)
     }
 
     private var searchFixtures: [PropertyListItemDto] {

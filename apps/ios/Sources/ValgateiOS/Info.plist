@@ -26,7 +26,14 @@
 	<string>$(CLERK_PUBLISHABLE_KEY)</string>
 	<key>VERCEL_PROTECTION_BYPASS</key>
 	<string>$(VERCEL_PROTECTION_BYPASS)</string>
+	<key>MBXAccessToken</key>
+	<string>$(MAPBOX_PUBLIC_TOKEN)</string>
 	<key>UILaunchScreen</key>
-	<dict/>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+		<key>UIImageName</key>
+		<string>ValgateLogo</string>
+	</dict>
 </dict>
 </plist>

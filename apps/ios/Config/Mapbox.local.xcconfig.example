@@ -1,0 +1,3 @@
+// Copy this file to Mapbox.local.xcconfig (gitignored) and paste a restricted public pk. token.
+// Never put a Mapbox secret sk. downloads token in this file.
+MAPBOX_ACCESS_TOKEN =

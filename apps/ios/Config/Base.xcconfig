@@ -4,4 +4,8 @@ CLERK_PUBLISHABLE_KEY = pk_test_d2hvbGUtY2l2ZXQtODkuY2xlcmsuYWNjb3VudHMuZGV2JA
 LOCAL_VERCEL_PROTECTION_BYPASS =
 VERCEL_PROTECTION_BYPASS =
 VERCEL_PROTECTION_BYPASS[config=Debug] = $(LOCAL_VERCEL_PROTECTION_BYPASS)
+// Mapbox public (pk.*) token. Empty here; Mapbox.local.xcconfig supplies the local value.
+MAPBOX_ACCESS_TOKEN =
+MAPBOX_PUBLIC_TOKEN =
 #include? "Secrets.xcconfig"
+#include? "Mapbox.xcconfig"

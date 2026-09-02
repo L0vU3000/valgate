@@ -47,12 +47,7 @@ final class HomeViewModel: ObservableObject {
 
     var portfolioStats: PortfolioStatsDto? {
         guard case .loaded(let items) = state else { return nil }
-        return PortfolioStatsDto(
-            totalProperties: items.count,
-            activeCount: items.filter { $0.status.lowercased() == "active" || $0.status.lowercased() == "rented" }.count,
-            pendingCount: items.filter { $0.status.lowercased() == "pending" }.count,
-            vacantCount: items.filter { $0.status.lowercased() == "vacant" }.count
-        )
+        return PortfolioStatsDto.from(items)
     }
 }
 
@@ -195,13 +190,15 @@ struct HomeView: View {
                 navigationDestination = HomeNavigationResolver.resolve(property: property)
             },
             onAddProperty: {
+                HapticFeedback.shared.play(.addInvoked)
                 showCreateProperty = true
             },
             onSearch: {
+                HapticFeedback.shared.play(.searchOpened)
                 isSearching = true
             },
             onPortfolio: {
-                // TODO: Navigate to portfolio
+                HapticFeedback.shared.play(.mapControl)
             },
             onDocuments: {
                 // TODO: Navigate to documents

@@ -1,0 +1,6 @@
+// Mapbox token layer. Included from Base.xcconfig.
+// Runtime maps read MBXAccessToken from Info.plist, which is $(MAPBOX_PUBLIC_TOKEN).
+// Supply a restricted public pk. token locally via Mapbox.local.xcconfig (gitignored).
+// Never put a Mapbox secret downloads token in this app, Info.plist, or any tracked file.
+#include? "Mapbox.local.xcconfig"
+MAPBOX_PUBLIC_TOKEN = $(MAPBOX_ACCESS_TOKEN)

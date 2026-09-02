@@ -52,3 +52,6 @@ fastlane/test_output
 
 # Local Xcode secrets — real staging API base URL, never commit
 Config/Secrets.xcconfig
+
+# Local Mapbox public token override — never commit
+Config/Mapbox.local.xcconfig
