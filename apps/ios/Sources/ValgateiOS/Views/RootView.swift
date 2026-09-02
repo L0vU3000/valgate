@@ -27,7 +27,10 @@ struct RootView: View {
             case .configurationMissing:
                 ConfigurationMissingView()
             case .loading:
-                ProgressView()
+                // Opaque fill so UIKit can dismiss UILaunchScreen. A bare
+                // ProgressView is transparent, which leaves the splash logo
+                // on screen for the whole Clerk token wait.
+                BootLoadingView()
             case .signedIn(let baseURL, let token):
                 RootTabView(
                     client: APIClient(baseURL: baseURL),
@@ -58,9 +61,32 @@ struct RootView: View {
         Task { await SessionRefresher.invalidateSession(using: tokenProvider) }
     }
 
+    /// Always flips `authChecked` so the resolver cannot stay on `.loading`.
+    /// Incomplete configuration still resolves to `.configurationMissing`
+    /// (that guard runs first). A hung Clerk `getToken()` falls through to
+    /// `.signedOut` after `SessionRefresher.bootTokenTimeout`.
     private func refreshSession() async {
+        defer { authChecked = true }
         guard configuration.isComplete else { return }
-        self.sessionToken = await SessionRefresher.refreshedToken(using: tokenProvider)
-        self.authChecked = true
+        sessionToken = await SessionRefresher.refreshedToken(
+            using: tokenProvider,
+            timeout: SessionRefresher.bootTokenTimeout
+        )
+    }
+}
+
+/// First drawn frame after the process starts. Must be opaque: iOS keeps the
+/// launch storyboard/plist screen visible behind a transparent root view.
+private struct BootLoadingView: View {
+    var body: some View {
+        ZStack {
+            Color.valSurfacePage
+                .ignoresSafeArea()
+
+            ProgressView()
+                .controlSize(.large)
+                .tint(Color.valBrandBlue)
+        }
+        .accessibilityIdentifier("bootLoadingView")
     }
 }

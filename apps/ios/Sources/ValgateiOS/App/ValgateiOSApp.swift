@@ -6,6 +6,8 @@ struct ValgateiOSApp: App {
     private let configuration: AppConfiguration
 
     init() {
+        // Read Info.plist (xcconfig → API URL + Clerk key) before any view
+        // asks the resolver or ClerkSessionTokenProvider for a session.
         let configuration = AppConfiguration()
         self.configuration = configuration
         if let publishableKey = configuration.clerkPublishableKey {
@@ -15,15 +17,18 @@ struct ValgateiOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if configuration.isComplete {
-                    RootView(configuration: configuration)
-                        .environment(Clerk.shared)
-                } else {
-                    RootView(configuration: configuration)
-                }
-            }
-            .tint(Color.valBrandBlue)
+            rootContent
+                .tint(Color.valBrandBlue)
+        }
+    }
+
+    @ViewBuilder
+    private var rootContent: some View {
+        if configuration.isComplete {
+            RootView(configuration: configuration)
+                .environment(Clerk.shared)
+        } else {
+            RootView(configuration: configuration)
         }
     }
 }
