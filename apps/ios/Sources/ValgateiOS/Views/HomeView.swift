@@ -72,8 +72,9 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                switch viewModel.state {
+            ZStack {
+                Group {
+                    switch viewModel.state {
                 case .loading:
                     MapLoadingView()
                 case .loaded(let properties):
@@ -130,6 +131,15 @@ struct HomeView: View {
                             .foregroundStyle(Color.valTextSecondary)
                     )
                     .background(Color.valSurfacePage)
+                }
+                }
+
+                VStack {
+                    Spacer()
+                    Text("Dev Mode")
+                        .font(.caption2)
+                        .foregroundStyle(Color.gray.opacity(0.5))
+                        .padding(.bottom, 8)
                 }
             }
             .navigationDestination(item: $navigationDestination) { destination in
