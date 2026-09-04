@@ -6,6 +6,8 @@ private final class StubTokenProvider: SessionTokenProviding {
     enum Outcome {
         case token(String?)
         case failure
+        /// Never returns unless cancelled — models a hung Clerk `getToken()`.
+        case hang
     }
 
     struct StubError: Error {}
@@ -31,6 +33,9 @@ private final class StubTokenProvider: SessionTokenProviding {
             return value
         case .failure:
             throw StubError()
+        case .hang:
+            try await Task.sleep(for: .seconds(60))
+            return "late-token"
         }
     }
 
@@ -69,6 +74,50 @@ final class SessionRefresherTests: XCTestCase {
         let token = await SessionRefresher.refreshedToken(using: provider)
 
         XCTAssertNil(token)
+    }
+
+    /// Boot must not sit on `.loading` / the launch screen if Clerk never answers.
+    func test_refreshedToken_timeout_returnsNilWhenProviderHangs() async {
+        let provider = StubTokenProvider(outcome: .hang)
+        let started = ContinuousClock.now
+
+        let token = await SessionRefresher.refreshedToken(
+            using: provider,
+            timeout: .milliseconds(150)
+        )
+        let elapsed = started.duration(to: .now)
+
+        XCTAssertNil(token)
+        XCTAssertLessThan(elapsed, .seconds(2))
+    }
+
+    func test_refreshedToken_timeout_stillReturnsFastToken() async {
+        let provider = StubTokenProvider(outcome: .token("token123"))
+
+        let token = await SessionRefresher.refreshedToken(
+            using: provider,
+            timeout: .seconds(2)
+        )
+
+        XCTAssertEqual(token, "token123")
+    }
+
+    func test_timedOutRefresh_resolvesToSignedOutNotLoading() async {
+        let configuration = AppConfiguration(infoDictionary: completeInfo)
+        let provider = StubTokenProvider(outcome: .hang)
+
+        let token = await SessionRefresher.refreshedToken(
+            using: provider,
+            timeout: .milliseconds(150)
+        )
+        let state = RootViewStateResolver.resolve(
+            configuration: configuration,
+            authChecked: true,
+            sessionToken: token
+        )
+
+        XCTAssertEqual(state, .signedOut)
+        XCTAssertNotEqual(state, .loading)
     }
 
     /// A refresh after the auth sheet dismisses must move a stale signed-out

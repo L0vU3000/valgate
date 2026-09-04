@@ -7,13 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00D763799C180C5C9C9633B7 /* RootTabRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43BD60D80E422FF636FCB15 /* RootTabRouterTests.swift */; };
+		02C800BBF9E12E180D08B6A5 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 924B0EF07C8FA245C0E65779 /* RootTabView.swift */; };
 		03F8774160C3F7125466E442 /* VGButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31445AB10DB5B45A95D5F8B9 /* VGButton.swift */; };
-		5F2AD6CFEB944718A791D58C /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D08B7AB1E64DB19D4ED26B /* HapticFeedback.swift */; };
-		4BA57E38A59240CDAE23D2CE /* RootTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 410F99D5260C4822BD28B089 /* RootTab.swift */; };
-		91BDB87CB8ED42B0B13283A3 /* RootTabRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC2F88087B1429782551315 /* RootTabRouter.swift */; };
-		7317DED977AF42F18E8739B9 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2879AAB098344D78A7868AF6 /* RootTabView.swift */; };
-		635A4589CAEC4F33B6D0DA33 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B905114D5945F4BD9BA201 /* ProfileView.swift */; };
-		C56A71BB50244D078EF0D56B /* RootTabRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBAFAFDFD1CA4BA4908C41DD /* RootTabRouterTests.swift */; };
 		04BE8161E647B69B898C869B /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77AAD2569A94E5DFFF583FB2 /* Colors.swift */; };
 		094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD4E376CC32D292E607951D /* MeDto.swift */; };
 		16F75C8C6352D1C74CBCFB2F /* EditPropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40432FFA6FC85128F0BD817 /* EditPropertyView.swift */; };
@@ -40,8 +36,11 @@
 		743ABA6C62B3476892C08D00 /* APIErrorEnvelopeDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B740F353870900732EDE4C4A /* APIErrorEnvelopeDecodingTests.swift */; };
 		7747C8B629548EC7BC19C781 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B9F9C575C0949D6774DBAC /* APIError.swift */; };
 		7B344C47E9D106EF5E3D74DA /* PropertiesUnauthorizedRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69E6F73468BEE851C42B551C /* PropertiesUnauthorizedRoutingTests.swift */; };
+		7EFBB2E82FB92E0F9697D7CB /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C51CF7D3BAE65BE7CD48170 /* ProfileView.swift */; };
+		82DD04ED3F2ED5F7B77FE20B /* RootTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF661E07D15EFA9B929F1716 /* RootTab.swift */; };
 		850DBA73CF4A7BEB3AC66D5F /* CreatePropertyStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54457B7CD87F3D5362875425 /* CreatePropertyStateResolverTests.swift */; };
 		851440F47CED2EB3728DD4B1 /* CreatePropertyRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA96CC22207A608E46F7996 /* CreatePropertyRequest.swift */; };
+		8588AB6FB986C573BAE162F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40BF32D1186876EF993C3220 /* Assets.xcassets */; };
 		8AF3B433EA712F154BC99A3F /* RootViewStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA375A4CD1F77D2F3DBA4C5 /* RootViewStateResolverTests.swift */; };
 		8C799C7F62BF9D3791CF5088 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1BFB816426B649022E99BF /* HomeView.swift */; };
 		987C5956038269443E348A36 /* VGGlassPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183F33D94FF0E4416176E3DD /* VGGlassPanel.swift */; };
@@ -51,8 +50,11 @@
 		A14FBFD58298D63EBD909F6A /* AppConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB29D23DCAAE734153F110D0 /* AppConfiguration.swift */; };
 		A25D34EA8DF4A471B8FDA525 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00B36F92757F054C11C90C7 /* Spacing.swift */; };
 		A81FBD7B28095E624142ED73 /* VGCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E1260E2FB2314597CFEE94 /* VGCard.swift */; };
+		ABB0E5DC5FDF029589A21268 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EAB648910E8EE63A19A9A51 /* HapticFeedback.swift */; };
 		AEA28F0751EB0D046A784AA3 /* UpdatePropertyRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70217B209495B2167AD817A0 /* UpdatePropertyRequest.swift */; };
 		AF7225A316CABDB4B1A94EA2 /* ClerkKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 3ECDDD9AD34F2D66C26842D7 /* ClerkKitUI */; };
+		AF7F3BD915A8BE3E30C3DEAD /* MapboxMaps in Frameworks */ = {isa = PBXBuildFile; productRef = FF0027159B857CF332A1F4BD /* MapboxMaps */; };
+		B0F7F3E3108E2A9F70CD34D9 /* RootTabRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5459FCB8DA581D352CCD0E83 /* RootTabRouter.swift */; };
 		B26FE88B772A0ECFA85F2810 /* ValgateiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289CAF3B76E412F13E5F7D88 /* ValgateiOSApp.swift */; };
 		B875E90CB4BFEA85D9F2C035 /* PropertiesLoadStateResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 717E54E30465A0E3D6347769 /* PropertiesLoadStateResolverTests.swift */; };
 		BA302DC659E36BEE5FC61798 /* CreatePropertyRequestEncodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8EA07FD345332286F24AC /* CreatePropertyRequestEncodingTests.swift */; };
@@ -85,12 +87,6 @@
 
 /* Begin PBXFileReference section */
 		094F4955487B8341011BDEE8 /* RootViewStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewStateResolver.swift; sourceTree = "<group>"; };
-		01D08B7AB1E64DB19D4ED26B /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
-		410F99D5260C4822BD28B089 /* RootTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTab.swift; sourceTree = "<group>"; };
-		9FC2F88087B1429782551315 /* RootTabRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabRouter.swift; sourceTree = "<group>"; };
-		2879AAB098344D78A7868AF6 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
-		E1B905114D5945F4BD9BA201 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
-		EBAFAFDFD1CA4BA4908C41DD /* RootTabRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabRouterTests.swift; sourceTree = "<group>"; };
 		0E302CEBABE5B42CA2C9E065 /* PropertyMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyMapView.swift; sourceTree = "<group>"; };
 		135D266F9441DC049F2CDD45 /* ValgateiOSTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ValgateiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		15B9F9C575C0949D6774DBAC /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
@@ -104,11 +100,14 @@
 		3116E18D2C68CD3348D40468 /* VGBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VGBadge.swift; sourceTree = "<group>"; };
 		31445AB10DB5B45A95D5F8B9 /* VGButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VGButton.swift; sourceTree = "<group>"; };
 		38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRefresherTests.swift; sourceTree = "<group>"; };
+		40BF32D1186876EF993C3220 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		41B1F6470503FF81B1D320F1 /* AppConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfigurationTests.swift; sourceTree = "<group>"; };
 		47D37257EBF9682412CECBAD /* CreatePropertyStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyStateResolver.swift; sourceTree = "<group>"; };
 		48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesLoadStateResolver.swift; sourceTree = "<group>"; };
 		54457B7CD87F3D5362875425 /* CreatePropertyStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyStateResolverTests.swift; sourceTree = "<group>"; };
+		5459FCB8DA581D352CCD0E83 /* RootTabRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabRouter.swift; sourceTree = "<group>"; };
 		583477EC57F2CB0295D9BB1B /* SessionRefresher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRefresher.swift; sourceTree = "<group>"; };
+		5C51CF7D3BAE65BE7CD48170 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		66B8EA07FD345332286F24AC /* CreatePropertyRequestEncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyRequestEncodingTests.swift; sourceTree = "<group>"; };
 		683ED27534EC93D2217E7075 /* SignedOutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedOutView.swift; sourceTree = "<group>"; };
 		69E6F73468BEE851C42B551C /* PropertiesUnauthorizedRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesUnauthorizedRoutingTests.swift; sourceTree = "<group>"; };
@@ -123,11 +122,13 @@
 		88E1260E2FB2314597CFEE94 /* VGCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VGCard.swift; sourceTree = "<group>"; };
 		8BE777B97EEA616F19C19006 /* APIRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRoute.swift; sourceTree = "<group>"; };
 		90DBB4F9B1936BD73002203B /* APIClientBoundaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClientBoundaryTests.swift; sourceTree = "<group>"; };
+		924B0EF07C8FA245C0E65779 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
 		9452B973A67B2A062A410CA7 /* ConfigurationMissingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationMissingView.swift; sourceTree = "<group>"; };
 		95881E49D31608658D848396 /* PropertiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesView.swift; sourceTree = "<group>"; };
 		9854FCD35DC8EE84879593F7 /* CreatePropertyRequestFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyRequestFactoryTests.swift; sourceTree = "<group>"; };
 		995F851414A21A1643ABAD0F /* CreatePropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePropertyView.swift; sourceTree = "<group>"; };
 		9B82043C37B19C268E190FFE /* APIRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequestFactory.swift; sourceTree = "<group>"; };
+		9EAB648910E8EE63A19A9A51 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		A90F29EBA660296B451314A0 /* LocationPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPickerView.swift; sourceTree = "<group>"; };
 		AACA31A90B9AEA25486D27FE /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		AB80C0C33CF08F8EE03F4D98 /* PropertyDetailStateResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailStateResolverTests.swift; sourceTree = "<group>"; };
@@ -138,8 +139,10 @@
 		BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyListItemDtoDecodingTests.swift; sourceTree = "<group>"; };
 		BB29D23DCAAE734153F110D0 /* AppConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfiguration.swift; sourceTree = "<group>"; };
 		BBAEC0494720B4DDB84D0C63 /* HomeNavigationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeNavigationTests.swift; sourceTree = "<group>"; };
+		C43BD60D80E422FF636FCB15 /* RootTabRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabRouterTests.swift; sourceTree = "<group>"; };
 		CC20330114E4958D492AB4CE /* BrandedAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandedAuthView.swift; sourceTree = "<group>"; };
 		CE6923C31EECA8CDC7CB7220 /* HomeNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeNavigation.swift; sourceTree = "<group>"; };
+		CF661E07D15EFA9B929F1716 /* RootTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTab.swift; sourceTree = "<group>"; };
 		D40432FFA6FC85128F0BD817 /* EditPropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPropertyView.swift; sourceTree = "<group>"; };
 		D4BD3E9D500C1208D99BF7EB /* PropertiesPageDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertiesPageDecodingTests.swift; sourceTree = "<group>"; };
 		D965F9027788E14B54414414 /* PropertyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyDetailView.swift; sourceTree = "<group>"; };
@@ -158,6 +161,7 @@
 			files = (
 				191C053ACE7EB741A599F6D2 /* ClerkKit in Frameworks */,
 				AF7225A316CABDB4B1A94EA2 /* ClerkKitUI in Frameworks */,
+				AF7F3BD915A8BE3E30C3DEAD /* MapboxMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,17 +189,17 @@
 				1F1BFB816426B649022E99BF /* HomeView.swift */,
 				A90F29EBA660296B451314A0 /* LocationPickerView.swift */,
 				732F9A268A79F1FC285872C1 /* PortfolioDashboardView.swift */,
+				5C51CF7D3BAE65BE7CD48170 /* ProfileView.swift */,
 				48CE25E1DC862BC2F80719CB /* PropertiesLoadStateResolver.swift */,
 				95881E49D31608658D848396 /* PropertiesView.swift */,
-				E1B905114D5945F4BD9BA201 /* ProfileView.swift */,
 				2F86B8AB112A169CAB0F4910 /* PropertyDetailStateResolver.swift */,
 				D965F9027788E14B54414414 /* PropertyDetailView.swift */,
 				0E302CEBABE5B42CA2C9E065 /* PropertyMapView.swift */,
+				CF661E07D15EFA9B929F1716 /* RootTab.swift */,
+				5459FCB8DA581D352CCD0E83 /* RootTabRouter.swift */,
+				924B0EF07C8FA245C0E65779 /* RootTabView.swift */,
 				E154FADC143DDD700CCEC9CA /* RootView.swift */,
 				094F4955487B8341011BDEE8 /* RootViewStateResolver.swift */,
-				410F99D5260C4822BD28B089 /* RootTab.swift */,
-				9FC2F88087B1429782551315 /* RootTabRouter.swift */,
-				2879AAB098344D78A7868AF6 /* RootTabView.swift */,
 				683ED27534EC93D2217E7075 /* SignedOutView.swift */,
 			);
 			path = Views;
@@ -226,15 +230,24 @@
 		2431D50091A3B0CD731D6972 /* ValgateiOS */ = {
 			isa = PBXGroup;
 			children = (
+				40BF32D1186876EF993C3220 /* Assets.xcassets */,
 				48C8122C28C5C62F9DBAD8C3 /* App */,
 				ADA2F5EE9B797356BEEFFAC9 /* Configuration */,
 				89E01FAAF3D23E4EE6011F8F /* DesignSystem */,
-				259883DC4452417BBD0757C1 /* Haptics */,
+				2D6A483309925C0AF2D6F219 /* Haptics */,
 				234C3BDB57E463051CE8A9BB /* Models */,
 				C137A16839862073A0ABC2D1 /* Networking */,
 				0C65356C0F9C7F9580956202 /* Views */,
 			);
 			path = ValgateiOS;
+			sourceTree = "<group>";
+		};
+		2D6A483309925C0AF2D6F219 /* Haptics */ = {
+			isa = PBXGroup;
+			children = (
+				9EAB648910E8EE63A19A9A51 /* HapticFeedback.swift */,
+			);
+			path = Haptics;
 			sourceTree = "<group>";
 		};
 		37EB0EA0D697C376EA5EE152 /* Components */ = {
@@ -281,14 +294,6 @@
 				37EB0EA0D697C376EA5EE152 /* Components */,
 			);
 			path = DesignSystem;
-			sourceTree = "<group>";
-		};
-		259883DC4452417BBD0757C1 /* Haptics */ = {
-			isa = PBXGroup;
-			children = (
-				01D08B7AB1E64DB19D4ED26B /* HapticFeedback.swift */,
-			);
-			path = Haptics;
 			sourceTree = "<group>";
 		};
 		ADA2F5EE9B797356BEEFFAC9 /* Configuration */ = {
@@ -340,7 +345,7 @@
 				AB80C0C33CF08F8EE03F4D98 /* PropertyDetailStateResolverTests.swift */,
 				FAC5B5E9BAD935FAE173788A /* PropertyDetailUnauthorizedRoutingTests.swift */,
 				BAC64B79AFED7FC35F57C0EF /* PropertyListItemDtoDecodingTests.swift */,
-				EBAFAFDFD1CA4BA4908C41DD /* RootTabRouterTests.swift */,
+				C43BD60D80E422FF636FCB15 /* RootTabRouterTests.swift */,
 				1BA375A4CD1F77D2F3DBA4C5 /* RootViewStateResolverTests.swift */,
 				38F891F26C69EBBC8A4798AF /* SessionRefresherTests.swift */,
 			);
@@ -355,6 +360,7 @@
 			buildConfigurationList = 9D02362F606C3E1EE6986E92 /* Build configuration list for PBXNativeTarget "ValgateiOS" */;
 			buildPhases = (
 				89F8080224B4D69631A90E9C /* Sources */,
+				7130B0354547F78DD4701AFA /* Resources */,
 				F437BD4B130AD2F336AB5DC5 /* Frameworks */,
 			);
 			buildRules = (
@@ -365,6 +371,7 @@
 			packageProductDependencies = (
 				C5A8E4BFB83155B1B62F99E5 /* ClerkKit */,
 				3ECDDD9AD34F2D66C26842D7 /* ClerkKitUI */,
+				FF0027159B857CF332A1F4BD /* MapboxMaps */,
 			);
 			productName = ValgateiOS;
 			productReference = DF4FD7891383403D428C89F5 /* ValgateiOS.app */;
@@ -397,6 +404,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					B776832ECA4BCC6101617FFF = {
+						DevelopmentTeam = 3AF697J32A;
+						ProvisioningStyle = Automatic;
+					};
 					DB7AAB233BCA6F11C3CA1021 = {
 						TestTargetID = B776832ECA4BCC6101617FFF;
 					};
@@ -413,6 +424,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				9B1E1A14CEA8E1A6E7C29A64 /* XCRemoteSwiftPackageReference "clerk-ios" */,
+				A429B64053601D4C13571698 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 02E459255E4D13FD02D674B8 /* Products */;
@@ -424,6 +436,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7130B0354547F78DD4701AFA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8588AB6FB986C573BAE162F4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1C1CF02F3F0066D99AC2EDD4 /* Sources */ = {
@@ -448,7 +471,7 @@
 				9B6D477F3965772E051A43DB /* PropertyDetailStateResolverTests.swift in Sources */,
 				6A22C5B59E05862753976638 /* PropertyDetailUnauthorizedRoutingTests.swift in Sources */,
 				FA53128627B9327563E3EBA3 /* PropertyListItemDtoDecodingTests.swift in Sources */,
-				C56A71BB50244D078EF0D56B /* RootTabRouterTests.swift in Sources */,
+				00D763799C180C5C9C9633B7 /* RootTabRouterTests.swift in Sources */,
 				8AF3B433EA712F154BC99A3F /* RootViewStateResolverTests.swift in Sources */,
 				EB7828BA9E818C2D99843E33 /* SessionRefresherTests.swift in Sources */,
 			);
@@ -470,23 +493,23 @@
 				3FEEE715A73A5ACEC95A454B /* CreatePropertyStateResolver.swift in Sources */,
 				5CF123E415A489CF55F710E2 /* CreatePropertyView.swift in Sources */,
 				16F75C8C6352D1C74CBCFB2F /* EditPropertyView.swift in Sources */,
+				ABB0E5DC5FDF029589A21268 /* HapticFeedback.swift in Sources */,
 				C82A414FFF0F027189FCD952 /* HomeNavigation.swift in Sources */,
 				8C799C7F62BF9D3791CF5088 /* HomeView.swift in Sources */,
-				5F2AD6CFEB944718A791D58C /* HapticFeedback.swift in Sources */,
 				CDF4652767A0E1A3DE7F6C87 /* LocationPickerView.swift in Sources */,
 				094F4642EF2D8FBDAA0BDFE9 /* MeDto.swift in Sources */,
 				E0BA42A02CB73195008E45AE /* PortfolioDashboardView.swift in Sources */,
+				7EFBB2E82FB92E0F9697D7CB /* ProfileView.swift in Sources */,
 				1F3679E3417AC3A408AB1F80 /* PropertiesLoadStateResolver.swift in Sources */,
 				C78CF7EADA92D96CCEB01128 /* PropertiesView.swift in Sources */,
-				635A4589CAEC4F33B6D0DA33 /* ProfileView.swift in Sources */,
 				3D2999DD8C4AB36D9C0EE521 /* PropertyDetailStateResolver.swift in Sources */,
 				229782DC978C8D747E5932A1 /* PropertyDetailView.swift in Sources */,
 				323E057F2FB875FC5D4B64D5 /* PropertyDto.swift in Sources */,
 				C769FD1BBDD44B803E933C99 /* PropertyMapView.swift in Sources */,
+				82DD04ED3F2ED5F7B77FE20B /* RootTab.swift in Sources */,
+				B0F7F3E3108E2A9F70CD34D9 /* RootTabRouter.swift in Sources */,
+				02C800BBF9E12E180D08B6A5 /* RootTabView.swift in Sources */,
 				C47C43BE50B8DC7963714C78 /* RootView.swift in Sources */,
-				4BA57E38A59240CDAE23D2CE /* RootTab.swift in Sources */,
-				91BDB87CB8ED42B0B13283A3 /* RootTabRouter.swift in Sources */,
-				7317DED977AF42F18E8739B9 /* RootTabView.swift in Sources */,
 				2C0DBE50420E40AC10FB15DD /* RootViewStateResolver.swift in Sources */,
 				BDB4849AE1A63DC848C93EFC /* SessionRefresher.swift in Sources */,
 				60EF62EF2B0DC515B49D6442 /* SessionTokenProvider.swift in Sources */,
@@ -517,16 +540,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 3AF697J32A;
 				INFOPLIST_FILE = Sources/ValgateiOS/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation;
 				PRODUCT_MODULE_NAME = ValgateiOS;
 				PRODUCT_NAME = Valgate;
-				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -536,16 +556,9 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation.tests;
 				PRODUCT_NAME = ValgateiOSTests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Valgate.app/Valgate";
 				TEST_TARGET_NAME = ValgateiOS;
 			};
@@ -556,54 +569,9 @@
 			baseConfigurationReference = AACA31A90B9AEA25486D27FE /* Base.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -613,15 +581,8 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation.tests;
 				PRODUCT_NAME = ValgateiOSTests;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Valgate.app/Valgate";
 				TEST_TARGET_NAME = ValgateiOS;
 			};
@@ -631,18 +592,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 3AF697J32A;
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = Sources/ValgateiOS/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.valgate.ios.readonlyfoundation;
 				PRODUCT_MODULE_NAME = ValgateiOS;
 				PRODUCT_NAME = Valgate;
-				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -653,61 +611,9 @@
 			baseConfigurationReference = AACA31A90B9AEA25486D27FE /* Base.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"DEBUG=1",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -753,6 +659,14 @@
 				minimumVersion = 1.3.9;
 			};
 		};
+		A429B64053601D4C13571698 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mapbox/mapbox-maps-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -765,6 +679,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9B1E1A14CEA8E1A6E7C29A64 /* XCRemoteSwiftPackageReference "clerk-ios" */;
 			productName = ClerkKit;
+		};
+		FF0027159B857CF332A1F4BD /* MapboxMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A429B64053601D4C13571698 /* XCRemoteSwiftPackageReference "mapbox-maps-ios" */;
+			productName = MapboxMaps;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

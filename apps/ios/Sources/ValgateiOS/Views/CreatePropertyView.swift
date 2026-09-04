@@ -344,3 +344,324 @@ extension CreatePropertyState {
         return false
     }
 }
+
+// MARK: - Simple Property Create Form (Home sheet)
+//
+// Compact create model for the Home map sheet. Coordinates default to the
+// same map center used by PropertyMapView so a new pin lands on-screen.
+
+struct SimplePropertyCreateForm {
+    /// Must match PropertyMapView's default region center latitude.
+    static let defaultLatitude = 12.5657
+    /// Must match PropertyMapView's default region center longitude.
+    static let defaultLongitude = 104.9910
+
+    var name: String = ""
+    var type: PropertyType = .residential
+
+    var isValid: Bool {
+        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    /// Builds the POST /api/v1/properties body. Status is always vacant;
+    /// latitude and longitude always use the map-center defaults.
+    func toRequest() -> CreatePropertyRequest {
+        CreatePropertyRequest(
+            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+            type: type,
+            status: .vacant,
+            lat: SimplePropertyCreateForm.defaultLatitude,
+            lng: SimplePropertyCreateForm.defaultLongitude
+        )
+    }
+}
+
+// MARK: - Simple Property Create View (Home sheet content)
+//
+// Nested-radius rule: inner cards use ValgateRadius.xxl (24) and sit
+// ValgateSpacing.space4 (16) inside the outer shell. 24 + 16 = 40, so the
+// outer surface (and sheet chrome) use cornerRadius 40 to stay concentric.
+
+struct SimplePropertyCreateView: View {
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel: CreatePropertyViewModel
+    @State private var form = SimplePropertyCreateForm()
+    @FocusState private var isNameFieldFocused: Bool
+
+    private let onCreated: @MainActor (PropertyDetailDto) -> Void
+
+    /// Outer shell radius. Inner cards are 24; the gap to this edge is 16.
+    /// Math: 24 + 16 = 40.
+    private let outerCornerRadius: CGFloat = 40
+
+    init(
+        client: APIClient,
+        sessionToken: String,
+        onUnauthorized: @escaping @MainActor () -> Void = {},
+        onCreated: @escaping @MainActor (PropertyDetailDto) -> Void = { _ in }
+    ) {
+        _viewModel = StateObject(
+            wrappedValue: CreatePropertyViewModel(
+                client: client,
+                sessionToken: sessionToken,
+                onUnauthorized: onUnauthorized
+            )
+        )
+        self.onCreated = onCreated
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space4) {
+            headerRow
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: ValgateSpacing.space4) {
+                    if case .error(let message) = viewModel.state {
+                        errorBanner(message: message)
+                    }
+
+                    nameCard
+                    typeCard
+                    saveCard
+                }
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .scrollIndicators(.hidden)
+        }
+        // Inset / gap between the outer 40-radius shell and the inner 24-radius cards.
+        // Nested-radius math: inner 24 + inset 16 = outer 40.
+        .padding(ValgateSpacing.space4)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(outerGlassBackground)
+        .overlay(outerGlassStroke)
+        .presentationCornerRadius(outerCornerRadius)
+        .onChange(of: viewModel.state) { _, newState in
+            if case .submitted(let dto) = newState {
+                onCreated(dto)
+            }
+        }
+        .accessibilityIdentifier("simpleCreatePropertyView")
+    }
+
+    // MARK: Header
+
+    private var headerRow: some View {
+        HStack(alignment: .center, spacing: ValgateSpacing.space3) {
+            Text("New Property")
+                .font(ValgateTypography.Headline.title2)
+                .foregroundStyle(Color.valTextPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button(action: { dismiss() }) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.valTextPrimary)
+                    .frame(width: ValgateTouchTarget.minimum, height: ValgateTouchTarget.minimum)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Cancel")
+        }
+    }
+
+    // MARK: Name
+
+    private var nameCard: some View {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
+            Text("Property name")
+                .font(ValgateTypography.Content.label)
+                .foregroundStyle(Color.valTextPrimary)
+                .textCase(.uppercase)
+
+            TextField("Property name", text: $form.name)
+                .font(ValgateTypography.Body.standard)
+                .foregroundStyle(Color.valTextPrimary)
+                .textInputAutocapitalization(.words)
+                .submitLabel(.done)
+                .focused($isNameFieldFocused)
+                .padding(.vertical, ValgateSpacing.space3)
+                .padding(.horizontal, ValgateSpacing.space3)
+                .background(Color.valSurfacePage.opacity(0.55))
+                .clipShape(RoundedRectangle(cornerRadius: ValgateRadius.md, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: ValgateRadius.md, style: .continuous)
+                        .stroke(
+                            isNameFieldFocused
+                                ? Color.valInteractivePrimary
+                                : Color.white.opacity(0.2),
+                            lineWidth: 1
+                        )
+                )
+                .accessibilityIdentifier("simple-create-property-name")
+        }
+        .padding(ValgateSpacing.space4)
+        .simpleCreateInnerGlassCard()
+    }
+
+    // MARK: Type chips
+
+    private var typeCard: some View {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space3) {
+            Text("Type")
+                .font(ValgateTypography.Content.label)
+                .foregroundStyle(Color.valTextPrimary)
+                .textCase(.uppercase)
+
+            LazyVGrid(
+                columns: [
+                    GridItem(.adaptive(minimum: 108), spacing: ValgateSpacing.space2)
+                ],
+                alignment: .leading,
+                spacing: ValgateSpacing.space2
+            ) {
+                ForEach(PropertyType.allCases, id: \.self) { type in
+                    SimpleCreateTypeChip(
+                        title: type.displayName,
+                        isSelected: form.type == type
+                    ) {
+                        form.type = type
+                    }
+                }
+            }
+        }
+        .padding(ValgateSpacing.space4)
+        .simpleCreateInnerGlassCard()
+    }
+
+    // MARK: Save
+
+    private var saveCard: some View {
+        let isSaveDisabled = !form.isValid || viewModel.state == .submitting
+
+        return VGButton("Save", icon: "checkmark", variant: .primary, size: .large) {
+            submit()
+        }
+        .disabled(isSaveDisabled)
+        .opacity(isSaveDisabled ? 0.6 : 1.0)
+        .accessibilityIdentifier("simple-create-property-save")
+        .padding(ValgateSpacing.space4)
+        .simpleCreateInnerGlassCard()
+    }
+
+    // MARK: Error banner
+
+    private func errorBanner(message: String) -> some View {
+        HStack(alignment: .center, spacing: ValgateSpacing.space3) {
+            Image(systemName: "exclamationmark.circle.fill")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Color.valInteractivePrimary)
+
+            Text(message)
+                .font(ValgateTypography.Content.subheadline)
+                .foregroundStyle(Color.valTextPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button {
+                viewModel.dismissError()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.valTextPrimary)
+                    .frame(width: ValgateTouchTarget.minimum, height: ValgateTouchTarget.minimum)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Dismiss error")
+        }
+        .padding(ValgateSpacing.space4)
+        .simpleCreateInnerGlassCard()
+    }
+
+    // MARK: Outer glass shell
+
+    private var outerGlassBackground: some View {
+        ZStack {
+            Color.valSurfacePage
+            Rectangle()
+                .fill(.ultraThinMaterial)
+        }
+        .ignoresSafeArea()
+    }
+
+    private var outerGlassStroke: some View {
+        RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous)
+            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+            .ignoresSafeArea()
+    }
+
+    /// Sends the trimmed form to POST /api/v1/properties through CreatePropertyViewModel.
+    /// Does not navigate; the parent handles onCreated.
+    private func submit() {
+        guard form.isValid else { return }
+        isNameFieldFocused = false
+        Task {
+            await viewModel.submit(form.toRequest())
+        }
+    }
+}
+
+// MARK: - Type chip
+
+private struct SimpleCreateTypeChip: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(ValgateTypography.Content.subheadlineEmphasis)
+                .foregroundStyle(isSelected ? Color.valTextInverse : Color.valTextPrimary)
+                .frame(maxWidth: .infinity)
+                .frame(minHeight: ValgateTouchTarget.minimum)
+                .padding(.horizontal, ValgateSpacing.space3)
+                .background(chipBackground)
+                .clipShape(RoundedRectangle(cornerRadius: ValgateRadius.md, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: ValgateRadius.md, style: .continuous)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    @ViewBuilder
+    private var chipBackground: some View {
+        if isSelected {
+            Color.valInteractivePrimary
+        } else {
+            Color.clear.background(.ultraThinMaterial)
+        }
+    }
+}
+
+// MARK: - Inner glass card
+//
+// Inner cards: ultraThinMaterial + 1pt white 0.2 stroke + cornerRadius 24
+// (ValgateRadius.xxl). Card padding is 16, so chips at radius 8 stay concentric:
+// 8 + 16 = 24.
+
+private struct SimpleCreateInnerGlassModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: ValgateRadius.xxl, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: ValgateRadius.xxl, style: .continuous)
+                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+            )
+    }
+}
+
+private extension View {
+    func simpleCreateInnerGlassCard() -> some View {
+        modifier(SimpleCreateInnerGlassModifier())
+    }
+}

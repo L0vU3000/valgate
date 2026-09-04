@@ -1,9 +1,15 @@
 import SwiftUI
-import MapKit
+import CoreLocation
+import Turf
+import MapboxMaps
+
+private let vgDefaultMapCenter = CLLocationCoordinate2D(latitude: 12.5657, longitude: 104.9910)
+private let vgDefaultMapZoom: Double = 6.2
 
 struct PropertyMapView: View {
     let properties: [PropertyListItemDto]
     let portfolioStats: PortfolioStatsDto?
+    @Binding var selectedProperty: PropertyListItemDto?
     let onSelect: (PropertyListItemDto) -> Void
     let onAddProperty: () -> Void
     let onSearch: () -> Void
@@ -11,23 +17,16 @@ struct PropertyMapView: View {
     let onDocuments: () -> Void
     let onRental: () -> Void
 
-    @State private var position: MapCameraPosition = .region(
-        MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 12.5657, longitude: 104.9910),
-            span: MKCoordinateSpan(latitudeDelta: 2.0, longitudeDelta: 2.0)
-        )
-    )
-    @State private var selectedProperty: PropertyListItemDto?
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var viewport: Viewport = .camera(center: vgDefaultMapCenter, zoom: vgDefaultMapZoom)
     @State private var showPropertyList = false
-    @State private var isSatellite = false
-    @State private var searchText = ""
+    @State private var mapStyleOption: MapStyleOption = .light
 
     var body: some View {
         ZStack {
-            // Full-screen map
-            Map(position: $position) {
-                ForEach(properties) { property in
-                    Annotation(property.name, coordinate: CLLocationCoordinate2D(
+            Map(viewport: $viewport) {
+                ForEvery(properties) { property in
+                    MapViewAnnotation(coordinate: CLLocationCoordinate2D(
                         latitude: property.lat,
                         longitude: property.lng
                     )) {
@@ -35,13 +34,15 @@ struct PropertyMapView: View {
                             selectedProperty = property
                         }
                     }
+                    .allowOverlap(true)
                 }
             }
-            .mapStyle(isSatellite ? .imagery : .standard)
+            .mapStyle(mapStyleOption.style)
+            .ignoresSafeArea()
 
-            // Top floating search + quick actions
-            VStack(spacing: ValgateSpacing.space3) {
-                // Search bar
+            VStack(alignment: .leading, spacing: ValgateSpacing.space3) {
+                mapBrandMark
+
                 Button(action: onSearch) {
                     HStack(spacing: ValgateSpacing.space2) {
                         Image(systemName: "magnifyingglass")
@@ -76,11 +77,13 @@ struct PropertyMapView: View {
                     )
                 }
                 .buttonStyle(.plain)
+                .keyboardShortcut("k", modifiers: .command)
+                .accessibilityIdentifier("home-search-button")
 
-                // Quick action chips
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: ValgateSpacing.space2) {
                         QuickActionChip(icon: "plus", label: "New Property", action: onAddProperty)
+                            .accessibilityIdentifier("home-add-property")
                         QuickActionChip(icon: "chart.bar.fill", label: "Portfolio", action: onPortfolio)
                         QuickActionChip(icon: "doc.text", label: "Documents", action: onDocuments)
                         QuickActionChip(icon: "person.2", label: "Rental", action: onRental)
@@ -93,29 +96,34 @@ struct PropertyMapView: View {
             .padding(.horizontal, ValgateSpacing.space4)
             .padding(.top, ValgateSpacing.space4)
 
-            // Bottom controls
             VStack {
                 Spacer()
 
-                HStack(alignment: .bottom) {
-                    // Portfolio stats legend
+                HStack(alignment: .bottom, spacing: ValgateSpacing.space3) {
                     if let stats = portfolioStats {
-                        PortfolioLegend(stats: stats)
+                        PortfolioStatsBar(stats: stats, onTap: onPortfolio)
                     }
 
-                    Spacer()
+                    Spacer(minLength: ValgateSpacing.space2)
 
-                    // Map controls
                     VStack(spacing: ValgateSpacing.space2) {
                         MapControlButton(icon: "list.bullet") {
+                            HapticFeedback.shared.play(.mapControl)
                             showPropertyList = true
                         }
-                        MapControlButton(icon: isSatellite ? "map.fill" : "globe") {
-                            isSatellite.toggle()
+                        .accessibilityLabel("Property list")
+
+                        MapControlButton(icon: mapStyleOption.icon) {
+                            HapticFeedback.shared.play(.mapControl)
+                            mapStyleOption = mapStyleOption.next
                         }
+                        .accessibilityLabel("Change map style")
+
                         MapControlButton(icon: "location.fill") {
-                            fitToProperties()
+                            HapticFeedback.shared.play(.mapControl)
+                            recenter()
                         }
+                        .accessibilityLabel("Recenter map")
                     }
                 }
                 .padding(.horizontal, ValgateSpacing.space4)
@@ -134,11 +142,7 @@ struct PropertyMapView: View {
                 properties: properties,
                 onSelect: { property in
                     showPropertyList = false
-                    selectedProperty = property
-                    position = .region(MKCoordinateRegion(
-                        center: CLLocationCoordinate2D(latitude: property.lat, longitude: property.lng),
-                        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-                    ))
+                    focusProperty(property)
                 },
                 onAddProperty: onAddProperty
             )
@@ -146,38 +150,129 @@ struct PropertyMapView: View {
             .presentationDragIndicator(.visible)
         }
         .onAppear {
-            if !properties.isEmpty {
-                position = .region(regionForProperties(properties))
-            }
+            mapStyleOption = colorScheme == .dark ? .dark : .light
+            recenter(animated: false)
         }
-        .onChange(of: properties) { _, newProperties in
-            if !newProperties.isEmpty {
-                position = .region(regionForProperties(newProperties))
+        .onChange(of: properties) { oldProperties, newProperties in
+            handlePropertiesChange(from: oldProperties, to: newProperties)
+        }
+        .onChange(of: selectedProperty) { oldProperty, newProperty in
+            guard let newProperty else { return }
+            if oldProperty?.id != newProperty.id {
+                focusProperty(newProperty)
             }
         }
     }
 
-    private func fitToProperties() {
-        if !properties.isEmpty {
-            position = .region(regionForProperties(properties))
+    /// Small Valgate mark in the top-left so the full-screen map still reads as our product.
+    private var mapBrandMark: some View {
+        HStack {
+            Image("ValgateLogo")
+                .resizable()
+                .renderingMode(.original)
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 32, height: 32)
+                .padding(ValgateSpacing.space2)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: ValgateRadius.md, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: ValgateRadius.md, style: .continuous)
+                        .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
+                )
+                .accessibilityLabel("Valgate")
+
+            Spacer()
         }
     }
 
-    private func regionForProperties(_ properties: [PropertyListItemDto]) -> MKCoordinateRegion {
-        let coords = properties.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lng) }
-        let minLat = coords.map { $0.latitude }.min() ?? 12.5657
-        let maxLat = coords.map { $0.latitude }.max() ?? 12.5657
-        let minLng = coords.map { $0.longitude }.min() ?? 104.9910
-        let maxLng = coords.map { $0.longitude }.max() ?? 104.9910
-        let center = CLLocationCoordinate2D(
-            latitude: (minLat + maxLat) / 2,
-            longitude: (minLng + maxLng) / 2
+    /// Flies the Mapbox camera to a property and selects its pin.
+    /// Called from search results, the property list, and pin taps via `selectedProperty`.
+    func focusProperty(_ property: PropertyListItemDto) {
+        selectedProperty = property
+        HapticFeedback.shared.play(.propertySelected)
+        withViewportAnimation {
+            viewport = .camera(
+                center: CLLocationCoordinate2D(latitude: property.lat, longitude: property.lng),
+                zoom: 15
+            )
+        }
+    }
+
+    private func recenter(animated: Bool = true) {
+        recenter(for: properties, animated: animated)
+    }
+
+    private func recenter(for properties: [PropertyListItemDto], animated: Bool = true) {
+        let target = viewportForProperties(properties)
+        if animated {
+            withViewportAnimation {
+                viewport = target
+            }
+        } else {
+            viewport = target
+        }
+    }
+
+    /// After creating a property we refresh the list in place. Fly to the new pin
+    /// instead of resetting the camera for every unrelated list change.
+    private func handlePropertiesChange(from oldProperties: [PropertyListItemDto], to newProperties: [PropertyListItemDto]) {
+        let oldIds = Set(oldProperties.map(\.id))
+        if let added = newProperties.first(where: { !oldIds.contains($0.id) }) {
+            focusProperty(added)
+            return
+        }
+        if oldProperties.isEmpty && !newProperties.isEmpty {
+            recenter(for: newProperties)
+        }
+    }
+
+    private func viewportForProperties(_ properties: [PropertyListItemDto]) -> Viewport {
+        guard !properties.isEmpty else {
+            return .camera(center: vgDefaultMapCenter, zoom: vgDefaultMapZoom)
+        }
+        if properties.count == 1, let only = properties.first {
+            return .camera(center: CLLocationCoordinate2D(latitude: only.lat, longitude: only.lng), zoom: 14)
+        }
+        let coordinates = properties.map { CLLocationCoordinate2D(latitude: $0.lat, longitude: $0.lng) }
+        return .overview(
+            geometry: MultiPoint(coordinates),
+            geometryPadding: EdgeInsets(top: 120, leading: 60, bottom: 220, trailing: 60)
         )
-        let span = MKCoordinateSpan(
-            latitudeDelta: max(0.05, (maxLat - minLat) * 1.5),
-            longitudeDelta: max(0.05, (maxLng - minLng) * 1.5)
-        )
-        return MKCoordinateRegion(center: center, span: span)
+    }
+}
+
+// MARK: - Map Style Option (app-local; distinct from MapboxMaps.MapStyle)
+
+enum MapStyleOption {
+    case light
+    case dark
+    case satellite
+
+    var style: MapStyle {
+        switch self {
+        case .light:
+            return MapStyle(uri: StyleURI(rawValue: "mapbox://styles/mapbox/light-v11")!)
+        case .dark:
+            return MapStyle(uri: StyleURI(rawValue: "mapbox://styles/mapbox/dark-v11")!)
+        case .satellite:
+            return MapStyle(uri: StyleURI(rawValue: "mapbox://styles/mapbox/satellite-streets-v12")!)
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .light: return "sun.max.fill"
+        case .dark: return "moon.fill"
+        case .satellite: return "globe.americas.fill"
+        }
+    }
+
+    var next: MapStyleOption {
+        switch self {
+        case .light: return .dark
+        case .dark: return .satellite
+        case .satellite: return .light
+        }
     }
 }
 
@@ -281,35 +376,62 @@ struct MapControlButton: View {
     }
 }
 
-// MARK: - Portfolio Stats DTO
+// MARK: - Portfolio Stats
 
 struct PortfolioStatsDto: Equatable {
     let totalProperties: Int
     let activeCount: Int
     let pendingCount: Int
     let vacantCount: Int
+
+    /// Counts Total / Active / Vacant from the current home-map property list.
+    /// "Active" includes both `active` and `rented` so occupied homes still light up blue.
+    static func from(_ items: [PropertyListItemDto]) -> PortfolioStatsDto {
+        PortfolioStatsDto(
+            totalProperties: items.count,
+            activeCount: items.filter { $0.status.lowercased() == "active" || $0.status.lowercased() == "rented" }.count,
+            pendingCount: items.filter { $0.status.lowercased() == "pending" }.count,
+            vacantCount: items.filter { $0.status.lowercased() == "vacant" }.count
+        )
+    }
 }
 
-// MARK: - Portfolio Legend (Design System)
-
-struct PortfolioLegend: View {
+/// Bottom counter bar. Active uses Electric Blue (#2563EB) so occupancy stands out on glass.
+struct PortfolioStatsBar: View {
     let stats: PortfolioStatsDto
+    var onTap: () -> Void = {}
 
     var body: some View {
-        HStack(spacing: ValgateSpacing.space4) {
-            VGBadge("\\(stats.totalProperties) Total", variant: .primary, size: .small)
-            VGBadge("\\(stats.activeCount) Active", variant: .success, size: .small)
-            VGBadge("\\(stats.pendingCount) Pending", variant: .warning, size: .small)
-            VGBadge("\\(stats.vacantCount) Vacant", variant: .info, size: .small)
+        Button(action: onTap) {
+            HStack(spacing: ValgateSpacing.space4) {
+                statColumn(title: "Total", value: stats.totalProperties, valueColor: Color.valTextPrimary)
+                statColumn(title: "Active", value: stats.activeCount, valueColor: Color.valBrandBlue)
+                statColumn(title: "Vacant", value: stats.vacantCount, valueColor: Color.valTextSecondary)
+            }
+            .padding(.horizontal, ValgateSpacing.space4)
+            .padding(.vertical, ValgateSpacing.space3)
+            .background(.ultraThinMaterial)
+            .cornerRadius(ValgateRadius.lg)
+            .overlay(
+                RoundedRectangle(cornerRadius: ValgateRadius.lg)
+                    .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
+            )
         }
-        .padding(.horizontal, ValgateSpacing.space3)
-        .padding(.vertical, ValgateSpacing.space2)
-        .background(.ultraThinMaterial)
-        .cornerRadius(ValgateRadius.lg)
-        .overlay(
-            RoundedRectangle(cornerRadius: ValgateRadius.lg)
-                .stroke(Color.valBorderSubtle.opacity(0.15), lineWidth: 1)
-        )
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("home-portfolio-stats")
+        .accessibilityLabel("Portfolio stats, \(stats.totalProperties) total, \(stats.activeCount) active, \(stats.vacantCount) vacant")
+    }
+
+    private func statColumn(title: String, value: Int, valueColor: Color) -> some View {
+        VStack(alignment: .leading, spacing: ValgateSpacing.space0_5) {
+            Text("\(value)")
+                .font(ValgateTypography.Headline.title3)
+                .foregroundStyle(valueColor)
+                .monospacedDigit()
+            Text(title.uppercased())
+                .font(ValgateTypography.Content.caption)
+                .foregroundStyle(Color.valTextSecondary)
+        }
     }
 }
 
@@ -323,7 +445,6 @@ struct PropertyDetailSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    // Hero area with brand-tinted card
                     ZStack(alignment: .bottomLeading) {
                         VGCard(variant: .elevated, padding: 0) {
                             LinearGradient(
@@ -366,7 +487,6 @@ struct PropertyDetailSheet: View {
                         .padding(ValgateSpacing.space4)
                     }
 
-                    // Progress section
                     VStack(alignment: .leading, spacing: ValgateSpacing.space2) {
                         HStack {
                             Text("PROGRESS")
@@ -378,7 +498,7 @@ struct PropertyDetailSheet: View {
                                 .foregroundStyle(Color.valInteractivePrimary)
                         }
 
-                        GeometryReader { geo in
+                        GeometryReader { _ in
                             ZStack(alignment: .leading) {
                                 RoundedRectangle(cornerRadius: ValgateRadius.sm)
                                     .fill(Color.valBorderSubtle.opacity(0.15))
@@ -396,7 +516,6 @@ struct PropertyDetailSheet: View {
 
                     Divider()
 
-                    // Property details using LabeledContent + SF Symbols
                     VStack(alignment: .leading, spacing: ValgateSpacing.space4) {
                         DetailSection(title: "Property") {
                             LabeledDetailRow(icon: "building.2", label: "Type", value: property.type)
@@ -527,6 +646,284 @@ struct PropertyListSheet: View {
         case "sold": return .valStatusInfo
         case "archived": return .valTextSecondary
         default: return .valStatusInfo
+        }
+    }
+}
+
+// MARK: - Property Search Filter
+
+enum PropertySearchFilter {
+    static func matching(_ properties: [PropertyListItemDto], query: String) -> [PropertyListItemDto] {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedQuery.isEmpty {
+            return properties
+        }
+
+        let needle = trimmedQuery.lowercased()
+        return properties.filter { property in
+            if property.name.lowercased().contains(needle) {
+                return true
+            }
+            if property.type.lowercased().contains(needle) {
+                return true
+            }
+            if property.status.lowercased().contains(needle) {
+                return true
+            }
+            if let city = property.city, city.lowercased().contains(needle) {
+                return true
+            }
+            if let province = property.province, province.lowercased().contains(needle) {
+                return true
+            }
+            return false
+        }
+    }
+}
+
+// MARK: - Property Search Overlay (command palette)
+
+struct PropertySearchOverlay: View {
+    let properties: [PropertyListItemDto]
+    let onSelect: (PropertyListItemDto) -> Void
+    let onDismiss: () -> Void
+
+    @State private var query = ""
+    @FocusState private var isSearchFieldFocused: Bool
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+    private var filteredProperties: [PropertyListItemDto] {
+        PropertySearchFilter.matching(properties, query: query)
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                scrim
+                    .ignoresSafeArea()
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onDismiss()
+                    }
+
+                paletteCard
+                    .frame(
+                        maxWidth: min(560, geometry.size.width - (ValgateSpacing.space4 * 2)),
+                        maxHeight: geometry.size.height * 0.72
+                    )
+                    .padding(.horizontal, ValgateSpacing.space4)
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+        }
+        .accessibilityIdentifier("propertySearchOverlay")
+        .onAppear {
+            isSearchFieldFocused = true
+        }
+    }
+
+    @ViewBuilder
+    private var scrim: some View {
+        if reduceTransparency {
+            Color.valTextPrimary
+        } else {
+            ZStack {
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                Color.valTextPrimary.opacity(0.45)
+            }
+        }
+    }
+
+    private var paletteCard: some View {
+        VStack(spacing: 0) {
+            headerRow
+                .padding(.horizontal, ValgateSpacing.space4)
+                .padding(.top, ValgateSpacing.space4)
+                .padding(.bottom, ValgateSpacing.space3)
+
+            searchField
+                .padding(.horizontal, ValgateSpacing.space4)
+                .padding(.bottom, ValgateSpacing.space3)
+
+            Rectangle()
+                .fill(Color.valTextInverse.opacity(0.12))
+                .frame(height: 1)
+
+            resultsList
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(Color.valTextPrimary)
+        .clipShape(RoundedRectangle(cornerRadius: ValgateRadius.xxl, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: ValgateRadius.xxl, style: .continuous)
+                .stroke(Color.valTextInverse.opacity(0.12), lineWidth: 1)
+        )
+        .shadow(color: Color.valTextPrimary.opacity(0.35), radius: 24, x: 0, y: 12)
+    }
+
+    private var headerRow: some View {
+        HStack(spacing: ValgateSpacing.space3) {
+            Text("Search")
+                .font(ValgateTypography.Headline.title3)
+                .foregroundStyle(Color.valTextInverse)
+
+            Spacer()
+
+            HStack(spacing: ValgateSpacing.space1) {
+                Image(systemName: "command")
+                    .font(.system(size: 10, weight: .semibold))
+                Text("K")
+                    .font(ValgateTypography.Content.caption)
+            }
+            .foregroundStyle(Color.valTextInverse.opacity(0.7))
+            .padding(.horizontal, ValgateSpacing.space2)
+            .padding(.vertical, ValgateSpacing.space1)
+            .background(Color.valTextInverse.opacity(0.12))
+            .cornerRadius(ValgateRadius.sm)
+
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Color.valTextInverse)
+                    .frame(width: ValgateTouchTarget.minimum, height: ValgateTouchTarget.minimum)
+                    .background(Color.valTextInverse.opacity(0.12))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Close search")
+        }
+    }
+
+    private var searchField: some View {
+        HStack(spacing: ValgateSpacing.space2) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 17, weight: .medium))
+                .foregroundStyle(Color.valInteractivePrimary)
+
+            TextField(
+                "",
+                text: $query,
+                prompt: Text("Search properties…")
+                    .foregroundStyle(Color.valTextInverse.opacity(0.45))
+            )
+            .font(ValgateTypography.Body.standard)
+            .foregroundStyle(Color.valTextInverse)
+            .focused($isSearchFieldFocused)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .submitLabel(.search)
+            .tint(Color.valInteractivePrimary)
+            .accessibilityIdentifier("property-search-field")
+        }
+        .padding(.horizontal, ValgateSpacing.space3)
+        .frame(height: ValgateTouchTarget.comfortable)
+        .background(Color.valTextInverse.opacity(0.12))
+        .cornerRadius(ValgateRadius.md)
+    }
+
+    private var resultsList: some View {
+        Group {
+            if filteredProperties.isEmpty {
+                emptyResults
+            } else {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(filteredProperties) { property in
+                            Button {
+                                onSelect(property)
+                            } label: {
+                                searchResultRow(property)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                .scrollDismissesKeyboard(.interactively)
+            }
+        }
+    }
+
+    private var emptyResults: some View {
+        VStack(spacing: ValgateSpacing.space2) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 22, weight: .medium))
+                .foregroundStyle(Color.valTextInverse.opacity(0.45))
+
+            Text("No properties match")
+                .font(ValgateTypography.Body.standardEmphasis)
+                .foregroundStyle(Color.valTextInverse)
+
+            Text("Try a name, type, status, city, or province.")
+                .font(ValgateTypography.Content.subheadline)
+                .foregroundStyle(Color.valTextInverse.opacity(0.7))
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(ValgateSpacing.space6)
+    }
+
+    private func searchResultRow(_ property: PropertyListItemDto) -> some View {
+        HStack(spacing: ValgateSpacing.space3) {
+            Circle()
+                .fill(statusColor(property.status))
+                .frame(width: 10, height: 10)
+
+            VStack(alignment: .leading, spacing: ValgateSpacing.space1) {
+                Text(property.name)
+                    .font(ValgateTypography.Headline.title3)
+                    .foregroundStyle(Color.valTextInverse)
+                    .lineLimit(1)
+
+                HStack(spacing: ValgateSpacing.space2) {
+                    Text(property.type)
+                        .font(ValgateTypography.Content.subheadline)
+                        .foregroundStyle(Color.valTextInverse.opacity(0.7))
+
+                    if let city = property.city, !city.isEmpty {
+                        Text("·")
+                            .foregroundStyle(Color.valTextInverse.opacity(0.45))
+                        Text(city)
+                            .font(ValgateTypography.Content.subheadline)
+                            .foregroundStyle(Color.valTextInverse.opacity(0.7))
+                    }
+
+                    if let province = property.province, !province.isEmpty {
+                        Text("·")
+                            .foregroundStyle(Color.valTextInverse.opacity(0.45))
+                        Text(province)
+                            .font(ValgateTypography.Content.subheadline)
+                            .foregroundStyle(Color.valTextInverse.opacity(0.7))
+                    }
+                }
+            }
+
+            Spacer(minLength: ValgateSpacing.space2)
+
+            Text(property.status)
+                .font(ValgateTypography.Content.caption)
+                .foregroundStyle(Color.valInteractivePrimary)
+                .padding(.horizontal, ValgateSpacing.space2)
+                .padding(.vertical, ValgateSpacing.space1)
+                .background(Color.valInteractivePrimary.opacity(0.18))
+                .cornerRadius(ValgateRadius.pill)
+        }
+        .padding(.horizontal, ValgateSpacing.space4)
+        .padding(.vertical, ValgateSpacing.space3)
+        .contentShape(Rectangle())
+    }
+
+    private func statusColor(_ status: String) -> Color {
+        switch status.lowercased() {
+        case "active", "rented":
+            return .valStatusSuccess
+        case "pending", "vacant":
+            return .valStatusWarning
+        case "sold":
+            return .valStatusInfo
+        case "archived":
+            return .valTextSecondary
+        default:
+            return .valInteractivePrimary
         }
     }
 }

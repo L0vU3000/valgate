@@ -1,10 +1,13 @@
 import UIKit
 
-enum HapticEvent {
+enum HapticEvent: Equatable {
     case tabSelection
     case addInvoked
     case success
     case error
+    case searchOpened
+    case propertySelected
+    case mapControl
 }
 
 protocol HapticFeedbackPlaying {
@@ -18,9 +21,9 @@ struct HapticFeedback: HapticFeedbackPlaying {
 
     func play(_ event: HapticEvent) {
         switch event {
-        case .tabSelection:
+        case .tabSelection, .propertySelected:
             UISelectionFeedbackGenerator().selectionChanged()
-        case .addInvoked:
+        case .addInvoked, .searchOpened, .mapControl:
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         case .success:
             UINotificationFeedbackGenerator().notificationOccurred(.success)
