@@ -1,11 +1,11 @@
 ---
-updated: 2026-09-04T06:50:28.590754+00:00
+updated: 2026-09-04T07:09:23.195561+00:00
 source: hermes worktree scanner
 ---
 
 # Worktree State Registry
 
-Last updated: 2026-09-04T06:50:28.590754+00:00
+Last updated: 2026-09-04T07:09:23.195561+00:00
 
 ## Summary
 
@@ -26,13 +26,13 @@ Last updated: 2026-09-04T06:50:28.590754+00:00
 - Local path: `/home/hermes/development/projects/valgate-ios-navigation`
 - Remote: https://github.com/L0vU3000/valgate.git
 - Branch: `feat/ios-navigation-haptics`
-- Commit: `370ca66`
+- Commit: `0edcaa5`
 - Clean: no
 - Uncommitted files:
+  - `M vault/worktree-state.md`
   - `?? .agents/`
-  - `?? vault/`
 - Behind origin: 0 commit(s)
-- Ahead of origin: 3 commit(s)
+- Ahead of origin: 0 commit(s)
 - Latest Conductor log: none
 
 ### valgate-webapp-vps
@@ -41,20 +41,22 @@ Last updated: 2026-09-04T06:50:28.590754+00:00
 - Local path: `/home/hermes/development/projects/valgate-webapp-vps`
 - Remote: https://github.com/L0vU3000/valgate-webapp-nextjs.git
 - Branch: `main`
-- Commit: `aca49d1`
+- Commit: `1defa75`
 - Clean: no
 - Uncommitted files:
   - `M lib/db/client.ts`
   - ` M package-lock.json`
   - `?? docs/migration/VERCEL-PROD-ENV-CHECKLIST.md`
 - Behind origin: 0 commit(s)
-- Ahead of origin: 3 commit(s)
+- Ahead of origin: 0 commit(s)
 - Latest Conductor log:
-  - File: `/home/hermes/development/projects/valgate-webapp-vps/conductor-logs/2026-09-04-valgate-webapp-conductor-logging-scaffold.md`
+  - File: `/home/hermes/development/projects/valgate-webapp-vps/conductor-logs/2026-09-04-valgate-webapp-conductor-handoff-harness.md`
   - Date: 2026-09-04
-  - Task: conductor logging scaffold
+  - Task: verify Conductor-to-Hermes handoff harness
   - Status: completed
+  - Mac workspace: `/Users/mintrose/conductor/workspaces/valgate-webapp-nextjs/honolulu`
+  - Mac commit: `3283208`
 
 ## Mac workspaces (from Conductor logs)
 
-- No Mac workspace state recorded yet. Conductor logs should include `workspace_state`.
+- `valgate-webapp-vps`: `/Users/mintrose/conductor/workspaces/valgate-webapp-nextjs/honolulu` on `L0vU3000/system-check` at `3283208` (clean=True)

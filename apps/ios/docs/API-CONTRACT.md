@@ -191,3 +191,23 @@ auth succeeds — unauthenticated requests never count against it.
 3. iOS feature work referencing an endpoint additionally requires the gates
    in "iOS integration status" above — mirroring alone does not unlock it.
    See [`docs/CROSS-PLATFORM-DELIVERY.md`](CROSS-PLATFORM-DELIVERY.md).
+
+
+## Verification state machine (cross-platform contract)
+
+Pillar verification uses the same state table in web and iOS. Status values:
+`unverified`, `pending_review`, `verified`, `rejected`, `revoked`.
+
+| Current status | Action | Next status | Notes |
+|---|---|---|---|
+| `unverified` | submit | `verified` | Document upload path (v1 auto-approves on submit) |
+| `rejected` | submit | `verified` | Re-submission after rejection |
+| `revoked` | submit | `verified` | Re-submission after revocation |
+| `pending_review` | approve | `verified` | Admin/manager approval flow |
+| `pending_review` | reject | `rejected` | Admin/manager rejection |
+| `verified` | reject | `rejected` | Approval can be reversed to rejected |
+| `verified` | revoke | `revoked` | Explicit revocation |
+
+Invalid transitions return a generic error to the client. iOS must not encode
+its own transition rules; it can call web endpoints or mirror this exact
+table for local UI state display.
