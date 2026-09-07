@@ -52,13 +52,16 @@ def should_run() -> bool:
 
 
 def main():
-    context = json.load(sys.stdin) if not sys.stdin.isatty() else {}
-    prompt = context.get("prompt", "")
+    try:
+        context = json.load(sys.stdin) if not sys.stdin.isatty() else {}
+    except Exception:
+        context = {}
+    prompt = context.get("prompt", "") if isinstance(context, dict) else ""
 
     if not should_run():
         return
 
-    workspace = context.get("workspace", {})
+    workspace = context.get("workspace", {}) if isinstance(context, dict) else {}
     repo_name = Path(workspace.get("absolutePath", ".")).name
 
     delta = recall(f"relevant context for: {prompt} in project {repo_name}")
