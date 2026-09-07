@@ -1,0 +1,6 @@
+{
+  "hooks": {
+    "SessionStart": ".claude/hooks/sessionstart.py",
+    "UserPromptSubmit": ".claude/hooks/userpromptsubmit.py"
+  }
+}
