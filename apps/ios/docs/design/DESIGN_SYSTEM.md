@@ -13,7 +13,7 @@ This is a living design system. It is intended to evolve as we discover new refe
 The goal is to move from a 'Generic Utility' feel to a 'Premium Instrument'.
 - **Key Pillar 1**: High typographic contrast (The Power Scale).
 - **Key Pillar 2**: Depth via Physical Glass surfaces.
-- **Key Pillar 3**: High-energy accents (Electric Cobalt).
+- **Key Pillar 3**: High-energy accents (Brand Blue `#2563EB`).
 
 ## 📁 Artifacts
 - `before-after.png` / `before-after.html` — visual before/after comparison of core components.

@@ -76,16 +76,17 @@ struct VGButton: View {
         }
     }
 
-    private var backgroundColor: Color {
+    private var backgroundColor: some View {
         switch variant {
         case .primary:
-            return .valInteractivePrimary
+            // Soar.flight-style gradient accent (deep blue → brand blue)
+            return AnyView(LinearGradient.valGradientAccent)
         case .secondary:
-            return .valInteractiveSecondary
+            return AnyView(Color.valInteractiveSecondary)
         case .ghost:
-            return .clear
+            return AnyView(Color.clear)
         case .destructive:
-            return .valStatusDanger
+            return AnyView(Color.valStatusDanger)
         }
     }
 
@@ -183,12 +184,16 @@ struct VGIconButton: View {
         variant == .primary || variant == .destructive ? .valInteractivePrimaryText : .valTextPrimary
     }
 
-    private var backgroundColor: Color {
+    private var backgroundColor: some View {
         switch variant {
-        case .primary: return .valInteractivePrimary
-        case .secondary: return .valInteractiveSecondary
-        case .ghost: return .clear
-        case .destructive: return .valStatusDanger
+        case .primary:
+            return AnyView(LinearGradient.valGradientAccent)
+        case .secondary:
+            return AnyView(Color.valInteractiveSecondary)
+        case .ghost:
+            return AnyView(Color.clear)
+        case .destructive:
+            return AnyView(Color.valStatusDanger)
         }
     }
 }

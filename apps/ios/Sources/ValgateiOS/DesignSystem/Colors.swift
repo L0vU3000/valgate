@@ -113,14 +113,27 @@ extension Color {
     /// Set via accentColor (tint) on the app window.
     static let valBrandBlue = Color(hex: 0x2563EB)
     static let valBrandBlueDark = Color(hex: 0x3B82F6)
-    /// High-saturation "Power" accent — reserved for high-impact metric
-    /// displays (see VGHeroMetric / ValgateTypography.PowerScale). #245BFF
-    static let valBrandBluePower = Color(hex: 0x245BFF)
-
+    /// Deep end of the primary gradient — web `--val-primary-dark` (#004AC6).
+    /// The soar.flight-style primary action is a gradient from this deep blue
+    /// to the brand blue, not a flat fill.
+    static let valBrandBlueDeep = Color(hex: 0x004AC6)
 
     /// Web heading color light: #121c28  |  dark: #F5F6F7
     static let valHeadingLight = Color(hex: 0x121C28)
     static let valHeadingDark = Color(hex: 0xF5F6F7)
+}
+
+// MARK: - Soar.Flight Gradient Accent
+// Primary actions use a linear gradient (deep blue → brand blue), matching the
+// webapp's `linear-gradient(168deg, var(--val-primary-dark) 0%, #2563eb 100%)`
+// and the Figma `Gradient/Accent` style (verified from soar.flights --grad-accent).
+extension LinearGradient {
+    /// Primary action fill — deep blue (#004AC6) → brand blue (#2563EB), 168deg.
+    static let valGradientAccent = LinearGradient(
+        colors: [.valBrandBlueDeep, .valBrandBlue],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
 }
 
 // MARK: - Hex Helper

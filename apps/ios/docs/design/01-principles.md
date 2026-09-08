@@ -20,16 +20,16 @@
 ## 🧊 Surface & Depth Policy
 *Goal: Eliminate the 'Spreadsheet' feel of standard iOS lists.*
 
-- **Canvas**: Cool Mist (`#F5F7FA`) as the base layer.
+- **Canvas**: `#F5F6F7` (webapp `surface/page`) as the base layer.
 - **Modules**: Crisp White (`#FFFFFF`) elevated surfaces.
 - **Physical Glass**: Use translucency + 1px inner borders for a 'tactile' edge.
 - **No Hairlines**: Zero use of full-width gray dividers. Use **whitespace grouping** and **rounded containers (16px)** to define sections.
 - **Depth**: Subtle cool-tinted shadows (`0 8px 28px rgba(20, 43, 80, 0.08)`).
 
 ## ⚡ Color Energy
-- **Primary Accent**: **Electric Cobalt (`#245BFF`)**.
+- **Primary Accent**: **Brand Blue (`#2563EB`)** — the webapp's `interactive/primary`. Anchored to the shipped product so iOS and web read as one company.
 - **Role**: Used as the 'energy thread' for active navigation, primary metrics, and key interaction states.
-- **Contrast**: Pure Deep Ink for text on light surfaces; Pure White on dark surfaces. No 'safe' medium grays for primary data.
+- **Contrast**: Pure Deep Ink (`#14181B`) for text on light surfaces; Pure White on dark surfaces. No 'safe' medium grays for primary data.
 
 ## 📐 Composition & Motion
 - **The Hero Hook**: Every screen must lead with a `VGHeroMetric` anchor.

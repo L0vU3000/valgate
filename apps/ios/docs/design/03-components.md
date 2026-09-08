@@ -19,7 +19,7 @@ CAPTION (17pt Regular, secondary)                ← Body.large
 - No borders, high contrast, tight tracking.
 - Value uses `monospacedDigit()` so numbers don't shift.
 - `minimumScaleFactor(0.5)` + `lineLimit(1)` for long values.
-- Optional 3px Electric Cobalt accent bar on the left for the "energy thread."
+- Optional 3px Brand Blue accent bar on the left for the "energy thread."
 
 **File:** `VGHeroMetric.swift`
 
@@ -55,7 +55,7 @@ The translucent surface for depth. **Restricted to three roles** (per the mobile
 
 ## 🔘 VGButton / VGBadge — the interaction primitives
 
-- **VGButton:** Uses contract tokens + semantic states (default / pressed / disabled). Primary action = Electric Cobalt fill.
+- **VGButton:** Uses contract tokens + semantic states (default / pressed / disabled). **Primary action = Soar.Flight gradient accent** (`#004AC6 → #2563EB`, 168deg) — matching the webapp's shipped primary-button gradient, not a flat fill.
 - **VGBadge:** Status tags, full pill radius, semantic colors (success / warning / danger / info).
 
 ## 📐 Composition Rules

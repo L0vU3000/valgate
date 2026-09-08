@@ -13,5 +13,5 @@ This log tracks the evolution of the Valgate iOS visual language. Every entry sh
 **Impact**: 
 - Implementation of the **Power Scale** typography (11pt $\to$ 52pt).
 - Replacement of hairlines with **Physical Glass** surfaces.
-- Adoption of **Electric Cobalt (#245BFF)** as the primary energy accent.
+- Adoption of **Brand Blue (#2563EB)** — the webapp's `interactive/primary` — as the primary energy accent (retired the earlier "Electric Cobalt #245BFF" placeholder, which didn't match the shipped product).
 - Introduction of the `VGHeroMetric` as a mandatory screen anchor.
