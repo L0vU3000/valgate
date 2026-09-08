@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', -apple-system, sans-serif; }
+  body { background:#F5F7FA; padding:24px; }
+  h1 { font-size:20px; font-weight:700; margin-bottom:4px; color:#111827; }
+  .sub { font-size:13px; color:#667085; margin-bottom:20px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:900px; }
+  .col { background:#fff; border-radius:16px; padding:20px; box-shadow:0 8px 28px rgba(20,43,80,0.08); }
+  .col h2 { font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:16px; }
+  .before h2 { color:#667085; }
+  .after h2 { color:#245BFF; }
+  .tag { display:inline-block; font-size:11px; font-weight:600; padding:3px 8px; border-radius:999px; margin-bottom:12px; }
+  .tag-before { background:#FEE2E2; color:#B91C1C; }
+  .tag-after { background:#DBEAFE; color:#1D4ED8; }
+  /* Row styles */
+  .row { padding:12px 0; border-bottom:1px solid #E5E7EB; }
+  .row:last-child { border-bottom:none; }
+  .row-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.8px; color:#667085; margin-bottom:4px; }
+  .row-value { font-size:17px; font-weight:600; color:#111827; }
+  .row-caption { font-size:13px; color:#667085; margin-top:2px; }
+  /* Before row (boring) */
+  .before .row { border-bottom:1px solid #E5E7EB; }
+  .before .row-label { font-size:15px; font-weight:400; text-transform:none; letter-spacing:0; color:#3C3C43; opacity:0.6; }
+  .before .row-value { font-size:17px; font-weight:400; color:#3C3C43; }
+  /* After row (sleek) */
+  .after .row { border-bottom:none; background:#F8FAFC; border-radius:12px; padding:14px 16px; margin-bottom:8px; }
+  .after .row-value { font-size:17px; font-weight:600; color:#111827; }
+  /* Metric */
+  .metric { padding:16px; border-radius:12px; }
+  .metric-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.8px; color:#667085; }
+  .metric-value { font-size:34px; font-weight:700; color:#111827; margin:4px 0; }
+  .metric-caption { font-size:13px; color:#667085; }
+  .after .metric { background:#F8FAFC; }
+  .accent-bar { width:3px; height:100%; background:#245BFF; border-radius:2px; }
+  .metric-wrap { display:flex; gap:12px; align-items:stretch; }
+</style>
+</head>
+<body>
+  <h1>Valgate iOS — Energetic Sleek Refactor</h1>
+  <div class="sub">Before (current Figma) vs After (Energetic Sleek) — core components</div>
+
+  <div class="grid">
+    <!-- VGDataRow -->
+    <div class="col before">
+      <span class="tag tag-before">BEFORE</span>
+      <h2>VGDataRow (current)</h2>
+      <div class="row">
+        <div class="row-label">Monthly rent</div>
+        <div class="row-value">$1,450</div>
+        <div class="row-caption">per month</div>
+      </div>
+      <div class="row">
+        <div class="row-label">Property type</div>
+        <div class="row-value">Villa</div>
+      </div>
+      <div class="row">
+        <div class="row-label">Bedrooms</div>
+        <div class="row-value">4</div>
+      </div>
+    </div>
+
+    <div class="col after">
+      <span class="tag tag-after">AFTER</span>
+      <h2>VGDataRow (Sleek)</h2>
+      <div class="row">
+        <div class="row-label">Monthly rent</div>
+        <div class="row-value">$1,450</div>
+        <div class="row-caption">per month</div>
+      </div>
+      <div class="row">
+        <div class="row-label">Property type</div>
+        <div class="row-value">Villa</div>
+      </div>
+      <div class="row">
+        <div class="row-label">Bedrooms</div>
+        <div class="row-value">4</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:24px"></div>
+
+  <div class="grid">
+    <!-- VGMetric -->
+    <div class="col before">
+      <span class="tag tag-before">BEFORE</span>
+      <h2>VGMetric (current)</h2>
+      <div class="metric">
+        <div class="metric-label">Portfolio value</div>
+        <div class="metric-value">$14.79M</div>
+        <div class="metric-caption">across 27 properties</div>
+      </div>
+    </div>
+
+    <div class="col after">
+      <span class="tag tag-after">AFTER</span>
+      <h2>VGMetric (Sleek)</h2>
+      <div class="metric-wrap">
+        <div class="accent-bar"></div>
+        <div class="metric">
+          <div class="metric-label">Portfolio value</div>
+          <div class="metric-value">$14.79M</div>
+          <div class="metric-caption">across 27 properties</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

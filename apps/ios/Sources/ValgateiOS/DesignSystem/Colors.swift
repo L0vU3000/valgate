@@ -113,6 +113,10 @@ extension Color {
     /// Set via accentColor (tint) on the app window.
     static let valBrandBlue = Color(hex: 0x2563EB)
     static let valBrandBlueDark = Color(hex: 0x3B82F6)
+    /// High-saturation "Power" accent — reserved for high-impact metric
+    /// displays (see VGHeroMetric / ValgateTypography.PowerScale). #245BFF
+    static let valBrandBluePower = Color(hex: 0x245BFF)
+
 
     /// Web heading color light: #121c28  |  dark: #F5F6F7
     static let valHeadingLight = Color(hex: 0x121C28)
