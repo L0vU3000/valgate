@@ -9,6 +9,7 @@ This is a living design system. It is intended to evolve as we discover new refe
 - [04 — References](./04-references.md) — The 'Inspiration' (Soar Flight, IG Reels, Figma audit, Mobbin visual evidence).
 - [05 — Soar.Flight Reference](./05-soar-flight-reference.md) — Live token extraction from soar.flights (colors, radius, glass, gradient).
 - [06 — Figma → SwiftUI Generation Target](./06-figma-swiftui-generation-target.md) — The token-driven code shape your Figma→SwiftUI generator should emit (DSKit-derived).
+- [07 — Hermes ⇄ Dev Collaboration SOP](./07-hermes-dev-collaboration-sop.md) — The process: how the agent and the developer move a design from canvas to token-driven SwiftUI (pen.dev / Figma, roles, gates, handoff, DoD).
 - [Decision Log](./decision-log.md) — The 'Reasoning' (why we made each design decision).
 
 ## ⚡ Current Vision: 'Energetic Sleek'
