@@ -15,6 +15,9 @@ packages:
   Clerk:
     url: https://github.com/clerk/clerk-ios
     from: 1.3.9
+  Mapbox:
+    url: https://github.com/mapbox/mapbox-maps-ios
+    from: 11.0.0
 targets:
   ValgateiOS:
     type: application
@@ -34,6 +37,7 @@ targets:
         API_BASE_URL: $(VALGATE_API_BASE_URL)
         CLERK_PUBLISHABLE_KEY: $(CLERK_PUBLISHABLE_KEY)
         VERCEL_PROTECTION_BYPASS: $(VERCEL_PROTECTION_BYPASS)
+        MBXAccessToken: $(MAPBOX_PUBLIC_TOKEN)
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.valgate.ios.readonlyfoundation
@@ -52,6 +56,10 @@ targets:
         embed: false
       - package: Clerk
         product: ClerkKitUI
+        link: true
+        embed: false
+      - package: Mapbox
+        product: MapboxMaps
         link: true
         embed: false
   ValgateiOSTests:

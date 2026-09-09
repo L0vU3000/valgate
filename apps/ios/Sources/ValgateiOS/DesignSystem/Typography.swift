@@ -61,6 +61,16 @@ enum ValgateTypography {
         static let emphasis = Font.system(.callout, design: .monospaced).weight(.medium)
     }
 
+    // MARK: - Power Scale (high-impact single-metric display)
+    enum PowerScale {
+        /// Hero value — 44–56pt, Bold.
+        static let hero = Font.system(size: 52, weight: .bold)
+        /// Headline — 18–22pt, Semi-Bold.
+        static let headline = Font.system(size: 20, weight: .semibold)
+        /// Metadata — 11–12pt, Semi-Bold (intended for all-caps usage).
+        static let metadata = Font.system(size: 11, weight: .semibold)
+    }
+
     // MARK: - Legacy Aliases (migration support for old codebase)
     /// Backward-compatible `Brand` namespace used by existing views.
     enum Brand {

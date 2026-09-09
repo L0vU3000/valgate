@@ -123,7 +123,7 @@ struct VGGlassFloatingButton: View {
                     ZStack {
                         Color.clear.background(.ultraThinMaterial)
                         Circle()
-                            .fill(Color.valInteractivePrimary.opacity(0.9))
+                            .fill(LinearGradient.valGradientAccent.opacity(0.9))
                     }
                 )
                 .clipShape(Circle())
