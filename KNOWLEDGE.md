@@ -8,6 +8,7 @@
 | :--- | :--- | :--- | :--- |
 | **Product / architecture decisions** | `valgate-webapp-vps/vault/` | ✅ | ✅ |
 | **Design system spec** | `apps/ios/docs/design/` | ✅ | ✅ |
+| **Design research** | `docs/design-research/` | ✅ | ✅ |
 | **Creative research / moodboards** | Mac Dev Vault (`Design System/`) | ❌ | ❌ (private) |
 | **Project memory (what happened & why)** | Hindsight (project bank) | ❌ | via bridge |
 | **Personal facts** | Mem0 (local) | ❌ | via tool |
@@ -28,6 +29,7 @@ When you create knowledge, route it by type:
 
 ### Repo (git-tracked, agent-visible)
 - **Design system:** `apps/ios/docs/design/` → start at `DESIGN_SYSTEM.md`
+- **Design research:** `docs/design-research/` → start at `README.md` (migrating from the private Mac Dev Vault)
 - **Webapp knowledge:** `valgate-webapp-vps/vault/` → start at `vision.md`, `roadmap.md`, `tasks.md`
 - **Session logs:** `conductor-logs/`
 

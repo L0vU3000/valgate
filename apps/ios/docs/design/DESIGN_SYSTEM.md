@@ -7,6 +7,7 @@ This is a living design system. It is intended to evolve as we discover new refe
 - [02 — Tokens](./02-tokens.md) — The 'What' (Colors, Typography, Spacing, Motion).
 - [03 — Components](./03-components.md) — The 'How' (VGHeroMetric, VGDataRow, VGGlassPanel).
 - [04 — References](./04-references.md) — The 'Inspiration' (distilled principles from Soar Flight, IG Reels, Figma audit).
+- [05 — Soar.Flight Reference](./05-soar-flight-reference.md) — Live token extraction from soar.flights (colors, radius, glass, gradient).
 - [Decision Log](./decision-log.md) — The 'Reasoning' (why we made each design decision).
 
 ## ⚡ Current Vision: 'Energetic Sleek'
