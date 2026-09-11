@@ -28,9 +28,6 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   serverExternalPackages: ["mapbox-gl"],
-  outputFileTracingIncludes: {
-    "/**/*": ["./public/data/**/*"],
-  },
   turbopack: {
     root: __dirname,
   },
